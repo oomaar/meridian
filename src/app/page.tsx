@@ -654,7 +654,7 @@ function FinalCta() {
           >
             Explore as Admin <ArrowUpRight size={14} />
           </Link>
-          <Link className="m-btn m-btn--lg" href="/login">
+          <Link className="m-btn m-btn--lg" href="/register">
             Request a tenant
           </Link>
         </div>
