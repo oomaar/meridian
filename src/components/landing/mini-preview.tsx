@@ -1,4 +1,12 @@
-import { db, generateRecentActivity, NOW } from "@/fake-db";
+import {
+  db,
+  generateRecentActivity,
+  generateSemesterAnalytics,
+  generateSubmissionsLast7d,
+  generateSubmissionThroughput,
+  getActiveSemester,
+  NOW,
+} from "@/fake-db";
 import { AreaChart } from "./area-chart";
 
 const SIDEBAR_ITEMS = [
@@ -11,9 +19,6 @@ const SIDEBAR_ITEMS = [
   "Users",
 ];
 
-// 12-week submission throughput, hand-tuned to feel like a real curve.
-const TREND_RAW = [180, 210, 245, 220, 290, 340, 360, 320, 410, 470, 520, 495];
-
 function relTime(iso: string): string {
   const diffMs = NOW.getTime() - new Date(iso).getTime();
   const minutes = Math.floor(diffMs / 60_000);
@@ -25,8 +30,13 @@ function relTime(iso: string): string {
 }
 
 export function MiniPreview({ compact = false }: { compact?: boolean }) {
-  const trend = TREND_RAW.map((v, i) => ({ l: "w" + (i + 1), v }));
+  const trend = generateSubmissionThroughput(12);
   const recent = generateRecentActivity(3);
+  const submissions7d = generateSubmissionsLast7d();
+  const activeSemester = getActiveSemester();
+  const openAssignments = activeSemester
+    ? generateSemesterAnalytics(activeSemester.id).openAssignmentsCount
+    : 0;
 
   return (
     <div
@@ -142,9 +152,9 @@ export function MiniPreview({ compact = false }: { compact?: boolean }) {
         >
           {[
             { k: "Enrollment", v: db.students.length.toLocaleString() },
-            { k: "Submissions 7d", v: "3,412" },
+            { k: "Submissions 7d", v: submissions7d.toLocaleString() },
             { k: "Avg. turnaround", v: "38h" },
-            { k: "Open petitions", v: "23" },
+            { k: "Open assignments", v: openAssignments.toLocaleString() },
           ].map((s) => (
             <div
               key={s.k}
