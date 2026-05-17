@@ -20,8 +20,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Meridian",
-  description: "Meridian — Aldridge University · Operations",
+  title: {
+    default: "Meridian — The operating system for modern universities",
+    template: "%s · Meridian",
+  },
+  description:
+    "Meridian unifies enrollment, course delivery, grading, advising, and analytics in a single operational fabric — engineered for the registrars, deans, and faculty who keep an institution running.",
 };
 
 export default async function RootLayout({
