@@ -1,12 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthShell } from "@/components/auth/auth-shell";
-import { Field } from "@/components/auth/field";
+import { Field, SelectField } from "@/components/auth/field";
 import { PERSONAS } from "@/lib/personas";
 
 export const metadata: Metadata = {
   title: "Request a tenant",
 };
+
+const ROLE_OPTIONS = [
+  { value: "registrar", label: "Registrar" },
+  { value: "dean", label: "Dean / Department Chair" },
+  { value: "it", label: "IT / Systems administrator" },
+  { value: "admissions", label: "Admissions" },
+  { value: "faculty", label: "Faculty / Instructor" },
+  { value: "provost", label: "Provost / VP" },
+  { value: "other", label: "Other" },
+] as const;
 
 export default function RegisterPage() {
   return (
@@ -27,11 +37,11 @@ export default function RegisterPage() {
         name="institution"
       />
       <div style={{ height: 14 }} />
-      <Field
+      <SelectField
         label="Your role"
-        placeholder="Registrar, Dean, IT director, …"
-        autoComplete="organization-title"
         name="role"
+        defaultValue="registrar"
+        options={ROLE_OPTIONS}
       />
       <div style={{ height: 14 }} />
       <Field
@@ -50,23 +60,9 @@ export default function RegisterPage() {
         Request access
       </Link>
 
-      <p
-        style={{
-          marginTop: 18,
-          fontSize: 13,
-          color: "var(--m-text-3)",
-        }}
-      >
-        Already have a tenant?{" "}
-        <Link href="/login" style={{ color: "var(--m-accent)" }}>
-          Sign in
-        </Link>
+      <p className="m-auth__alt">
+        Already have a tenant? <Link href="/login">Sign in</Link>
       </p>
-
-      <div className="m-auth__hint">
-        <b>Want to see it first?</b> Walk through the demo as{" "}
-        <Link href={PERSONAS.admin.homeHref}>an admin →</Link>
-      </div>
     </AuthShell>
   );
 }
