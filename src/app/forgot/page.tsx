@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { Field } from "@/components/auth/field";
-import { PERSONAS } from "@/lib/personas";
 
 export const metadata: Metadata = {
   title: "Reset password",
@@ -30,7 +29,7 @@ export default function ForgotPage() {
       />
 
       <Link
-        href="/login"
+        href="/verify"
         className="m-btn m-btn--primary"
         style={{ width: "100%", height: 40, marginTop: 22 }}
       >
@@ -40,11 +39,6 @@ export default function ForgotPage() {
       <Link href="/login" className="m-auth__back">
         <ArrowLeft size={12} /> Back to sign in
       </Link>
-
-      <div className="m-auth__hint">
-        <b>Just exploring?</b> Skip the reset flow and{" "}
-        <Link href={PERSONAS.admin.homeHref}>open the demo →</Link>
-      </div>
     </AuthShell>
   );
 }
