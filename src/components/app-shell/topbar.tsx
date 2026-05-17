@@ -2,7 +2,8 @@
 
 import { Fragment } from "react";
 import { usePathname } from "next/navigation";
-import { Bell, ChevronRight, Info, Search, Sun } from "lucide-react";
+import { Bell, ChevronRight, Info, Search } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const ROOT_LABEL: Record<string, string> = {
   admin: "Aldridge University",
@@ -65,9 +66,7 @@ export function Topbar() {
       </div>
 
       <div className="m-top-actions">
-        <button className="m-btn m-btn--ghost m-btn--icon" title="Toggle theme">
-          <Sun size={14} />
-        </button>
+        <ThemeToggle />
         <button
           className="m-btn m-btn--ghost m-btn--icon"
           style={{ position: "relative" }}
