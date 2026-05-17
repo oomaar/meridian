@@ -13,15 +13,14 @@ import {
   GraduationCap,
   Inbox,
   LayoutDashboard,
-  MoreHorizontal,
   PenLine,
   Settings,
   UserCog,
   Users,
   type LucideIcon,
 } from "lucide-react";
-
-type Role = "admin" | "instructor" | "student";
+import { PERSONAS, roleFromPath, type Role } from "@/lib/personas";
+import { PersonaFooter } from "./persona-footer";
 
 type NavItem = {
   href: string;
@@ -110,20 +109,6 @@ const TENANT = {
   crest: "A",
 };
 
-const USER = { name: "Ines Halvorsen", initials: "IH" };
-
-const ROLE_TITLES: Record<Role, string> = {
-  admin: "Registrar",
-  instructor: "Faculty",
-  student: "Student",
-};
-
-function roleFromPath(pathname: string): Role {
-  if (pathname.startsWith("/instructor")) return "instructor";
-  if (pathname.startsWith("/student")) return "student";
-  return "admin";
-}
-
 function isActive(pathname: string, href: string): boolean {
   if (pathname === href) return true;
   return pathname.startsWith(href + "/");
@@ -132,6 +117,7 @@ function isActive(pathname: string, href: string): boolean {
 export function Sidebar() {
   const pathname = usePathname();
   const role = roleFromPath(pathname);
+  const persona = PERSONAS[role];
   const groups = NAV[role];
 
   return (
@@ -176,16 +162,7 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="m-sidebar__footer">
-        <div className="m-avatar">{USER.initials}</div>
-        <div className="m-sidebar__user">
-          <b>{USER.name}</b>
-          <span>{ROLE_TITLES[role]}</span>
-        </div>
-        <button className="m-btn m-btn--ghost m-btn--icon m-btn--sm" title="Account">
-          <MoreHorizontal size={14} />
-        </button>
-      </div>
+      <PersonaFooter persona={persona} />
     </aside>
   );
 }
