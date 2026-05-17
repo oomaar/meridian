@@ -506,6 +506,201 @@
 .m-btn--icon { width: 32px; padding: 0; }
 .m-btn--icon.m-btn--sm { width: 26px; }
 
+/* ───────────────────────────────────────────────────────
+   Meridian — content components
+   Cards, charts, eyebrows, preview frames, layout helpers
+   used by the landing surfaces and inside .m-page bodies.
+   ─────────────────────────────────────────────────────── */
+
+/* layout helpers */
+.m-grid { display: grid; gap: var(--m-gap); }
+.m-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.m-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.m-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.m-grid-2-1 { grid-template-columns: 2fr 1fr; }
+.m-grid-1-1 { grid-template-columns: 1fr 1fr; }
+.m-stack { display: flex; flex-direction: column; gap: var(--m-gap); }
+.m-row { display: flex; align-items: center; gap: var(--m-gap); }
+.m-rule { border: none; border-top: 1px solid var(--m-line); margin: 0; }
+
+/* cards */
+.m-card {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.m-card__head {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--m-line);
+}
+.m-card__title {
+  font-family: var(--m-font-serif);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  margin: 0;
+  color: var(--m-text);
+  flex: 1;
+}
+.m-card__sub { font-size: 12px; color: var(--m-text-3); }
+.m-card__body { padding: 18px; }
+.m-card__body--flush { padding: 0; }
+.m-card__foot {
+  padding: 10px 18px;
+  border-top: 1px solid var(--m-line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--m-text-3);
+}
+
+/* chart axes */
+.m-chart { width: 100%; display: block; }
+.m-chart-axis-line { stroke: var(--m-line); stroke-width: 1; }
+.m-chart-axis-text {
+  fill: var(--m-text-3);
+  font-size: 10px;
+  font-family: var(--m-font-mono);
+}
+
+/* eyebrow + section heading (used across content surfaces) */
+.m-eyebrow {
+  font-family: var(--m-font-mono);
+  font-size: 11.5px;
+  color: var(--m-accent);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.m-section-title {
+  font-family: var(--m-font-serif);
+  font-weight: 400;
+  font-size: clamp(28px, 3.4vw, 40px);
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  max-width: 22ch;
+  margin: 10px 0 0;
+}
+
+/* pulse dot (status indicator) */
+.m-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--m-success);
+  box-shadow: 0 0 0 3px var(--m-success-bg);
+  display: inline-block;
+}
+
+/* preview frame (wraps mini UI emulations on the landing) */
+.m-preview-frame {
+  border: 1px solid var(--m-line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--m-surface);
+  box-shadow: var(--m-shadow-lg);
+  position: relative;
+}
+.m-preview-chrome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--m-line);
+  background: var(--m-surface-2);
+}
+.m-preview-dots { display: flex; gap: 6px; }
+.m-preview-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--m-line-strong);
+}
+.m-preview-url {
+  font-family: var(--m-font-mono);
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  background: var(--m-canvas);
+  border: 1px solid var(--m-line);
+  border-radius: 5px;
+  padding: 3px 10px;
+  flex: 1;
+  max-width: 360px;
+}
+
+/* ───────────────────────────────────────────────────────
+   Meridian — landing surfaces
+   Public marketing chrome (separate from .m-app).
+   ─────────────────────────────────────────────────────── */
+
+.m-landing {
+  background: var(--m-canvas);
+  color: var(--m-text);
+  min-height: 100vh;
+}
+.m-landing__nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--m-line);
+  background: rgba(13, 11, 9, 0.72);
+  backdrop-filter: blur(12px);
+}
+[data-theme="light"] .m-landing__nav {
+  background: rgba(241, 236, 225, 0.78);
+}
+.m-landing__hero {
+  padding: 80px 40px 60px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.m-landing__h1 {
+  font-family: var(--m-font-serif);
+  font-weight: 400;
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+  color: var(--m-text);
+  margin: 0;
+}
+.m-landing__h1 em {
+  font-style: italic;
+  color: var(--m-accent);
+  font-weight: 400;
+}
+.m-landing__lede {
+  margin-top: 24px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--m-text-2);
+  max-width: 56ch;
+}
+.m-landing__section {
+  padding: 60px 40px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.m-landing__rule {
+  border: none;
+  border-top: 1px solid var(--m-line);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* theme-toggle icon visibility — picks Sun on dark, Moon on light */
+.theme-icon-moon { display: none; }
+[data-theme="light"] .theme-icon-sun { display: none; }
+[data-theme="light"] .theme-icon-moon { display: inline-flex; }
+
 /* persona switcher menu (sidebar footer popover) */
 .m-sidebar__footer { position: relative; }
 .m-persona-menu {
