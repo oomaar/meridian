@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, JetBrains_Mono, Newsreader } from "next/font/google";
+import { getTheme } from "@/lib/theme";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -23,15 +24,16 @@ export const metadata: Metadata = {
   description: "Meridian — Aldridge University · Operations",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const theme = await getTheme();
   return (
     <html
       lang="en"
-      data-theme="dark"
+      data-theme={theme}
       data-density="comfortable"
       className={`${geistSans.variable} ${newsreader.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
