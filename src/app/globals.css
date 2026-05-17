@@ -823,8 +823,36 @@
 }
 
 @media (max-width: 880px) {
+  /* Auth: collapse to single column + center the form inner */
   .m-auth { grid-template-columns: 1fr; }
   .m-auth__quote-col { display: none; }
+  .m-auth__inner { margin: 0 auto; }
+
+  /* Landing: collapse multi-col grids, shrink padding, hide secondary nav.
+     The section grids are inline-styled, so !important + attr selectors
+     are required to override them. Scoped under .m-landing so the rules
+     can't leak into other surfaces. */
+  .m-landing__hero { padding: 60px 20px 40px !important; }
+  .m-landing__section { padding: 40px 20px !important; }
+  .m-landing__nav { padding: 0 20px !important; }
+  .m-landing__nav > nav { display: none !important; }
+  .m-landing [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  .m-landing [style*="repeat(6"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 18px !important;
+  }
+  .m-landing section[style*="padding: 72px 40px"] {
+    padding: 40px 20px !important;
+  }
+  .m-landing .m-row { flex-wrap: wrap; }
+  .m-landing > footer {
+    flex-wrap: wrap !important;
+    padding: 24px 20px !important;
+  }
+  .m-preview-frame { overflow-x: auto; }
 }
 
 /* labelled input — used inside auth, settings, modals */

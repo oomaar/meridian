@@ -85,9 +85,7 @@ export function MiniPreview({ compact = false }: { compact?: boolean }) {
               background: i === 0 ? "var(--m-elevated)" : "transparent",
               color: i === 0 ? "var(--m-text)" : "var(--m-text-3)",
               borderLeft:
-                i === 0
-                  ? "2px solid var(--m-accent)"
-                  : "2px solid transparent",
+                i === 0 ? "2px solid var(--m-accent)" : "2px solid transparent",
             }}
           >
             {l}

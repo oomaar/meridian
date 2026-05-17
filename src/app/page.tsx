@@ -26,24 +26,21 @@ const OPERATIONAL_CARDS = [
   {
     eyebrow: "OPERATIONS",
     title: "Active term, in one frame.",
-    copy:
-      "A single page that holds the entire term: enrollment, throughput, ungraded queues, pending petitions, and rule-based alerts. Built so registrars can scan it before coffee finishes brewing.",
+    copy: "A single page that holds the entire term: enrollment, throughput, ungraded queues, pending petitions, and rule-based alerts. Built so registrars can scan it before coffee finishes brewing.",
     icon: LayoutDashboard,
     go: PERSONAS.admin.homeHref,
   },
   {
     eyebrow: "INSTRUCTORS",
     title: "Grading workflow that respects time.",
-    copy:
-      "Rubric-driven grading with inline code feedback, auto-test signal, and queue-aware navigation. Anchored on the median 38-hour turnaround your faculty already aim for.",
+    copy: "Rubric-driven grading with inline code feedback, auto-test signal, and queue-aware navigation. Anchored on the median 38-hour turnaround your faculty already aim for.",
     icon: PenLine,
     go: PERSONAS.instructor.homeHref,
   },
   {
     eyebrow: "STUDENTS",
     title: "A calm place to learn.",
-    copy:
-      "Continuity-first learning surfaces: pick up exactly where you left off, see what's due, and never wonder what comes next. Designed for the long arc of a degree.",
+    copy: "Continuity-first learning surfaces: pick up exactly where you left off, see what's due, and never wonder what comes next. Designed for the long arc of a degree.",
     icon: BookOpen,
     go: PERSONAS.student.homeHref,
   },
@@ -185,10 +182,10 @@ function Hero() {
             The operating system for <em>modern universities</em>.
           </h1>
           <p className="m-landing__lede">
-            Meridian unifies enrollment, course delivery, grading, advising,
-            and analytics in a single operational fabric — engineered for the
-            long days of registrars, deans, and faculty who keep an
-            institution running.
+            Meridian unifies enrollment, course delivery, grading, advising, and
+            analytics in a single operational fabric — engineered for the long
+            days of registrars, deans, and faculty who keep an institution
+            running.
           </p>
           <div className="m-row" style={{ marginTop: 32, gap: 10 }}>
             <Link
@@ -224,7 +221,10 @@ function Hero() {
           </div>
         </div>
 
-        <div className="m-preview-frame" style={{ transform: "translateY(8px)" }}>
+        <div
+          className="m-preview-frame"
+          style={{ transform: "translateY(8px)" }}
+        >
           <div className="m-preview-chrome">
             <div className="m-preview-dots">
               <span />
@@ -522,8 +522,8 @@ function GradingPreviewSection() {
             }}
           >
             Submissions, autograder signal, rubric, and queue navigation all
-            live in the same view. Faculty keep their flow; students get
-            faster, more substantive feedback.
+            live in the same view. Faculty keep their flow; students get faster,
+            more substantive feedback.
           </p>
           <div className="m-grid m-grid-2" style={{ marginTop: 26, gap: 14 }}>
             {GRADING_STATS.map((s) => (
@@ -593,9 +593,8 @@ function QuoteSection() {
           }}
         >
           &ldquo;We stopped maintaining four separate systems the week Meridian
-          went live. Our registrar reports it gave her back roughly an
-          afternoon a week — and the operational picture is finally
-          honest.&rdquo;
+          went live. Our registrar reports it gave her back roughly an afternoon
+          a week — and the operational picture is finally honest.&rdquo;
         </blockquote>
         <div
           style={{

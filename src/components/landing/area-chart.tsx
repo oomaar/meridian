@@ -29,7 +29,8 @@ export function AreaChart({
   const linePath = pts
     .map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1))
     .join(" ");
-  const areaPath = linePath + ` L ${pad.l + W} ${pad.t + H} L ${pad.l} ${pad.t + H} Z`;
+  const areaPath =
+    linePath + ` L ${pad.l + W} ${pad.t + H} L ${pad.l} ${pad.t + H} Z`;
   const gridYs = 4;
 
   return (
@@ -80,7 +81,7 @@ export function AreaChart({
           >
             {d.l}
           </text>
-        ) : null
+        ) : null,
       )}
       <path d={areaPath} fill={`url(#${gradientId})`} />
       <path
