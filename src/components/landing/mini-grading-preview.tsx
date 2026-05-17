@@ -1,4 +1,6 @@
 import { Check } from "lucide-react";
+import { generateSampleSubmission } from "@/fake-db";
+import { PERSONAS } from "@/lib/personas";
 
 const RUBRIC = [
   { k: "Election", v: 23, m: 25 },
@@ -8,7 +10,37 @@ const RUBRIC = [
   { k: "Writeup", v: 7, m: 10 },
 ];
 
+function initialsOf(name: string): string {
+  return name
+    .split(/\s+/)
+    .map((w) => w[0] ?? "")
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
+function submissionIdFor(studentId: string): string {
+  // "stu-08723" → "S-8723"
+  const numeric = studentId.split("-")[1] ?? studentId;
+  return `S-${numeric.replace(/^0+/, "") || "0"}`;
+}
+
+const FALLBACK = {
+  studentName: "Aarav Patel",
+  initials: "AP",
+  submissionId: "S-9821",
+};
+
 export function MiniGradingPreview() {
+  const sample = generateSampleSubmission(PERSONAS.instructor.fakeDbId);
+  const studentName = sample?.student.fullName ?? FALLBACK.studentName;
+  const initials = sample
+    ? initialsOf(sample.student.fullName)
+    : FALLBACK.initials;
+  const submissionId = sample
+    ? submissionIdFor(sample.student.id)
+    : FALLBACK.submissionId;
+
   return (
     <div
       style={{
@@ -41,10 +73,10 @@ export function MiniGradingPreview() {
               fontSize: 11,
             }}
           >
-            AP
+            {initials}
           </div>
           <div>
-            <div style={{ fontSize: 12.5, fontWeight: 500 }}>Aarav Patel</div>
+            <div style={{ fontSize: 12.5, fontWeight: 500 }}>{studentName}</div>
             <div
               style={{
                 fontSize: 10.5,
@@ -52,7 +84,7 @@ export function MiniGradingPreview() {
                 fontFamily: "var(--m-font-mono)",
               }}
             >
-              S-9821 · attempt 1 · 2m ago
+              {submissionId} · attempt 1 · 2m ago
             </div>
           </div>
           <span
