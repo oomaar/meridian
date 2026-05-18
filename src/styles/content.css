@@ -71,6 +71,46 @@
   margin: 10px 0 0;
 }
 
+/* section-companion patterns — body copy that follows .m-section-title,
+   recurring stat tiles, accent-tinted icon backgrounds, outline pills.
+   Reused across the landing today and the in-app dashboards next. */
+
+.m-section-copy {
+  color: var(--m-text-2);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-top: 14px;
+  max-width: 60ch;
+}
+
+.m-stat-tile {
+  padding: 16px;
+  border: 1px solid var(--m-line);
+  border-radius: 8px;
+  background: var(--m-surface);
+}
+
+.m-icon-tile {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--m-accent-bg);
+  color: var(--m-accent);
+  display: grid;
+  place-items: center;
+}
+
+.m-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border: 1px solid var(--m-line);
+  border-radius: 100px;
+  font-size: 12px;
+  color: var(--m-text-2);
+}
+
 /* pulse dot — small status/heartbeat indicator */
 .m-pulse-dot {
   width: 6px;
