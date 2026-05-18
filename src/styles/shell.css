@@ -54,6 +54,11 @@
   height: 30px;
   font-size: 17px;
 }
+.m-brand-mark--sm {
+  width: 22px;
+  height: 22px;
+  font-size: 13px;
+}
 .m-brand-text {
   display: flex;
   flex-direction: column;

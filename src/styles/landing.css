@@ -51,7 +51,9 @@
   font-size: 13px;
   color: var(--m-text-2);
 }
-.m-landing__nav-links a { cursor: pointer; }
+.m-landing__nav-links a {
+  cursor: pointer;
+}
 .m-landing__nav-actions {
   display: flex;
   align-items: center;
@@ -71,7 +73,6 @@
   letter-spacing: -0.025em;
   max-width: 18ch;
   color: var(--m-text);
-  margin: 0;
 }
 .m-landing__h1 em {
   font-style: italic;
@@ -115,7 +116,10 @@
   border-bottom: 1px solid var(--m-line);
   background: var(--m-surface-2);
 }
-.m-preview-dots { display: flex; gap: 6px; }
+.m-preview-dots {
+  display: flex;
+  gap: 6px;
+}
 .m-preview-dots span {
   width: 10px;
   height: 10px;

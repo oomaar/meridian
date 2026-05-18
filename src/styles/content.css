@@ -111,6 +111,19 @@
   color: var(--m-text-2);
 }
 
+/* split section layout — text + visual side-by-side. The default
+   weighting is 1.1fr/0.9fr; --reverse flips it. Collapses to a
+   single column at narrow widths (see responsive.css). */
+.m-section-split {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 56px;
+  align-items: center;
+}
+.m-section-split--reverse {
+  grid-template-columns: 0.9fr 1.1fr;
+}
+
 /* pulse dot — small status/heartbeat indicator */
 .m-pulse-dot {
   width: 6px;

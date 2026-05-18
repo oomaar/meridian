@@ -189,6 +189,41 @@
 }
 
 @theme inline {
+  /* Meridian token bridge — exposes the warm-institutional palette
+     as Tailwind utilities so we can write text-m-text-2, bg-m-canvas,
+     border-m-line, font-m-serif etc. instead of arbitrary-value soup
+     (text-[var(--m-text-2)] …). Theme variants ([data-theme="light"])
+     still flip the underlying CSS vars; the utilities follow. */
+  --color-m-canvas: var(--m-canvas);
+  --color-m-surface: var(--m-surface);
+  --color-m-surface-2: var(--m-surface-2);
+  --color-m-elevated: var(--m-elevated);
+  --color-m-line: var(--m-line);
+  --color-m-line-strong: var(--m-line-strong);
+  --color-m-line-soft: var(--m-line-soft);
+  --color-m-text: var(--m-text);
+  --color-m-text-2: var(--m-text-2);
+  --color-m-text-3: var(--m-text-3);
+  --color-m-text-4: var(--m-text-4);
+  --color-m-text-inv: var(--m-text-inv);
+  --color-m-accent: var(--m-accent);
+  --color-m-accent-hi: var(--m-accent-hi);
+  --color-m-accent-lo: var(--m-accent-lo);
+  --color-m-accent-bg: var(--m-accent-bg);
+  --color-m-accent-bg-hi: var(--m-accent-bg-hi);
+  --color-m-on-accent: var(--m-on-accent);
+  --color-m-success: var(--m-success);
+  --color-m-success-bg: var(--m-success-bg);
+  --color-m-warning: var(--m-warning);
+  --color-m-warning-bg: var(--m-warning-bg);
+  --color-m-danger: var(--m-danger);
+  --color-m-danger-bg: var(--m-danger-bg);
+  --color-m-info: var(--m-info);
+  --color-m-info-bg: var(--m-info-bg);
+  --font-m-sans: var(--m-font-sans);
+  --font-m-serif: var(--m-font-serif);
+  --font-m-mono: var(--m-font-mono);
+
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
