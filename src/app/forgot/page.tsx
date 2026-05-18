@@ -11,9 +11,7 @@ export const metadata: Metadata = {
 export default function ForgotPage() {
   return (
     <AuthShell>
-      <div className="m-eyebrow" style={{ marginBottom: 12 }}>
-        Reset access
-      </div>
+      <div className="m-eyebrow mb-3">Reset access</div>
       <h1 className="m-auth__h">Forgot your password?</h1>
       <p className="m-auth__sub">
         Enter the email tied to your Meridian account. If a matching tenant
@@ -30,8 +28,7 @@ export default function ForgotPage() {
 
       <Link
         href="/verify"
-        className="m-btn m-btn--primary"
-        style={{ width: "100%", height: 40, marginTop: 22 }}
+        className="m-btn m-btn--primary m-btn--block mt-5.5"
       >
         Send reset link
       </Link>

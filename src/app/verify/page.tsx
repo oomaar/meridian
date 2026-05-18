@@ -25,9 +25,7 @@ export default function VerifyPage() {
       <div className="m-success-icon">
         <Check size={26} strokeWidth={2.4} />
       </div>
-      <div className="m-eyebrow" style={{ marginBottom: 12 }}>
-        Email verified
-      </div>
+      <div className="m-eyebrow mb-3">Email verified</div>
       <h1 className="m-auth__h">Welcome to Meridian.</h1>
       <p className="m-auth__sub">
         Your tenant is provisioned and seeded with a full demo cohort. Pick up
@@ -36,8 +34,7 @@ export default function VerifyPage() {
 
       <Link
         href={PERSONAS.admin.homeHref}
-        className="m-btn m-btn--primary"
-        style={{ width: "100%", height: 40 }}
+        className="m-btn m-btn--primary m-btn--block"
       >
         Continue to your dashboard →
       </Link>

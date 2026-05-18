@@ -12,9 +12,7 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <AuthShell>
-      <div className="m-eyebrow" style={{ marginBottom: 12 }}>
-        Sign in
-      </div>
+      <div className="m-eyebrow mb-3">Sign in</div>
       <h1 className="m-auth__h">Welcome back.</h1>
       <p className="m-auth__sub">
         Jump in as a demo persona, or sign in with your institutional account.
@@ -49,11 +47,11 @@ export default function LoginPage() {
         <hr />
       </div>
 
-      <button type="button" className="m-btn" style={{ width: "100%", height: 40 }}>
+      <button type="button" className="m-btn m-btn--block">
         <Shield size={14} /> Continue with Okta SSO
       </button>
 
-      <div style={{ height: 14 }} />
+      <div className="h-3.5" />
       <Field
         label="Email"
         type="email"
@@ -61,7 +59,7 @@ export default function LoginPage() {
         autoComplete="email"
         name="email"
       />
-      <div style={{ height: 14 }} />
+      <div className="h-3.5" />
       <Field
         label="Password"
         type="password"
@@ -70,24 +68,20 @@ export default function LoginPage() {
         name="password"
       />
 
-      <div className="m-row" style={{ marginTop: 14, fontSize: 12 }}>
+      <div className="m-row mt-3.5 text-xs">
         <label className="m-check">
           <input type="checkbox" defaultChecked />
           Remember this device for 30 days
         </label>
         <span className="m-spacer" />
-        <Link
-          href="/forgot"
-          style={{ color: "var(--m-accent)", textDecoration: "none" }}
-        >
+        <Link href="/forgot" className="text-m-accent no-underline">
           Forgot password
         </Link>
       </div>
 
       <Link
         href={PERSONAS.admin.homeHref}
-        className="m-btn m-btn--primary"
-        style={{ width: "100%", height: 40, marginTop: 18 }}
+        className="m-btn m-btn--primary m-btn--block mt-4.5"
       >
         Sign in
       </Link>

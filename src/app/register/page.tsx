@@ -21,9 +21,7 @@ const ROLE_OPTIONS = [
 export default function RegisterPage() {
   return (
     <AuthShell>
-      <div className="m-eyebrow" style={{ marginBottom: 12 }}>
-        Request access
-      </div>
+      <div className="m-eyebrow mb-3">Request access</div>
       <h1 className="m-auth__h">Request a Meridian tenant.</h1>
       <p className="m-auth__sub">
         Tell us about your institution. A team member will be in touch within
@@ -36,14 +34,14 @@ export default function RegisterPage() {
         autoComplete="organization"
         name="institution"
       />
-      <div style={{ height: 14 }} />
+      <div className="h-3.5" />
       <SelectField
         label="Your role"
         name="role"
         defaultValue="registrar"
         options={ROLE_OPTIONS}
       />
-      <div style={{ height: 14 }} />
+      <div className="h-3.5" />
       <Field
         label="Work email"
         type="email"
@@ -54,8 +52,7 @@ export default function RegisterPage() {
 
       <Link
         href={PERSONAS.admin.homeHref}
-        className="m-btn m-btn--primary"
-        style={{ width: "100%", height: 40, marginTop: 22 }}
+        className="m-btn m-btn--primary m-btn--block mt-5.5"
       >
         Request access
       </Link>
