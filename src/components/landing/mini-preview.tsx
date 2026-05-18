@@ -40,53 +40,21 @@ export function MiniPreview({ compact = false }: { compact?: boolean }) {
 
   return (
     <div
-      style={{
-        background: "var(--m-canvas)",
-        padding: 18,
-        minHeight: compact ? 380 : 480,
-        display: "grid",
-        gridTemplateColumns: "180px 1fr",
-        gap: 14,
-      }}
+      className={`m-mini-preview${compact ? " m-mini-preview--compact" : ""}`}
     >
       {/* mini sidebar */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            marginBottom: 8,
-          }}
-        >
-          <div
-            className="m-brand-mark"
-            style={{ width: 20, height: 20, fontSize: 12 }}
-          >
-            M
-          </div>
-          <span
-            style={{
-              fontFamily: "var(--m-font-serif)",
-              fontSize: 13,
-              fontWeight: 500,
-            }}
-          >
-            Meridian
-          </span>
+      <div className="m-mini-preview__sidebar">
+        <div className="m-mini-preview__brand">
+          <div className="m-brand-mark">M</div>
+          <span className="m-mini-preview__brand-name">Meridian</span>
         </div>
         {SIDEBAR_ITEMS.map((l, i) => (
           <div
             key={l}
-            style={{
-              padding: "5px 8px",
-              borderRadius: 4,
-              fontSize: 11.5,
-              background: i === 0 ? "var(--m-elevated)" : "transparent",
-              color: i === 0 ? "var(--m-text)" : "var(--m-text-3)",
-              borderLeft:
-                i === 0 ? "2px solid var(--m-accent)" : "2px solid transparent",
-            }}
+            className={
+              "m-mini-preview__nav-item" +
+              (i === 0 ? " m-mini-preview__nav-item--active" : "")
+            }
           >
             {l}
           </div>
@@ -95,173 +63,47 @@ export function MiniPreview({ compact = false }: { compact?: boolean }) {
 
       {/* mini main */}
       <div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 12,
-          }}
-        >
+        <div className="m-mini-preview__header">
           <div>
-            <div
-              style={{
-                fontSize: 10,
-                color: "var(--m-text-3)",
-                letterSpacing: ".06em",
-                textTransform: "uppercase",
-              }}
-            >
+            <div className="m-mini-preview__eyebrow">
               SPRING 2026 · FINALS WEEK
             </div>
-            <div
-              style={{
-                fontFamily: "var(--m-font-serif)",
-                fontSize: 19,
-                fontWeight: 500,
-              }}
-            >
+            <div className="m-mini-preview__greeting">
               Good afternoon, Ines.
             </div>
           </div>
-          <div
-            style={{
-              height: 22,
-              padding: "0 8px",
-              borderRadius: 4,
-              background: "var(--m-accent)",
-              color: "var(--m-on-accent)",
-              display: "flex",
-              alignItems: "center",
-              fontSize: 10.5,
-            }}
-          >
-            + New course
-          </div>
+          <div className="m-mini-preview__cta">+ New course</div>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: 8,
-            marginBottom: 12,
-          }}
-        >
+        <div className="m-mini-preview__stats">
           {[
             { k: "Enrollment", v: db.students.length.toLocaleString() },
             { k: "Submissions 7d", v: submissions7d.toLocaleString() },
             { k: "Avg. turnaround", v: "38h" },
             { k: "Open assignments", v: openAssignments.toLocaleString() },
           ].map((s) => (
-            <div
-              key={s.k}
-              style={{
-                padding: 8,
-                background: "var(--m-surface)",
-                border: "1px solid var(--m-line)",
-                borderRadius: 6,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 9,
-                  color: "var(--m-text-3)",
-                  textTransform: "uppercase",
-                  letterSpacing: ".04em",
-                }}
-              >
-                {s.k}
-              </div>
-              <div
-                style={{
-                  fontFamily: "var(--m-font-serif)",
-                  fontSize: 15,
-                  fontWeight: 500,
-                }}
-              >
-                {s.v}
-              </div>
+            <div key={s.k} className="m-mini-preview__stat">
+              <div className="m-mini-preview__stat-label">{s.k}</div>
+              <div className="m-mini-preview__stat-value">{s.v}</div>
             </div>
           ))}
         </div>
 
-        <div
-          style={{
-            background: "var(--m-surface)",
-            border: "1px solid var(--m-line)",
-            borderRadius: 6,
-            padding: 10,
-          }}
-        >
-          <div
-            style={{
-              fontSize: 10.5,
-              color: "var(--m-text-3)",
-              marginBottom: 4,
-            }}
-          >
+        <div className="m-mini-preview__panel">
+          <div className="m-mini-preview__panel-label">
             SUBMISSION THROUGHPUT · 12 WEEKS
           </div>
           <AreaChart data={trend} height={compact ? 110 : 140} />
         </div>
 
         {!compact && (
-          <div
-            style={{
-              marginTop: 12,
-              background: "var(--m-surface)",
-              border: "1px solid var(--m-line)",
-              borderRadius: 6,
-              padding: "8px 12px",
-            }}
-          >
-            <div
-              style={{
-                fontSize: 10.5,
-                color: "var(--m-text-3)",
-                marginBottom: 6,
-              }}
-            >
-              LIVE ACTIVITY
-            </div>
+          <div className="m-mini-preview__panel m-mini-preview__panel--feed">
+            <div className="m-mini-preview__panel-label">LIVE ACTIVITY</div>
             {recent.map((it) => (
-              <div
-                key={it.id}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "8px 1fr auto",
-                  gap: 8,
-                  alignItems: "center",
-                  padding: "5px 0",
-                  fontSize: 11,
-                }}
-              >
-                <span
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: 50,
-                    background: "var(--m-accent)",
-                  }}
-                />
-                <span
-                  style={{
-                    color: "var(--m-text-2)",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {it.body}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "var(--m-font-mono)",
-                    color: "var(--m-text-3)",
-                    fontSize: 10,
-                  }}
-                >
+              <div key={it.id} className="m-mini-preview__feed-row">
+                <span className="m-mini-preview__feed-dot" />
+                <span className="m-mini-preview__feed-body">{it.body}</span>
+                <span className="m-mini-preview__feed-time">
                   {relTime(it.timestamp)}
                 </span>
               </div>
