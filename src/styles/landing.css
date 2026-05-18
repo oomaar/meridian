@@ -137,3 +137,285 @@
   flex: 1;
   max-width: 360px;
 }
+
+/* ───────────────────────────────────────────────────────
+   MiniPreview — admin overview emulation inside the
+   landing's preview-frame. Smaller scaled-down versions
+   of the real shell pieces (sidebar, page header, stats,
+   chart panel, activity feed). All sizes are decorative
+   one-offs tuned to fit inside the framed mockup.
+   ─────────────────────────────────────────────────────── */
+
+.m-mini-preview {
+  background: var(--m-canvas);
+  padding: 18px;
+  min-height: 480px;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 14px;
+}
+.m-mini-preview--compact { min-height: 380px; }
+
+.m-mini-preview__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.m-mini-preview__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.m-mini-preview__brand .m-brand-mark {
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+}
+.m-mini-preview__brand-name {
+  font-family: var(--m-font-serif);
+  font-size: 13px;
+  font-weight: 500;
+}
+.m-mini-preview__nav-item {
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  border-left: 2px solid transparent;
+}
+.m-mini-preview__nav-item--active {
+  background: var(--m-elevated);
+  color: var(--m-text);
+  border-left-color: var(--m-accent);
+}
+
+.m-mini-preview__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.m-mini-preview__eyebrow {
+  font-size: 10px;
+  color: var(--m-text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.m-mini-preview__greeting {
+  font-family: var(--m-font-serif);
+  font-size: 19px;
+  font-weight: 500;
+}
+.m-mini-preview__cta {
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 4px;
+  background: var(--m-accent);
+  color: var(--m-on-accent);
+  display: flex;
+  align-items: center;
+  font-size: 10.5px;
+}
+
+.m-mini-preview__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.m-mini-preview__stat {
+  padding: 8px;
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: 6px;
+}
+.m-mini-preview__stat-label {
+  font-size: 9px;
+  color: var(--m-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.m-mini-preview__stat-value {
+  font-family: var(--m-font-serif);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.m-mini-preview__panel {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: 6px;
+  padding: 10px;
+}
+.m-mini-preview__panel--feed { padding: 8px 12px; margin-top: 12px; }
+.m-mini-preview__panel-label {
+  font-size: 10.5px;
+  color: var(--m-text-3);
+  margin-bottom: 4px;
+}
+.m-mini-preview__panel--feed .m-mini-preview__panel-label {
+  margin-bottom: 6px;
+}
+
+.m-mini-preview__feed-row {
+  display: grid;
+  grid-template-columns: 8px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 11px;
+}
+.m-mini-preview__feed-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--m-accent);
+}
+.m-mini-preview__feed-body {
+  color: var(--m-text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.m-mini-preview__feed-time {
+  font-family: var(--m-font-mono);
+  color: var(--m-text-3);
+  font-size: 10px;
+}
+
+/* ───────────────────────────────────────────────────────
+   MiniGradingPreview — instructor grading view emulation.
+   Two-column: code/feedback on the left, rubric scorecard
+   on the right. Code-block uses inline-color spans for a
+   light syntax-highlight effect.
+   ─────────────────────────────────────────────────────── */
+
+.m-mini-grading {
+  background: var(--m-canvas);
+  padding: 16px;
+  min-height: 460px;
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 12px;
+}
+
+.m-mini-grading__submission-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.m-mini-grading__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--m-accent-bg);
+  color: var(--m-accent);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+}
+.m-mini-grading__student-name {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.m-mini-grading__submission-meta {
+  font-size: 10.5px;
+  color: var(--m-text-3);
+  font-family: var(--m-font-mono);
+}
+.m-mini-grading__autograder-pill {
+  margin-left: auto;
+  height: 18px;
+  padding: 0 7px;
+  border-radius: 3px;
+  background: var(--m-success-bg);
+  color: var(--m-success);
+  font-size: 10.5px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.m-mini-grading__code {
+  background: var(--m-surface-2);
+  border: 1px solid var(--m-line);
+  border-radius: 6px;
+  padding: 10px;
+  font-family: var(--m-font-mono);
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--m-text-2);
+}
+.m-mini-grading__code-kw { color: var(--m-text-3); }
+.m-mini-grading__code-fn { color: var(--m-accent); }
+.m-mini-grading__code-false { color: var(--m-danger); }
+
+.m-mini-grading__inline-comment {
+  background: var(--m-warning-bg);
+  border-left: 2px solid var(--m-warning);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--m-warning);
+}
+.m-mini-grading__inline-comment span { color: var(--m-text-2); }
+
+.m-mini-grading__rubric {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.m-mini-grading__rubric-label {
+  font-size: 10.5px;
+  color: var(--m-text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.m-mini-grading__rubric-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+}
+.m-mini-grading__rubric-row-label { color: var(--m-text-2); }
+.m-mini-grading__rubric-row-max { color: var(--m-text-3); }
+.m-mini-grading__rubric-bar {
+  height: 3px;
+  background: var(--m-line-soft);
+  border-radius: 1px;
+  margin-top: 3px;
+}
+.m-mini-grading__rubric-bar-fill {
+  height: 100%;
+  background: var(--m-accent);
+  border-radius: 1px;
+}
+
+.m-mini-grading__total {
+  border-top: 1px solid var(--m-line);
+  margin-top: 6px;
+  padding-top: 8px;
+  display: flex;
+  align-items: baseline;
+}
+.m-mini-grading__total-score {
+  font-family: var(--m-font-serif);
+  font-size: 24px;
+  font-weight: 400;
+}
+.m-mini-grading__total-max {
+  margin-left: 4px;
+  font-size: 11px;
+  color: var(--m-text-3);
+}
+.m-mini-grading__grade-pill {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 3px;
+  background: var(--m-success-bg);
+  color: var(--m-success);
+  font-size: 10.5px;
+  font-weight: 500;
+}
