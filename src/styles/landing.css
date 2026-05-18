@@ -1,0 +1,135 @@
+/* ───────────────────────────────────────────────────────
+   Meridian — landing surface
+   Public marketing chrome at /. Includes the sticky nav,
+   hero block, section wrapper, and the preview-frame
+   used to wrap mini UI emulations inside the page.
+   ─────────────────────────────────────────────────────── */
+
+.m-landing {
+  background: var(--m-canvas);
+  color: var(--m-text);
+  min-height: 100vh;
+}
+
+.m-landing__nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--m-line);
+  background: rgba(13, 11, 9, 0.72);
+  backdrop-filter: blur(12px);
+}
+[data-theme="light"] .m-landing__nav {
+  background: rgba(241, 236, 225, 0.78);
+}
+
+/* Landing nav — sub-elements (the outer .m-landing__nav is the sticky bar). */
+.m-landing__nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.m-landing__nav-brand b {
+  font-family: var(--m-font-serif);
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+.m-landing__nav-version {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  margin-left: 6px;
+}
+.m-landing__nav-links {
+  margin-left: 48px;
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  color: var(--m-text-2);
+}
+.m-landing__nav-links a { cursor: pointer; }
+.m-landing__nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.m-landing__hero {
+  padding: 80px 40px 60px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.m-landing__h1 {
+  font-family: var(--m-font-serif);
+  font-weight: 400;
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+  color: var(--m-text);
+  margin: 0;
+}
+.m-landing__h1 em {
+  font-style: italic;
+  color: var(--m-accent);
+  font-weight: 400;
+}
+.m-landing__lede {
+  margin-top: 24px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--m-text-2);
+  max-width: 56ch;
+}
+.m-landing__section {
+  padding: 60px 40px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.m-landing__rule {
+  border: none;
+  border-top: 1px solid var(--m-line);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* preview frame — wraps the mini UI emulations on the landing
+   (MiniPreview / MiniGradingPreview inside their bordered card). */
+.m-preview-frame {
+  border: 1px solid var(--m-line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--m-surface);
+  box-shadow: var(--m-shadow-lg);
+  position: relative;
+}
+.m-preview-chrome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--m-line);
+  background: var(--m-surface-2);
+}
+.m-preview-dots { display: flex; gap: 6px; }
+.m-preview-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--m-line-strong);
+}
+.m-preview-url {
+  font-family: var(--m-font-mono);
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  background: var(--m-canvas);
+  border: 1px solid var(--m-line);
+  border-radius: 5px;
+  padding: 3px 10px;
+  flex: 1;
+  max-width: 360px;
+}
