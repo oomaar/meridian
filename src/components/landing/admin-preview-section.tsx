@@ -21,65 +21,32 @@ const DASHBOARD_FEATURES = [
 export function AdminPreviewSection() {
   return (
     <section className="m-landing__section">
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "0.9fr 1.1fr",
-          gap: 56,
-          alignItems: "center",
-        }}
-      >
+      <div className="m-section-split m-section-split--reverse">
         <div>
           <div className="m-eyebrow">Operations dashboard</div>
           <h2 className="m-section-title">The active term in one frame.</h2>
-          <p
-            style={{
-              color: "var(--m-text-2)",
-              fontSize: 15,
-              lineHeight: 1.6,
-              marginTop: 14,
-            }}
-          >
+          <p className="m-section-copy">
             The overview is the single screen your registrar opens first.
             Submission throughput, grading SLA, petitions, faculty health —
             everything is rolled into a quiet operating picture.
           </p>
-          <div className="m-stack" style={{ marginTop: 26, gap: 18 }}>
+          <div className="flex flex-col mt-6.5 gap-4.5">
             {DASHBOARD_FEATURES.map((f) => (
               <div
                 key={f.t}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "16px 1fr",
-                  gap: 14,
-                  alignItems: "start",
-                }}
+                className="grid grid-cols-[16px_1fr] gap-3.5 items-start"
               >
-                <Check
-                  size={14}
-                  style={{ color: "var(--m-accent)", marginTop: 4 }}
-                />
+                <Check size={14} className="text-m-accent mt-1" />
                 <div>
-                  <b style={{ fontSize: 14 }}>{f.t}</b>
-                  <p
-                    style={{
-                      color: "var(--m-text-2)",
-                      fontSize: 13.5,
-                      lineHeight: 1.55,
-                      margin: "4px 0 0",
-                    }}
-                  >
+                  <b className="text-sm">{f.t}</b>
+                  <p className="text-[13.5px] leading-[1.55] mt-1 mb-0 text-m-text-2">
                     {f.b}
                   </p>
                 </div>
               </div>
             ))}
           </div>
-          <Link
-            className="m-btn m-btn--lg"
-            style={{ marginTop: 28 }}
-            href={PERSONAS.admin.homeHref}
-          >
+          <Link className="m-btn m-btn--lg mt-7" href={PERSONAS.admin.homeHref}>
             Open admin demo <ArrowUpRight size={14} />
           </Link>
         </div>
@@ -91,7 +58,7 @@ export function AdminPreviewSection() {
               <span />
               <span />
             </div>
-            <div className="m-preview-url m-mono">/admin/overview</div>
+            <div className="m-preview-url font-m-mono">/admin/overview</div>
           </div>
           <MiniPreview compact />
         </div>

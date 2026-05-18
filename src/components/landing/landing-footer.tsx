@@ -1,32 +1,15 @@
 export function LandingFooter() {
   return (
-    <footer
-      style={{
-        borderTop: "1px solid var(--m-line)",
-        padding: "32px 40px",
-        maxWidth: 1280,
-        margin: "0 auto",
-        display: "flex",
-        alignItems: "center",
-        gap: 16,
-        color: "var(--m-text-3)",
-        fontSize: 12,
-      }}
-    >
-      <div
-        className="m-brand-mark"
-        style={{ width: 22, height: 22, fontSize: 13 }}
-      >
-        M
-      </div>
+    <footer className="border-t border-m-line py-8 px-10 max-w-7xl mx-auto flex items-center flex-wrap gap-4 text-xs text-m-text-3">
+      <div className="m-brand-mark m-brand-mark--sm">M</div>
       <span>
         Meridian Operations Inc. · Princeton, NJ · v4.2.18 · build 0c9a142
       </span>
       <span className="m-spacer" />
-      <a style={{ cursor: "pointer" }}>Privacy</a>
-      <a style={{ cursor: "pointer" }}>Terms</a>
-      <a style={{ cursor: "pointer" }}>Status</a>
-      <a style={{ cursor: "pointer" }}>Security</a>
+      <a className="cursor-pointer">Privacy</a>
+      <a className="cursor-pointer">Terms</a>
+      <a className="cursor-pointer">Status</a>
+      <a className="cursor-pointer">Security</a>
     </footer>
   );
 }

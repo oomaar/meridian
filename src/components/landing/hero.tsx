@@ -15,31 +15,13 @@ const INSTITUTIONS = [
 export function Hero() {
   return (
     <section className="m-landing__hero">
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1.1fr 0.9fr",
-          gap: 56,
-          alignItems: "center",
-        }}
-      >
+      <div className="m-section-split">
         <div>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "5px 12px",
-              border: "1px solid var(--m-line)",
-              borderRadius: 100,
-              fontSize: 12,
-              color: "var(--m-text-2)",
-            }}
-          >
+          <div className="m-pill">
             <span className="m-pulse-dot" />
             <span>Trusted by 142 institutions · 1.4M students worldwide</span>
           </div>
-          <h1 className="m-landing__h1" style={{ marginTop: 28 }}>
+          <h1 className="m-landing__h1 mt-7">
             The operating system for <em>modern universities</em>.
           </h1>
           <p className="m-landing__lede">
@@ -48,7 +30,7 @@ export function Hero() {
             days of registrars, deans, and faculty who keep an institution
             running.
           </p>
-          <div className="m-row" style={{ marginTop: 32, gap: 10 }}>
+          <div className="flex items-center flex-wrap mt-8 gap-2.5">
             <Link
               className="m-btn m-btn--primary m-btn--lg"
               href={PERSONAS.admin.homeHref}
@@ -65,15 +47,7 @@ export function Hero() {
               Explore as Student
             </Link>
           </div>
-          <div
-            className="m-row m-mono"
-            style={{
-              marginTop: 18,
-              gap: 18,
-              fontSize: 12,
-              color: "var(--m-text-3)",
-            }}
-          >
+          <div className="font-m-mono flex items-center flex-wrap mt-4.5 gap-4.5 text-xs text-m-text-3">
             <span>No sign-up required</span>
             <span>·</span>
             <span>Live operational data</span>
@@ -82,79 +56,33 @@ export function Hero() {
           </div>
         </div>
 
-        <div
-          className="m-preview-frame"
-          style={{ transform: "translateY(8px)" }}
-        >
+        <div className="m-preview-frame translate-y-2">
           <div className="m-preview-chrome">
             <div className="m-preview-dots">
               <span />
               <span />
               <span />
             </div>
-            <div className="m-preview-url m-mono">
+            <div className="m-preview-url font-m-mono">
               meridian.aldridge.edu/admin/overview
             </div>
-            <RefreshCw size={12} style={{ color: "var(--m-text-3)" }} />
+            <RefreshCw size={12} className="text-m-text-3" />
           </div>
           <MiniPreview />
         </div>
       </div>
 
-      <div
-        style={{
-          marginTop: 72,
-          paddingTop: 36,
-          borderTop: "1px solid var(--m-line)",
-        }}
-      >
-        <div
-          style={{
-            fontSize: 11,
-            letterSpacing: ".08em",
-            textTransform: "uppercase",
-            color: "var(--m-text-3)",
-            marginBottom: 18,
-          }}
-        >
+      <div className="mt-18 pt-9 border-t border-m-line">
+        <div className="text-[11px] tracking-[.08em] uppercase text-m-text-3 mb-4.5 font-medium">
           Used daily by operations teams at
         </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(6, 1fr)",
-            gap: 24,
-            alignItems: "center",
-            color: "var(--m-text-3)",
-          }}
-        >
+        <div className="grid grid-cols-2 min-[880px]:grid-cols-6 gap-4.5 min-[880px]:gap-6 items-center text-m-text-3">
           {INSTITUTIONS.map((l) => (
-            <div
-              key={l.name}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 3,
-                opacity: 0.75,
-              }}
-            >
-              <b
-                style={{
-                  fontFamily: "var(--m-font-serif)",
-                  fontSize: 17,
-                  fontWeight: 500,
-                  letterSpacing: "-0.01em",
-                }}
-              >
+            <div key={l.name} className="flex flex-col gap-0.75 opacity-75">
+              <b className="font-m-serif text-[17px] font-medium tracking-[-0.01em]">
                 {l.name}
               </b>
-              <span
-                style={{
-                  fontSize: 10.5,
-                  fontFamily: "var(--m-font-mono)",
-                  letterSpacing: ".02em",
-                }}
-              >
+              <span className="font-m-mono text-[10.5px] tracking-[.02em]">
                 {l.note}
               </span>
             </div>

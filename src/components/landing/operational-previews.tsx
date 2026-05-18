@@ -33,89 +33,32 @@ export function OperationalPreviews() {
       <h2 className="m-section-title">
         Built around the real shape of academic operations.
       </h2>
-      <p
-        style={{
-          color: "var(--m-text-2)",
-          fontSize: 15,
-          maxWidth: "60ch",
-          marginTop: 14,
-        }}
-      >
+      <p className="m-section-copy">
         Meridian doesn&apos;t ask you to bend your processes around a template.
         Each surface — from semester transitions to grade releases — is modeled
         on the work people actually do.
       </p>
 
-      <div
-        style={{
-          marginTop: 36,
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 18,
-        }}
-      >
+      <div className="mt-9 grid grid-cols-1 min-[880px]:grid-cols-3 gap-4.5">
         {OPERATIONAL_CARDS.map((p) => {
           const Icon = p.icon;
           return (
             <Link
               key={p.go}
               href={p.go}
-              className="m-card"
-              style={{
-                padding: 28,
-                cursor: "pointer",
-                display: "block",
-                color: "inherit",
-                textDecoration: "none",
-              }}
+              className="m-card block p-7 cursor-pointer text-inherit no-underline"
             >
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 8,
-                  background: "var(--m-accent-bg)",
-                  color: "var(--m-accent)",
-                  display: "grid",
-                  placeItems: "center",
-                  marginBottom: 16,
-                }}
-              >
+              <div className="m-icon-tile mb-4">
                 <Icon size={18} />
               </div>
-              <div className="m-eyebrow" style={{ fontSize: 10.5 }}>
-                {p.eyebrow}
-              </div>
-              <h3
-                style={{
-                  fontFamily: "var(--m-font-serif)",
-                  fontSize: 22,
-                  fontWeight: 400,
-                  letterSpacing: "-0.01em",
-                  margin: "6px 0 10px",
-                  lineHeight: 1.15,
-                }}
-              >
+              <div className="m-eyebrow text-[10.5px]">{p.eyebrow}</div>
+              <h3 className="font-m-serif text-[22px] tracking-[-0.01em] mt-1.5 mb-2.5 leading-[1.15]">
                 {p.title}
               </h3>
-              <p
-                style={{
-                  color: "var(--m-text-2)",
-                  fontSize: 13.5,
-                  lineHeight: 1.6,
-                  margin: 0,
-                }}
-              >
+              <p className="text-[13.5px] leading-[1.6] m-0 text-m-text-2">
                 {p.copy}
               </p>
-              <div
-                className="m-row"
-                style={{
-                  marginTop: 18,
-                  color: "var(--m-accent)",
-                  fontSize: 13,
-                }}
-              >
+              <div className="flex items-center gap-2.5 mt-4.5 text-[13px] text-m-accent">
                 <span>Open preview</span> <ArrowUpRight size={12} />
               </div>
             </Link>

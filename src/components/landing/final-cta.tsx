@@ -4,33 +4,19 @@ import { PERSONAS } from "@/lib/personas";
 
 export function FinalCta() {
   return (
-    <section className="m-landing__section" style={{ padding: "72px 40px" }}>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr auto",
-          gap: 40,
-          alignItems: "center",
-        }}
-      >
+    <section className="m-landing__section min-[880px]:py-18">
+      <div className="grid grid-cols-1 min-[880px]:grid-cols-[1fr_auto] gap-10 items-center">
         <div>
-          <h2 className="m-section-title" style={{ maxWidth: "20ch" }}>
+          <h2 className="m-section-title max-w-[20ch]">
             Step into the demo. No sign-up.
           </h2>
-          <p
-            style={{
-              color: "var(--m-text-2)",
-              fontSize: 15,
-              marginTop: 12,
-              maxWidth: "60ch",
-            }}
-          >
+          <p className="m-section-copy mt-3">
             The demo runs against a seeded Aldridge University instance. Switch
             roles at will from the sidebar; every screen is wired to real
             workflows.
           </p>
         </div>
-        <div className="m-row" style={{ gap: 10 }}>
+        <div className="flex items-center flex-wrap gap-2.5">
           <Link
             className="m-btn m-btn--primary m-btn--lg"
             href={PERSONAS.admin.homeHref}
