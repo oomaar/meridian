@@ -30,6 +30,7 @@
 .m-auth__inner {
   max-width: 380px;
   width: 100%;
+  margin: 0px auto;
 }
 .m-auth__foot {
   font-size: 11.5px;
@@ -71,8 +72,12 @@
   font-size: 12.5px;
   color: var(--m-text-2);
 }
-.m-auth__hint b { color: var(--m-text); }
-.m-auth__hint a { color: var(--m-accent); }
+.m-auth__hint b {
+  color: var(--m-text);
+}
+.m-auth__hint a {
+  color: var(--m-accent);
+}
 .m-auth__back {
   display: inline-flex;
   align-items: center;
@@ -82,7 +87,9 @@
   font-size: 13px;
   text-decoration: none;
 }
-.m-auth__back:hover { color: var(--m-text); }
+.m-auth__back:hover {
+  color: var(--m-text);
+}
 .m-auth__meta {
   margin-top: 18px;
   font-size: 11px;
@@ -114,12 +121,20 @@
 .m-auth__quote-glow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at top right, rgba(193, 154, 107, 0.18), transparent 60%);
+  background: radial-gradient(
+    ellipse at top right,
+    rgba(193, 154, 107, 0.18),
+    transparent 60%
+  );
 }
 .m-auth__quote-grid {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(135deg, transparent 0 18px, rgba(193, 154, 107, 0.025) 18px 19px);
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0 18px,
+    rgba(193, 154, 107, 0.025) 18px 19px
+  );
 }
 .m-auth__quote-content {
   position: relative;
