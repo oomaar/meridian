@@ -69,7 +69,6 @@ export function Topbar() {
         <ThemeToggle />
         <button
           className="m-btn m-btn--ghost m-btn--icon"
-          style={{ position: "relative" }}
           title="Notifications"
         >
           <Bell size={14} />

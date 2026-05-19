@@ -385,7 +385,7 @@
 .m-btn--danger { color: var(--m-danger); }
 .m-btn--lg { height: 38px; padding: 0 16px; font-size: 14px; }
 .m-btn--sm { height: 26px; padding: 0 9px; font-size: 12.5px; }
-.m-btn--icon { width: 32px; padding: 0; }
+.m-btn--icon { width: 32px; padding: 0; position: relative; }
 .m-btn--icon.m-btn--sm { width: 26px; }
 .m-btn--block { width: 100%; height: 40px; }
 
