@@ -1,0 +1,438 @@
+/* ───────────────────────────────────────────────────────
+   Meridian — landing surface
+   Public marketing chrome at /. Includes the sticky nav,
+   hero block, section wrapper, and the preview-frame
+   used to wrap mini UI emulations inside the page.
+   ─────────────────────────────────────────────────────── */
+
+.m-landing {
+  background: var(--m-canvas);
+  color: var(--m-text);
+  min-height: 100vh;
+}
+
+.m-landing__nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--m-line);
+  background: rgba(13, 11, 9, 0.72);
+  backdrop-filter: blur(12px);
+}
+[data-theme="light"] .m-landing__nav {
+  background: rgba(241, 236, 225, 0.78);
+}
+
+/* Landing nav — sub-elements (the outer .m-landing__nav is the sticky bar). */
+.m-landing__nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.m-landing__nav-brand b {
+  font-family: var(--m-font-serif);
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+.m-landing__nav-version {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  margin-left: 6px;
+}
+.m-landing__nav-links {
+  margin-left: 48px;
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  color: var(--m-text-2);
+}
+.m-landing__nav-links a {
+  cursor: pointer;
+}
+.m-landing__nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.m-landing__hero {
+  padding: 80px 40px 60px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.m-landing__h1 {
+  font-family: var(--m-font-serif);
+  font-weight: 400;
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+  color: var(--m-text);
+}
+.m-landing__h1 em {
+  font-style: italic;
+  color: var(--m-accent);
+  font-weight: 400;
+}
+.m-landing__lede {
+  margin-top: 24px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--m-text-2);
+  max-width: 56ch;
+}
+.m-landing__section {
+  padding: 60px 40px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.m-landing__rule {
+  border: none;
+  border-top: 1px solid var(--m-line);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* preview frame — wraps the mini UI emulations on the landing
+   (MiniPreview / MiniGradingPreview inside their bordered card). */
+.m-preview-frame {
+  border: 1px solid var(--m-line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--m-surface);
+  box-shadow: var(--m-shadow-lg);
+  position: relative;
+}
+.m-preview-chrome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--m-line);
+  background: var(--m-surface-2);
+}
+.m-preview-dots {
+  display: flex;
+  gap: 6px;
+}
+.m-preview-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--m-line-strong);
+}
+.m-preview-url {
+  font-family: var(--m-font-mono);
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  background: var(--m-canvas);
+  border: 1px solid var(--m-line);
+  border-radius: 5px;
+  padding: 3px 10px;
+  flex: 1;
+  max-width: 360px;
+}
+
+/* ───────────────────────────────────────────────────────
+   MiniPreview — admin overview emulation inside the
+   landing's preview-frame. Smaller scaled-down versions
+   of the real shell pieces (sidebar, page header, stats,
+   chart panel, activity feed). All sizes are decorative
+   one-offs tuned to fit inside the framed mockup.
+   ─────────────────────────────────────────────────────── */
+
+.m-mini-preview {
+  background: var(--m-canvas);
+  padding: 18px;
+  min-height: 480px;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 14px;
+}
+.m-mini-preview--compact {
+  min-height: 380px;
+}
+
+.m-mini-preview__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.m-mini-preview__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.m-mini-preview__brand .m-brand-mark {
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+}
+.m-mini-preview__brand-name {
+  font-family: var(--m-font-serif);
+  font-size: 13px;
+  font-weight: 500;
+}
+.m-mini-preview__nav-item {
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  border-left: 2px solid transparent;
+}
+.m-mini-preview__nav-item--active {
+  background: var(--m-elevated);
+  color: var(--m-text);
+  border-left-color: var(--m-accent);
+}
+
+.m-mini-preview__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.m-mini-preview__eyebrow {
+  font-size: 10px;
+  color: var(--m-text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.m-mini-preview__greeting {
+  font-family: var(--m-font-serif);
+  font-size: 19px;
+  font-weight: 500;
+}
+.m-mini-preview__cta {
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 4px;
+  background: var(--m-accent);
+  color: var(--m-on-accent);
+  display: flex;
+  align-items: center;
+  font-size: 10.5px;
+}
+
+.m-mini-preview__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.m-mini-preview__stat {
+  padding: 8px;
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: 6px;
+}
+.m-mini-preview__stat-label {
+  font-size: 9px;
+  color: var(--m-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.m-mini-preview__stat-value {
+  font-family: var(--m-font-serif);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.m-mini-preview__panel {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: 6px;
+  padding: 10px;
+}
+.m-mini-preview__panel--feed {
+  padding: 8px 12px;
+  margin-top: 12px;
+}
+.m-mini-preview__panel-label {
+  font-size: 10.5px;
+  color: var(--m-text-3);
+  margin-bottom: 4px;
+}
+.m-mini-preview__panel--feed .m-mini-preview__panel-label {
+  margin-bottom: 6px;
+}
+
+.m-mini-preview__feed-row {
+  display: grid;
+  grid-template-columns: 8px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 11px;
+}
+.m-mini-preview__feed-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--m-accent);
+}
+.m-mini-preview__feed-body {
+  color: var(--m-text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.m-mini-preview__feed-time {
+  font-family: var(--m-font-mono);
+  color: var(--m-text-3);
+  font-size: 10px;
+}
+
+/* ───────────────────────────────────────────────────────
+   MiniGradingPreview — instructor grading view emulation.
+   Two-column: code/feedback on the left, rubric scorecard
+   on the right. Code-block uses inline-color spans for a
+   light syntax-highlight effect.
+   ─────────────────────────────────────────────────────── */
+
+.m-mini-grading {
+  background: var(--m-canvas);
+  padding: 16px;
+  min-height: 460px;
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 12px;
+}
+
+.m-mini-grading__submission-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.m-mini-grading__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--m-accent-bg);
+  color: var(--m-accent);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+}
+.m-mini-grading__student-name {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.m-mini-grading__submission-meta {
+  font-size: 10.5px;
+  color: var(--m-text-3);
+  font-family: var(--m-font-mono);
+}
+.m-mini-grading__autograder-pill {
+  margin-left: auto;
+  height: 18px;
+  padding: 0 7px;
+  border-radius: 3px;
+  background: var(--m-success-bg);
+  color: var(--m-success);
+  font-size: 10.5px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.m-mini-grading__code {
+  background: var(--m-surface-2);
+  border: 1px solid var(--m-line);
+  border-radius: 6px;
+  padding: 10px;
+  font-family: var(--m-font-mono);
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--m-text-2);
+}
+.m-mini-grading__code-kw {
+  color: var(--m-text-3);
+}
+.m-mini-grading__code-fn {
+  color: var(--m-accent);
+}
+.m-mini-grading__code-false {
+  color: var(--m-danger);
+}
+
+.m-mini-grading__inline-comment {
+  background: var(--m-warning-bg);
+  border-left: 2px solid var(--m-warning);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--m-warning);
+}
+.m-mini-grading__inline-comment span {
+  color: var(--m-text-2);
+}
+
+.m-mini-grading__rubric {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.m-mini-grading__rubric-label {
+  font-size: 10.5px;
+  color: var(--m-text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.m-mini-grading__rubric-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+}
+.m-mini-grading__rubric-row-label {
+  color: var(--m-text-2);
+}
+.m-mini-grading__rubric-row-max {
+  color: var(--m-text-3);
+}
+.m-mini-grading__rubric-bar {
+  height: 3px;
+  background: var(--m-line-soft);
+  border-radius: 1px;
+  margin-top: 3px;
+}
+.m-mini-grading__rubric-bar-fill {
+  height: 100%;
+  background: var(--m-accent);
+  border-radius: 1px;
+}
+
+.m-mini-grading__total {
+  border-top: 1px solid var(--m-line);
+  margin-top: 6px;
+  padding-top: 8px;
+  display: flex;
+  align-items: baseline;
+}
+.m-mini-grading__total-score {
+  font-family: var(--m-font-serif);
+  font-size: 24px;
+  font-weight: 400;
+}
+.m-mini-grading__total-max {
+  margin-left: 4px;
+  font-size: 11px;
+  color: var(--m-text-3);
+}
+.m-mini-grading__grade-pill {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 3px;
+  background: var(--m-success-bg);
+  color: var(--m-success);
+  font-size: 10.5px;
+  font-weight: 500;
+}

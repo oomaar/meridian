@@ -1,0 +1,33 @@
+/* ───────────────────────────────────────────────────────
+   Meridian — responsive overrides
+   All @media blocks collected here so we can see, at a
+   glance, what changes at each breakpoint. Imported last
+   in globals.css so these rules win on source order.
+   ─────────────────────────────────────────────────────── */
+
+@media (max-width: 880px) {
+  /* Auth: collapse to single column + center the form inner */
+  .m-auth { grid-template-columns: 1fr; }
+  .m-auth__quote-col { display: none; }
+  .m-auth__inner { margin: 0 auto; }
+
+  /* Landing: collapse multi-col grids, shrink padding, hide secondary nav.
+     Section splits now use the .m-section-split class instead of inline
+     grid styles, so we can collapse them with simple class-on-class rules
+     (no !important needed). */
+  .m-landing__hero { padding: 60px 20px 40px; }
+  .m-landing__section { padding: 40px 20px; }
+  .m-landing__nav { padding: 0 20px; }
+  .m-landing__nav-links { display: none; }
+  .m-section-split,
+  .m-section-split--reverse {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .m-landing .m-row { flex-wrap: wrap; }
+  .m-landing > footer {
+    flex-wrap: wrap !important;
+    padding: 24px 20px !important;
+  }
+  .m-preview-frame { overflow-x: auto; }
+}

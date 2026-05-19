@@ -1,0 +1,59 @@
+/* ───────────────────────────────────────────────────────
+   Meridian — overlays
+   Surfaces that float above the page: popovers, command
+   palette, drawers. The persona-menu popover lives here.
+   Command palette (.m-cmd*) and notifications drawer
+   (.m-drawer*) will land here when we build them.
+   ─────────────────────────────────────────────────────── */
+
+/* persona switcher menu (sidebar footer popover) */
+.m-persona-menu {
+  position: absolute;
+  bottom: calc(100% - 4px);
+  left: 8px;
+  right: 8px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--m-elevated);
+  border: 1px solid var(--m-line-strong);
+  border-radius: 8px;
+  box-shadow: var(--m-shadow-md);
+  z-index: 10;
+}
+.m-persona-menu__heading {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  padding: 8px 8px 4px;
+  font-weight: 500;
+}
+.m-persona-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  color: var(--m-text);
+  text-decoration: none;
+  cursor: pointer;
+}
+.m-persona-menu__item:hover { background: var(--m-surface-2); }
+.m-persona-menu__item--active { background: var(--m-accent-bg); }
+.m-persona-menu__meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.m-persona-menu__meta b { font-size: 13px; font-weight: 500; }
+.m-persona-menu__meta span {
+  font-size: 11px;
+  color: var(--m-text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-persona-menu__check { color: var(--m-accent); flex-shrink: 0; }

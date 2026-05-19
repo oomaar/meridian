@@ -1,0 +1,23 @@
+/* ───────────────────────────────────────────────────────
+   Meridian — utilities
+   Layout helpers (grid/stack/row), low-level visual helpers,
+   and small behavioural toggles like the theme-toggle icon.
+   ─────────────────────────────────────────────────────── */
+
+.m-grid { display: grid; gap: var(--m-gap); }
+.m-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.m-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.m-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.m-grid-2-1 { grid-template-columns: 2fr 1fr; }
+.m-grid-1-1 { grid-template-columns: 1fr 1fr; }
+.m-stack { display: flex; flex-direction: column; gap: var(--m-gap); }
+.m-row { display: flex; align-items: center; gap: var(--m-gap); }
+.m-rule { border: none; border-top: 1px solid var(--m-line); margin: 0; }
+.m-spacer { flex: 1; }
+.m-mono { font-family: var(--m-font-mono); }
+.m-num-tnum { font-variant-numeric: tabular-nums; }
+
+/* theme-toggle icon visibility — picks Sun on dark, Moon on light */
+.theme-icon-moon { display: none; }
+[data-theme="light"] .theme-icon-sun { display: none; }
+[data-theme="light"] .theme-icon-moon { display: inline-flex; }

@@ -1,0 +1,135 @@
+/* ───────────────────────────────────────────────────────
+   Meridian — content components
+   Reusable design-language pieces inside .m-page bodies
+   and on the landing: cards, eyebrows, section titles,
+   pulse dots, chart axes. Stats / tables / badges /
+   progress / tabs / segmented / filters / feed-items /
+   schedule / avatars-group / placeholder will land here
+   as we build the in-app screens.
+   ─────────────────────────────────────────────────────── */
+
+/* cards */
+.m-card {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.m-card__head {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--m-line);
+}
+.m-card__title {
+  font-family: var(--m-font-serif);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  margin: 0;
+  color: var(--m-text);
+  flex: 1;
+}
+.m-card__sub { font-size: 12px; color: var(--m-text-3); }
+.m-card__body { padding: 18px; }
+.m-card__body--flush { padding: 0; }
+.m-card__foot {
+  padding: 10px 18px;
+  border-top: 1px solid var(--m-line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--m-text-3);
+}
+
+/* chart axes (consumed by AreaChart) */
+.m-chart { width: 100%; display: block; }
+.m-chart-axis-line { stroke: var(--m-line); stroke-width: 1; }
+.m-chart-axis-text {
+  fill: var(--m-text-3);
+  font-size: 10px;
+  font-family: var(--m-font-mono);
+}
+
+/* eyebrow + section heading (used across content surfaces) */
+.m-eyebrow {
+  font-family: var(--m-font-mono);
+  font-size: 11.5px;
+  color: var(--m-accent);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.m-section-title {
+  font-family: var(--m-font-serif);
+  font-weight: 400;
+  font-size: clamp(28px, 3.4vw, 40px);
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  max-width: 22ch;
+  margin: 10px 0 0;
+}
+
+/* section-companion patterns — body copy that follows .m-section-title,
+   recurring stat tiles, accent-tinted icon backgrounds, outline pills.
+   Reused across the landing today and the in-app dashboards next. */
+
+.m-section-copy {
+  color: var(--m-text-2);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-top: 14px;
+  max-width: 60ch;
+}
+
+.m-stat-tile {
+  padding: 16px;
+  border: 1px solid var(--m-line);
+  border-radius: 8px;
+  background: var(--m-surface);
+}
+
+.m-icon-tile {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--m-accent-bg);
+  color: var(--m-accent);
+  display: grid;
+  place-items: center;
+}
+
+.m-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border: 1px solid var(--m-line);
+  border-radius: 100px;
+  font-size: 12px;
+  color: var(--m-text-2);
+}
+
+/* split section layout — text + visual side-by-side. The default
+   weighting is 1.1fr/0.9fr; --reverse flips it. Collapses to a
+   single column at narrow widths (see responsive.css). */
+.m-section-split {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 56px;
+  align-items: center;
+}
+.m-section-split--reverse {
+  grid-template-columns: 0.9fr 1.1fr;
+}
+
+/* pulse dot — small status/heartbeat indicator */
+.m-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--m-success);
+  box-shadow: 0 0 0 3px var(--m-success-bg);
+  display: inline-block;
+}

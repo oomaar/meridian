@@ -1,3 +1,41 @@
+import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { Field } from "@/components/auth/field";
+
+export const metadata: Metadata = {
+  title: "Reset password",
+};
+
 export default function ForgotPage() {
-  return <h1>Forgot password</h1>;
+  return (
+    <AuthShell>
+      <div className="m-eyebrow mb-3">Reset access</div>
+      <h1 className="m-auth__h">Forgot your password?</h1>
+      <p className="m-auth__sub">
+        Enter the email tied to your Meridian account. If a matching tenant
+        exists, we&apos;ll send a reset link within a minute.
+      </p>
+
+      <Field
+        label="Email"
+        type="email"
+        defaultValue="i.halvorsen@aldridge.edu"
+        autoComplete="email"
+        name="email"
+      />
+
+      <Link
+        href="/verify"
+        className="m-btn m-btn--primary m-btn--block mt-5.5"
+      >
+        Send reset link
+      </Link>
+
+      <Link href="/login" className="m-auth__back">
+        <ArrowLeft size={12} /> Back to sign in
+      </Link>
+    </AuthShell>
+  );
 }

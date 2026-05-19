@@ -20,9 +20,14 @@ export {
   generateRecentActivityForCourse,
   generateRecentActivityForInstructor,
   generateRecentActivityForStudent,
+  generateSampleSubmission,
+  generateSubmissionsLast7d,
+  generateSubmissionThroughput,
   generateUnreadCount,
   generateUnreadNotifications,
   generateUpcomingDeadlines,
+  type SampleSubmission,
+  type SubmissionThroughputPoint,
 } from "./generators";
 
 export {

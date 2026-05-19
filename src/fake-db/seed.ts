@@ -1,6 +1,8 @@
 import { faker } from "@faker-js/faker";
 
-faker.seed(42);
+// Fresh seed per server start so two demo viewers see different data.
+// (NOW stays frozen — the active semester math depends on it.)
+faker.seed(Date.now());
 
 export { faker };
 

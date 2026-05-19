@@ -1,6 +1,23 @@
+/* ───────────────────────────────────────────────────────
+   Meridian — globals.css
+   This file owns the cascade order. Imports go top-to-bottom
+   (low-specificity first, surface-specific later, responsive
+   last). After imports: the Meridian + shadcn token blocks,
+   then Tailwind theme + base rules.
+   ─────────────────────────────────────────────────────── */
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+
+@import "../styles/utilities.css";
+@import "../styles/shell.css";
+@import "../styles/content.css";
+@import "../styles/forms.css";
+@import "../styles/overlays.css";
+@import "../styles/landing.css";
+@import "../styles/auth.css";
+@import "../styles/responsive.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -129,449 +146,14 @@
 }
 
 /* ───────────────────────────────────────────────────────
-   Meridian — application shell components
-   App grid, sidebar, topbar, page wrapper, buttons, nav,
-   avatars, breadcrumbs. Ported from project wireframes.
+   shadcn — light tokens (the .dark block below overrides
+   for dark mode). These were previously nested by mistake
+   inside .m-notif-dot, so they only applied to that
+   selector; restoring them to :root so shadcn primitives
+   resolve correctly regardless of where they're used.
    ─────────────────────────────────────────────────────── */
 
-/* app shell grid */
-.m-app {
-  display: grid;
-  grid-template-columns: 248px 1fr;
-  grid-template-rows: 100%;
-  height: 100vh;
-  background: var(--m-canvas);
-  color: var(--m-text);
-  font-family: var(--m-font-sans);
-  font-size: 14px;
-  line-height: 1.45;
-  font-feature-settings: "ss01", "cv11";
-}
-.m-app[data-density="compact"] {
-  grid-template-columns: 224px 1fr;
-}
-
-/* sidebar */
-.m-sidebar {
-  border-right: 1px solid var(--m-line);
-  background: var(--m-surface);
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-.m-sidebar__brand {
-  padding: 18px 18px 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.m-brand-mark {
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  background: var(--m-text);
-  color: var(--m-canvas);
-  border-radius: 6px;
-  font-family: var(--m-font-serif);
-  font-weight: 600;
-  font-size: 16px;
-  letter-spacing: -0.02em;
-}
-.m-brand-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
-.m-brand-text b {
-  font-family: var(--m-font-serif);
-  font-weight: 500;
-  font-size: 16px;
-  letter-spacing: -0.01em;
-}
-.m-brand-text span {
-  font-size: 11px;
-  color: var(--m-text-3);
-  font-variant-numeric: tabular-nums;
-}
-
-.m-tenant {
-  margin: 0 12px 8px;
-  padding: 10px 12px;
-  border: 1px solid var(--m-line);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--m-surface-2);
-  cursor: pointer;
-  transition: background 0.12s;
-}
-.m-tenant:hover { background: var(--m-elevated); }
-.m-tenant__crest {
-  width: 26px;
-  height: 26px;
-  border-radius: 4px;
-  background: linear-gradient(135deg, #6a4d2c, #8a6638);
-  display: grid;
-  place-items: center;
-  color: #f1ece1;
-  font-family: var(--m-font-serif);
-  font-size: 13px;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-.m-tenant__meta {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-.m-tenant__meta b { font-size: 13px; font-weight: 500; }
-.m-tenant__meta span {
-  font-size: 11px;
-  color: var(--m-text-3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.m-tenant__chev { color: var(--m-text-3); flex-shrink: 0; }
-
-.m-nav {
-  flex: 1;
-  overflow-y: auto;
-  padding: 6px 8px 20px;
-}
-.m-nav__group { margin-top: 14px; }
-.m-nav__heading {
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--m-text-3);
-  padding: 6px 12px 4px;
-  font-weight: 500;
-}
-.m-nav__item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 32px;
-  padding: 0 10px;
-  border-radius: 6px;
-  color: var(--m-text-2);
-  cursor: pointer;
-  font-size: 13.5px;
-  font-weight: 450;
-  position: relative;
-  text-decoration: none;
-}
-.m-nav__item:hover { background: var(--m-surface-2); color: var(--m-text); }
-.m-nav__item--active {
-  background: var(--m-elevated);
-  color: var(--m-text);
-  box-shadow: var(--m-shadow-sm);
-}
-.m-nav__item--active::before {
-  content: "";
-  position: absolute;
-  left: -8px;
-  top: 8px;
-  bottom: 8px;
-  width: 2px;
-  background: var(--m-accent);
-  border-radius: 2px;
-}
-.m-nav__icon {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  color: var(--m-text-3);
-}
-.m-nav__item--active .m-nav__icon { color: var(--m-accent); }
-.m-nav__badge {
-  margin-left: auto;
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: var(--m-text-3);
-  background: var(--m-surface-2);
-  padding: 1px 7px;
-  border-radius: 10px;
-  border: 1px solid var(--m-line);
-}
-.m-nav__item--active .m-nav__badge {
-  color: var(--m-accent);
-  background: var(--m-accent-bg);
-  border-color: transparent;
-}
-
-.m-sidebar__footer {
-  border-top: 1px solid var(--m-line);
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.m-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--m-accent-bg);
-  color: var(--m-accent);
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  font-weight: 500;
-  flex-shrink: 0;
-  border: 1px solid var(--m-line);
-}
-.m-avatar--lg { width: 36px; height: 36px; font-size: 13px; }
-.m-avatar--sm { width: 22px; height: 22px; font-size: 10px; }
-.m-sidebar__user {
-  flex: 1;
-  min-width: 0;
-  line-height: 1.2;
-}
-.m-sidebar__user b { font-size: 13px; font-weight: 500; display: block; }
-.m-sidebar__user span { font-size: 11px; color: var(--m-text-3); }
-
-/* main column + topbar */
-.m-main {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  min-width: 0;
-  min-height: 0;
-}
-.m-topbar {
-  height: 52px;
-  border-bottom: 1px solid var(--m-line);
-  background: var(--m-surface);
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  gap: 16px;
-  flex-shrink: 0;
-}
-.m-crumbs {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--m-text-3);
-  flex: 0 0 auto;
-}
-.m-crumbs b { color: var(--m-text); font-weight: 500; }
-.m-crumbs__sep { opacity: 0.5; }
-
-.m-search {
-  flex: 1;
-  max-width: 460px;
-  position: relative;
-}
-.m-search input {
-  width: 100%;
-  height: 32px;
-  background: var(--m-surface-2);
-  border: 1px solid var(--m-line);
-  border-radius: 6px;
-  padding: 0 12px 0 32px;
-  font-size: 13px;
-  color: var(--m-text);
-  outline: none;
-  transition: border 0.12s, background 0.12s;
-}
-.m-search input::placeholder { color: var(--m-text-4); }
-.m-search input:focus {
-  border-color: var(--m-line-strong);
-  background: var(--m-elevated);
-}
-.m-search__icon {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--m-text-3);
-}
-.m-search__kbd {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-family: var(--m-font-mono);
-  font-size: 10.5px;
-  color: var(--m-text-3);
-  padding: 1px 6px;
-  border: 1px solid var(--m-line);
-  border-radius: 4px;
-  background: var(--m-canvas);
-}
-.m-top-actions {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* page wrapper */
-.m-page {
-  overflow-y: auto;
-  min-height: 0;
-  background: var(--m-canvas);
-}
-.m-page__header {
-  padding: 28px 32px 18px;
-  border-bottom: 1px solid var(--m-line);
-  background: var(--m-canvas);
-  display: flex;
-  align-items: flex-end;
-  gap: 24px;
-}
-.m-page__title {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
-}
-.m-page__eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--m-text-3);
-  font-weight: 500;
-}
-.m-page__h {
-  font-family: var(--m-font-serif);
-  font-weight: 400;
-  font-size: 30px;
-  letter-spacing: -0.015em;
-  margin: 0;
-  color: var(--m-text);
-}
-.m-page__sub {
-  color: var(--m-text-2);
-  font-size: 13.5px;
-  max-width: 64ch;
-}
-.m-page__actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.m-page__body { padding: 24px 32px 64px; }
-
-/* buttons */
-.m-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 12px;
-  border-radius: 6px;
-  border: 1px solid var(--m-line);
-  background: var(--m-surface);
-  color: var(--m-text);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.12s, border 0.12s, color 0.12s;
-  white-space: nowrap;
-  font-family: inherit;
-}
-.m-btn:hover { background: var(--m-elevated); border-color: var(--m-line-strong); }
-.m-btn:focus-visible { outline: none; box-shadow: var(--m-ring); }
-.m-btn--ghost {
-  background: transparent;
-  border-color: transparent;
-  color: var(--m-text-2);
-}
-.m-btn--ghost:hover {
-  background: var(--m-surface-2);
-  color: var(--m-text);
-  border-color: transparent;
-}
-.m-btn--primary {
-  background: var(--m-accent);
-  border-color: var(--m-accent);
-  color: var(--m-on-accent);
-  font-weight: 500;
-}
-.m-btn--primary:hover {
-  background: var(--m-accent-hi);
-  border-color: var(--m-accent-hi);
-}
-.m-btn--danger { color: var(--m-danger); }
-.m-btn--lg { height: 38px; padding: 0 16px; font-size: 14px; }
-.m-btn--sm { height: 26px; padding: 0 9px; font-size: 12.5px; }
-.m-btn--icon { width: 32px; padding: 0; }
-.m-btn--icon.m-btn--sm { width: 26px; }
-
-/* persona switcher menu (sidebar footer popover) */
-.m-sidebar__footer { position: relative; }
-.m-persona-menu {
-  position: absolute;
-  bottom: calc(100% - 4px);
-  left: 8px;
-  right: 8px;
-  margin: 0;
-  padding: 4px;
-  list-style: none;
-  background: var(--m-elevated);
-  border: 1px solid var(--m-line-strong);
-  border-radius: 8px;
-  box-shadow: var(--m-shadow-md);
-  z-index: 10;
-}
-.m-persona-menu__heading {
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--m-text-3);
-  padding: 8px 8px 4px;
-  font-weight: 500;
-}
-.m-persona-menu__item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px;
-  border-radius: 6px;
-  color: var(--m-text);
-  text-decoration: none;
-  cursor: pointer;
-}
-.m-persona-menu__item:hover { background: var(--m-surface-2); }
-.m-persona-menu__item--active { background: var(--m-accent-bg); }
-.m-persona-menu__meta {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-.m-persona-menu__meta b { font-size: 13px; font-weight: 500; }
-.m-persona-menu__meta span {
-  font-size: 11px;
-  color: var(--m-text-3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.m-persona-menu__check { color: var(--m-accent); flex-shrink: 0; }
-
-/* misc helpers used by the shell */
-.m-spacer { flex: 1; }
-.m-mono { font-family: var(--m-font-mono); }
-.m-num-tnum { font-variant-numeric: tabular-nums; }
-.m-notif-dot {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--m-accent);
-  box-shadow: 0 0 0 2px var(--m-surface);
+:root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -607,6 +189,41 @@
 }
 
 @theme inline {
+  /* Meridian token bridge — exposes the warm-institutional palette
+     as Tailwind utilities so we can write text-m-text-2, bg-m-canvas,
+     border-m-line, font-m-serif etc. instead of arbitrary-value soup
+     (text-[var(--m-text-2)] …). Theme variants ([data-theme="light"])
+     still flip the underlying CSS vars; the utilities follow. */
+  --color-m-canvas: var(--m-canvas);
+  --color-m-surface: var(--m-surface);
+  --color-m-surface-2: var(--m-surface-2);
+  --color-m-elevated: var(--m-elevated);
+  --color-m-line: var(--m-line);
+  --color-m-line-strong: var(--m-line-strong);
+  --color-m-line-soft: var(--m-line-soft);
+  --color-m-text: var(--m-text);
+  --color-m-text-2: var(--m-text-2);
+  --color-m-text-3: var(--m-text-3);
+  --color-m-text-4: var(--m-text-4);
+  --color-m-text-inv: var(--m-text-inv);
+  --color-m-accent: var(--m-accent);
+  --color-m-accent-hi: var(--m-accent-hi);
+  --color-m-accent-lo: var(--m-accent-lo);
+  --color-m-accent-bg: var(--m-accent-bg);
+  --color-m-accent-bg-hi: var(--m-accent-bg-hi);
+  --color-m-on-accent: var(--m-on-accent);
+  --color-m-success: var(--m-success);
+  --color-m-success-bg: var(--m-success-bg);
+  --color-m-warning: var(--m-warning);
+  --color-m-warning-bg: var(--m-warning-bg);
+  --color-m-danger: var(--m-danger);
+  --color-m-danger-bg: var(--m-danger-bg);
+  --color-m-info: var(--m-info);
+  --color-m-info-bg: var(--m-info-bg);
+  --font-m-sans: var(--m-font-sans);
+  --font-m-serif: var(--m-font-serif);
+  --font-m-mono: var(--m-font-mono);
+
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);

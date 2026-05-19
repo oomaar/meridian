@@ -1,3 +1,5 @@
+import "server-only";
+
 import { buildActivity } from "./activity";
 import { buildAssignments } from "./assignments";
 import { buildCourses } from "./courses";
