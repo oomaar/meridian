@@ -6,9 +6,9 @@ import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const [navOpen, setNavOpen] = useState(false);
-  const [prevPathname, setPrevPathname] = useState("");
   const pathname = usePathname();
+  const [navOpen, setNavOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
 
   // Close nav on navigation without an effect (React derived-state pattern)
   if (pathname !== prevPathname) {

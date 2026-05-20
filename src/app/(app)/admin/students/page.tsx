@@ -1,6 +1,8 @@
-import { DownloadIcon, PlusIcon, UploadIcon } from "lucide-react";
 import { getAdminStudentsPage } from "@/fake-db/dashboards";
 import { StudentsTable } from "@/components/admin/students-table";
+import { AddStudentButton } from "@/components/admin/add-student-button";
+import { ImportRosterButton } from "@/components/admin/import-roster-button";
+import { ExportStudentsButton } from "@/components/admin/export-students-button";
 
 export default function AdminStudentsPage() {
   const { rows, total } = getAdminStudentsPage();
@@ -16,15 +18,9 @@ export default function AdminStudentsPage() {
           </p>
         </div>
         <div className="m-page__actions">
-          <button className="m-btn">
-            <UploadIcon size={14} /> Import roster
-          </button>
-          <button className="m-btn">
-            <DownloadIcon size={14} /> Export
-          </button>
-          <button className="m-btn m-btn--primary">
-            <PlusIcon size={14} /> Add student
-          </button>
+          <ImportRosterButton />
+          <ExportStudentsButton />
+          <AddStudentButton />
         </div>
       </div>
       <div className="m-page__body">
