@@ -27,6 +27,7 @@ import type {
   Assignment,
   Course,
   Instructor,
+  Notification,
   Semester,
   Student,
 } from "../types";
@@ -110,4 +111,20 @@ export function getInstructorDashboard(
     gradingQueue,
     recentActivity: generateRecentActivityForInstructor(instructorId, 10),
   };
+}
+
+export type AdminActivityData = {
+  events: Activity[];
+};
+
+export function getAdminActivityPage(): AdminActivityData {
+  return { events: db.activity.slice(0, 24) };
+}
+
+export type AdminNotificationsData = {
+  notifications: Notification[];
+};
+
+export function getAdminNotificationsPage(): AdminNotificationsData {
+  return { notifications: db.notifications.slice(0, 10) };
 }
