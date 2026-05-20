@@ -6,6 +6,68 @@
    (.m-drawer*) will land here when we build them.
    ─────────────────────────────────────────────────────── */
 
+/* ── Sheet / slide-in drawer ────────────────────────────────────────────────
+   Usage: render .m-sheet-overlay as click-away backdrop, .m-sheet as the
+   panel. Animates in from the right; close by un-mounting (no exit anim). */
+.m-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--m-overlay);
+  z-index: 150;
+}
+.m-sheet {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 480px;
+  max-width: 100vw;
+  background: var(--m-surface);
+  border-left: 1px solid var(--m-line);
+  box-shadow: var(--m-shadow-lg);
+  z-index: 151;
+  display: flex;
+  flex-direction: column;
+  animation: m-sheet-in 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes m-sheet-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0);    }
+}
+.m-sheet__head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--m-line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.m-sheet__title {
+  font-family: var(--m-font-serif);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--m-text);
+  flex: 1;
+}
+.m-sheet__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.m-sheet__foot {
+  padding: 14px 20px;
+  border-top: 1px solid var(--m-line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
 /* persona switcher menu (sidebar footer popover) */
 .m-persona-menu {
   position: absolute;
