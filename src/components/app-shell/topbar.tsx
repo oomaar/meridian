@@ -1,8 +1,9 @@
 "use client";
 
 import { Fragment } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, ChevronRight, Info, Search } from "lucide-react";
+import { Bell, ChevronLeft, ChevronRight, Info, Menu, Search } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const ROOT_LABEL: Record<string, string> = {
@@ -44,12 +45,19 @@ function deriveCrumbs(pathname: string): string[] {
   return [root, ...segments.slice(1).map(prettify)];
 }
 
-export function Topbar() {
+export function Topbar({ onNavToggle }: { onNavToggle?: () => void }) {
   const pathname = usePathname();
   const crumbs = deriveCrumbs(pathname);
 
   return (
     <div className="m-topbar">
+      <button
+        className="m-nav-toggle"
+        onClick={onNavToggle}
+        aria-label="Toggle navigation"
+      >
+        <Menu size={18} />
+      </button>
       <div className="m-crumbs">
         {crumbs.map((c, i) => (
           <Fragment key={i}>
@@ -66,6 +74,9 @@ export function Topbar() {
       </div>
 
       <div className="m-top-actions">
+        <Link href="/" className="m-btn m-btn--ghost m-btn--sm m-topbar-landing">
+          <ChevronLeft size={12} /> Landing
+        </Link>
         <ThemeToggle />
         <button
           className="m-btn m-btn--ghost m-btn--icon"
