@@ -31,6 +31,7 @@ import type {
   Notification,
   Semester,
   Student,
+  StudentStatus,
 } from "../types";
 import { db } from "../universe";
 
@@ -230,4 +231,69 @@ export function getAdminCoursesPage(): AdminCoursesData {
   });
 
   return { rows, total: db.courses.length };
+}
+
+// ─── Admin Students ───────────────────────────────────────────────────────────
+
+const YEAR_TO_STANDING: Record<1 | 2 | 3 | 4 | 5, string> = {
+  1: "Freshman",
+  2: "Sophomore",
+  3: "Junior",
+  4: "Senior",
+  5: "Graduate",
+};
+
+const LAST_ACTIVE_OPTS = [
+  "Just now", "5m ago", "1h ago", "2h ago", "4h ago", "8h ago",
+  "1d ago", "2d ago", "3d ago", "5d ago", "1w ago",
+];
+
+export type AdminStudentRow = {
+  id: string;
+  studentNumber: string;
+  fullName: string;
+  email: string;
+  programName: string;
+  programCode: string;
+  standing: string;
+  gpa: number;
+  credits: number;
+  status: StudentStatus;
+  advisorName: string;
+  lastActive: string;
+  isAdvisee: boolean;
+};
+
+export type AdminStudentsData = {
+  rows: AdminStudentRow[];
+  total: number;
+};
+
+export function getAdminStudentsPage(): AdminStudentsData {
+  const programById = new Map(db.programs.map((p) => [p.id, p]));
+  const instructors = db.instructors;
+
+  const rows: AdminStudentRow[] = db.students.map((s, i) => {
+    const program = programById.get(s.programId);
+    const h = strHash(s.id);
+    const advisor = instructors[h % instructors.length];
+    const credits = (s.year - 1) * 28 + (h % 18) + 10;
+    return {
+      id: s.id,
+      studentNumber: `AU-${String(48210 + i).padStart(7, "0")}`,
+      fullName: s.fullName,
+      email: s.email,
+      programName: program?.name ?? "Unknown",
+      programCode: program?.code ?? "??",
+      standing: YEAR_TO_STANDING[s.year],
+      gpa: s.gpa,
+      credits,
+      status: s.status,
+      advisorName: advisor ? `${advisor.firstName} ${advisor.lastName}` : "—",
+      lastActive: LAST_ACTIVE_OPTS[h % LAST_ACTIVE_OPTS.length],
+      isAdvisee: strHash(s.id + "adv") % 10 < 2,
+    };
+  });
+
+  return { rows, total: db.students.length };
 }
