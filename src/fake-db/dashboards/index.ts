@@ -10,7 +10,10 @@ import {
   generateRecentActivity,
   generateRecentActivityForInstructor,
   generateRecentActivityForStudent,
+  generateSubmissionThroughput,
+  generateSubmissionsLast7d,
   generateUpcomingDeadlines,
+  type SubmissionThroughputPoint,
 } from "../generators";
 import {
   getActiveSemester,
@@ -35,6 +38,8 @@ export type AdminOverviewData = {
   enrollmentTrend: EnrollmentTrend;
   departmentLoad: DepartmentLoad;
   recentActivity: Activity[];
+  submissionThroughput: SubmissionThroughputPoint[];
+  submissionsLast7d: number;
   totals: {
     students: number;
     instructors: number;
@@ -51,6 +56,8 @@ export function getAdminOverview(): AdminOverviewData {
     enrollmentTrend: generateEnrollmentTrend(),
     departmentLoad: generateDepartmentLoad(),
     recentActivity: generateRecentActivity(12),
+    submissionThroughput: generateSubmissionThroughput(12),
+    submissionsLast7d: generateSubmissionsLast7d(),
     totals: {
       students: db.students.length,
       instructors: db.instructors.length,
