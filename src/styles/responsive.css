@@ -62,6 +62,9 @@
   /* ── Card toolbar: allow wrap, hide some filters ── */
   .m-card__toolbar { gap: 6px; }
 
+  /* ── Students: hide email sub-line on tablet ── */
+  .m-student-cell__email { display: none; }
+
   /* ── Semester banner: 3-col → vertical stack ── */
   .m-sem-banner { grid-template-columns: 1fr; gap: 14px; }
 

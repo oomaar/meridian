@@ -868,3 +868,56 @@
 .m-course-banner__body {
   padding: 16px;
 }
+
+/* ── Students ────────────────────────────────────────── */
+
+/* avatar — initials circle */
+.m-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.03em;
+}
+
+/* student name + email stacked cell */
+.m-student-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.m-student-cell__info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.m-student-cell__name {
+  font-size: 13.5px;
+}
+.m-student-cell__email {
+  font-size: 11px;
+  color: var(--m-text-3);
+}
+
+/* checkbox accent */
+.m-checkbox {
+  accent-color: var(--m-accent);
+  cursor: pointer;
+}
+
+/* bulk-action bar that replaces the view tabs */
+.m-bulk-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.m-bulk-bar__count {
+  font-size: 12.5px;
+  color: var(--m-text-2);
+}
