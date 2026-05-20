@@ -102,6 +102,13 @@
   color: var(--m-accent);
 }
 
+/* two-column form row — pair short fields side-by-side */
+.m-fields-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
 /* success state (verify page, forgot success) */
 .m-success-icon {
   width: 56px;
