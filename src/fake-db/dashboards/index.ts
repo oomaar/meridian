@@ -297,3 +297,63 @@ export function getAdminStudentsPage(): AdminStudentsData {
 
   return { rows, total: db.students.length };
 }
+
+// ─── Admin Instructors ────────────────────────────────────────────────────────
+
+import type { InstructorStatus, InstructorTitle } from "../types";
+
+function fmtHireDate(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+}
+
+export type AdminInstructorRow = {
+  id: string;
+  fullName: string;
+  email: string;
+  title: InstructorTitle;
+  deptCode: string;
+  deptName: string;
+  deptColor: string;
+  status: InstructorStatus;
+  rating: number;
+  courseCount: number;
+  activeCourseCount: number;
+  hireDate: string;
+};
+
+export type AdminInstructorsData = {
+  rows: AdminInstructorRow[];
+  total: number;
+};
+
+export function getAdminInstructorsPage(): AdminInstructorsData {
+  const deptById = new Map(db.departments.map((d) => [d.id, d]));
+  const activeCourseIdSet = new Set(
+    db.courses.filter((c) => c.status === "active").map((c) => c.id)
+  );
+
+  const rows: AdminInstructorRow[] = db.instructors.map((inst) => {
+    const dept = deptById.get(inst.departmentId);
+    const deptCode = dept?.code ?? "??";
+    const activeCourseCount = inst.courseIds.filter((id) =>
+      activeCourseIdSet.has(id)
+    ).length;
+    return {
+      id: inst.id,
+      fullName: inst.fullName,
+      email: inst.email,
+      title: inst.title,
+      deptCode,
+      deptName: dept?.name ?? "Unknown",
+      deptColor: DEPT_COLORS_MAP[deptCode] ?? "var(--m-accent)",
+      status: inst.status,
+      rating: inst.rating,
+      courseCount: inst.courseIds.length,
+      activeCourseCount,
+      hireDate: fmtHireDate(inst.hireDate),
+    };
+  });
+
+  return { rows, total: db.instructors.length };
+}

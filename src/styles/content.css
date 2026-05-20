@@ -921,3 +921,33 @@
   font-size: 12.5px;
   color: var(--m-text-2);
 }
+
+/* ── Instructors ─────────────────────────────────────── */
+
+/* department code + swatch inline pill */
+.m-dept-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* star rating inline display */
+.m-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--m-font-mono);
+  font-size: 12px;
+}
+
+/* invite note inside form */
+.m-invite-note {
+  font-size: 12px;
+  color: var(--m-text-3);
+  line-height: 1.6;
+  padding: 10px 12px;
+  background: var(--m-bg);
+  border: 1px solid var(--m-line);
+  border-radius: 6px;
+  margin-top: 4px;
+}
