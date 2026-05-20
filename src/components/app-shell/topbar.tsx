@@ -6,6 +6,11 @@ import { usePathname } from "next/navigation";
 import { Bell, ChevronLeft, ChevronRight, Info, Menu, Search } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
+function notifHref(pathname: string): string {
+  const role = pathname.split("/")[1];
+  return `/${role}/notifications`;
+}
+
 const ROOT_LABEL: Record<string, string> = {
   admin: "Aldridge University",
   instructor: "Teaching",
@@ -48,6 +53,7 @@ function deriveCrumbs(pathname: string): string[] {
 export function Topbar({ onNavToggle }: { onNavToggle?: () => void }) {
   const pathname = usePathname();
   const crumbs = deriveCrumbs(pathname);
+  const notifUrl = notifHref(pathname);
 
   return (
     <div className="m-topbar">
@@ -78,13 +84,14 @@ export function Topbar({ onNavToggle }: { onNavToggle?: () => void }) {
           <ChevronLeft size={12} /> Landing
         </Link>
         <ThemeToggle />
-        <button
+        <Link
+          href={notifUrl}
           className="m-btn m-btn--ghost m-btn--icon"
           title="Notifications"
         >
           <Bell size={14} />
           <span className="m-notif-dot" />
-        </button>
+        </Link>
         <button className="m-btn m-btn--ghost m-btn--icon" title="Help">
           <Info size={14} />
         </button>
