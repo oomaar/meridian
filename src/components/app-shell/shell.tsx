@@ -1,20 +1,23 @@
 "use client";
 
-import { useState, useCallback, useEffect, type ReactNode } from "react";
+import { useState, useCallback, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [navOpen, setNavOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState("");
   const pathname = usePathname();
+
+  // Close nav on navigation without an effect (React derived-state pattern)
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setNavOpen(false);
+  }
 
   const close = useCallback(() => setNavOpen(false), []);
   const toggle = useCallback(() => setNavOpen((o) => !o), []);
-
-  useEffect(() => {
-    close();
-  }, [pathname, close]);
 
   return (
     <div className="m-app" data-nav-open={navOpen ? "" : undefined}>
