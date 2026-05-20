@@ -56,6 +56,12 @@
   .m-grid-2-1,
   .m-grid-2   { grid-template-columns: 1fr; }
 
+  /* ── Course grid: 3-col → 2-col at tablet ── */
+  .m-course-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* ── Card toolbar: allow wrap, hide some filters ── */
+  .m-card__toolbar { gap: 6px; }
+
   /* ── Semester banner: 3-col → vertical stack ── */
   .m-sem-banner { grid-template-columns: 1fr; gap: 14px; }
 
@@ -81,6 +87,9 @@
    ─────────────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .m-grid-4 { grid-template-columns: 1fr; }
+
+  /* ── Course grid: 2-col → 1-col on small phone ── */
+  .m-course-grid { grid-template-columns: 1fr; }
 
   /* hide sparklines — they clip at this width */
   .m-stat__spark { display: none; }
