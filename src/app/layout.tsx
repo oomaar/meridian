@@ -2,6 +2,14 @@ import type { Metadata } from "next";
 import { Geist, JetBrains_Mono, Newsreader } from "next/font/google";
 import { getTheme } from "@/lib/theme";
 import "./globals.css";
+import "@/styles/utilities.css";
+import "@/styles/shell.css";
+import "@/styles/content.css";
+import "@/styles/forms.css";
+import "@/styles/overlays.css";
+import "@/styles/landing.css";
+import "@/styles/auth.css";
+import "@/styles/responsive.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

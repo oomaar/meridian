@@ -389,6 +389,32 @@
 .m-btn--icon.m-btn--sm { width: 26px; }
 .m-btn--block { width: 100%; height: 40px; }
 
+/* nav overlay — click-away backdrop for mobile drawer */
+.m-nav-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--m-overlay);
+  z-index: 149;
+}
+
+/* hamburger toggle — hidden on desktop, shown via responsive.css */
+.m-nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--m-text-2);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.m-nav-toggle:hover {
+  color: var(--m-text);
+  background: var(--m-surface-2);
+}
+
 /* notification dot — overlays icon buttons in the topbar */
 .m-notif-dot {
   position: absolute;

@@ -1,23 +1,13 @@
 /* ───────────────────────────────────────────────────────
    Meridian — globals.css
-   This file owns the cascade order. Imports go top-to-bottom
-   (low-specificity first, surface-specific later, responsive
-   last). After imports: the Meridian + shadcn token blocks,
-   then Tailwind theme + base rules.
+   Tailwind + shadcn + design tokens only.
+   Surface CSS files are imported directly in layout.tsx
+   as JS modules to guarantee Turbopack tracks them.
    ─────────────────────────────────────────────────────── */
 
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-
-@import "../styles/utilities.css";
-@import "../styles/shell.css";
-@import "../styles/content.css";
-@import "../styles/forms.css";
-@import "../styles/overlays.css";
-@import "../styles/landing.css";
-@import "../styles/auth.css";
-@import "../styles/responsive.css";
 
 @custom-variant dark (&:is(.dark *));
 
