@@ -796,8 +796,14 @@
   cursor: pointer;
   font-family: inherit;
 }
-.m-filter-panel__opt:hover { background: var(--m-surface-2); color: var(--m-text); }
-.m-filter-panel__opt--active { color: var(--m-accent); font-weight: 500; }
+.m-filter-panel__opt:hover {
+  background: var(--m-surface-2);
+  color: var(--m-text);
+}
+.m-filter-panel__opt--active {
+  color: var(--m-accent);
+  font-weight: 500;
+}
 
 /* card toolbar — search + filter chips + view toggle row inside a flush card */
 .m-card__toolbar {
@@ -807,6 +813,13 @@
   gap: 8px;
   border-bottom: 1px solid var(--m-line);
   flex-wrap: wrap;
+}
+
+/* course title cell — swatch + truncated title text */
+.m-course-title-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* dept colour swatch — 6 × 22 px bar next to course title in table */
