@@ -22,14 +22,18 @@ import {
   getInstructor,
   getStudent,
 } from "../relationships";
+import { NOW } from "../seed";
 import type {
   Activity,
   Assignment,
   Course,
   CourseStatus,
   Instructor,
+  InstructorStatus,
+  InstructorTitle,
   Notification,
   Semester,
+  SemesterStatus,
   Student,
   StudentStatus,
 } from "../types";
@@ -300,8 +304,6 @@ export function getAdminStudentsPage(): AdminStudentsData {
 
 // ─── Admin Instructors ────────────────────────────────────────────────────────
 
-import type { InstructorStatus, InstructorTitle } from "../types";
-
 function fmtHireDate(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
@@ -356,4 +358,102 @@ export function getAdminInstructorsPage(): AdminInstructorsData {
   });
 
   return { rows, total: db.instructors.length };
+}
+
+// ─── Admin Semesters ──────────────────────────────────────────────────────────
+
+const TL_START_MS = new Date("2025-01-01").getTime();
+const TL_END_MS   = new Date("2027-07-01").getTime();
+const TL_SPAN_MS  = TL_END_MS - TL_START_MS;
+
+function tlPct(d: Date): number {
+  return ((d.getTime() - TL_START_MS) / TL_SPAN_MS) * 100;
+}
+
+function semProgress(sem: Semester): number {
+  if (sem.status === "past") return 1.0;
+  if (sem.status !== "active") return 0.0;
+  const s = new Date(sem.startDate).getTime();
+  const e = new Date(sem.endDate).getTime();
+  return Math.min(1, Math.max(0, (NOW.getTime() - s) / (e - s)));
+}
+
+function fmtDateRange(start: string, end: string): string {
+  const s = new Date(start);
+  const e = new Date(end);
+  const fmt = (d: Date) =>
+    d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `${fmt(s)} – ${fmt(e)}, ${e.getFullYear()}`;
+}
+
+export type AdminSemesterCard = {
+  id: string;
+  code: string;
+  name: string;
+  dateRange: string;
+  status: SemesterStatus;
+  progress: number;
+  stats: { students: number; courses: number; instructors: number };
+  tlLeft: number;
+  tlWidth: number;
+};
+
+export type AdminSemestersData = {
+  semesters: AdminSemesterCard[];
+  todayPct: number;
+  tlLabels: { label: string; pct: number }[];
+};
+
+const TL_LABELS: { label: string; pct: number }[] = [
+  { label: "Jan '25", pct: tlPct(new Date("2025-01-01")) },
+  { label: "Jul '25", pct: tlPct(new Date("2025-07-01")) },
+  { label: "Jan '26", pct: tlPct(new Date("2026-01-01")) },
+  { label: "Jul '26", pct: tlPct(new Date("2026-07-01")) },
+  { label: "Jan '27", pct: tlPct(new Date("2027-01-01")) },
+  { label: "Jul '27", pct: 100 },
+];
+
+export function getAdminSemestersPage(): AdminSemestersData {
+  // per-semester stats
+  const coursesBySem = new Map<string, (typeof db.courses)[0][]>();
+  for (const c of db.courses) {
+    const arr = coursesBySem.get(c.semesterId) ?? [];
+    arr.push(c);
+    coursesBySem.set(c.semesterId, arr);
+  }
+
+  const semesters: AdminSemesterCard[] = db.semesters.map((sem) => {
+    const courses = coursesBySem.get(sem.id) ?? [];
+    const studentSet = new Set<string>();
+    const instructorSet = new Set<string>();
+    for (const c of courses) {
+      for (const sid of c.studentIds) studentSet.add(sid);
+      instructorSet.add(c.instructorId);
+    }
+
+    const left  = tlPct(new Date(sem.startDate));
+    const right = tlPct(new Date(sem.endDate));
+
+    return {
+      id: sem.id,
+      code: sem.code,
+      name: sem.name,
+      dateRange: fmtDateRange(sem.startDate, sem.endDate),
+      status: sem.status,
+      progress: semProgress(sem),
+      stats: {
+        students:    studentSet.size,
+        courses:     courses.length,
+        instructors: instructorSet.size,
+      },
+      tlLeft:  Math.max(0, left),
+      tlWidth: Math.max(0, Math.min(100, right) - Math.max(0, left)),
+    };
+  });
+
+  return {
+    semesters,
+    todayPct: Math.min(100, Math.max(0, tlPct(NOW))),
+    tlLabels: TL_LABELS,
+  };
 }
