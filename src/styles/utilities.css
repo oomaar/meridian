@@ -17,6 +17,10 @@
 .m-mono { font-family: var(--m-font-mono); }
 .m-num-tnum { font-variant-numeric: tabular-nums; }
 
+/* spin animation — used on loading spinners */
+@keyframes m-spin { to { transform: rotate(360deg); } }
+.m-spin { animation: m-spin 0.65s linear infinite; display: inline-block; }
+
 /* theme-toggle icon visibility — picks Sun on dark, Moon on light */
 .theme-icon-moon { display: none; }
 [data-theme="light"] .theme-icon-sun { display: none; }
