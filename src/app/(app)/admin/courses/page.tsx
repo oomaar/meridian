@@ -1,6 +1,7 @@
-import { PlusIcon, RefreshCwIcon } from "lucide-react";
 import { getAdminCoursesPage } from "@/fake-db/dashboards";
 import { CoursesTable } from "@/components/admin/courses-table";
+import { NewCourseButton } from "@/components/admin/new-course-button";
+import { SyncSISButton } from "@/components/admin/sync-sis-button";
 
 export default function AdminCoursesPage() {
   const { rows, total } = getAdminCoursesPage();
@@ -16,12 +17,8 @@ export default function AdminCoursesPage() {
           </p>
         </div>
         <div className="m-page__actions">
-          <button className="m-btn">
-            <RefreshCwIcon size={14} /> Sync with SIS
-          </button>
-          <button className="m-btn m-btn--primary">
-            <PlusIcon size={14} /> New course
-          </button>
+          <SyncSISButton />
+          <NewCourseButton />
         </div>
       </div>
 
