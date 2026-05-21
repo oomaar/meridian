@@ -143,9 +143,8 @@ function BulkMessageSheet({
         <div className="m-sheet__body">
           <label className="m-field">
             <span className="m-field__label">To</span>
-            <input className="m-field__input" readOnly
-              value={`${count} selected student${count !== 1 ? "s" : ""}`}
-              style={{ color: "var(--m-text-2)" }} />
+            <input className="m-field__input m-text-2" readOnly
+              value={`${count} selected student${count !== 1 ? "s" : ""}`} />
           </label>
           <label className="m-field">
             <span className="m-field__label">Subject</span>
@@ -154,9 +153,8 @@ function BulkMessageSheet({
           </label>
           <label className="m-field">
             <span className="m-field__label">Message</span>
-            <textarea className="m-field__input" rows={6} placeholder="Write your message here…"
-              value={body} onChange={(e) => setBody(e.target.value)}
-              style={{ resize: "vertical", minHeight: 120 }} />
+            <textarea className="m-field__input m-textarea" rows={6} placeholder="Write your message here…"
+              value={body} onChange={(e) => setBody(e.target.value)} />
           </label>
         </div>
         <div className="m-sheet__foot">
@@ -260,7 +258,7 @@ export function StudentsTable({ rows, total }: Props) {
             confirmRemove ? (
               /* ── confirm remove bar ── */
               <div className="m-bulk-bar">
-                <span className="m-bulk-bar__count" style={{ color: "var(--m-danger)" }}>
+                <span className="m-bulk-bar__count m-text-danger">
                   Remove {selected.size} student{selected.size !== 1 ? "s" : ""}?
                 </span>
                 <button className="m-btn m-btn--ghost m-btn--sm" onClick={() => setConfirmRemove(false)}>
@@ -331,16 +329,16 @@ export function StudentsTable({ rows, total }: Props) {
                     </div>
                   </div>
                 </td>
-                <td className="m-mono" style={{ fontSize: "11.5px" }}>{s.studentNumber}</td>
-                <td style={{ fontSize: "12.5px", color: "var(--m-text-2)" }}>{truncateString(s.programName, 26)}</td>
-                <td style={{ fontSize: "12.5px" }}>{s.standing}</td>
+                <td className="m-mono m-td-id">{s.studentNumber}</td>
+                <td className="m-td-dim">{truncateString(s.programName, 26)}</td>
+                <td className="m-td-dim">{s.standing}</td>
                 <td className="m-num m-mono" style={{ color: s.gpa < 2.5 ? "var(--m-danger)" : "var(--m-text)" }}>
                   {s.gpa.toFixed(2)}
                 </td>
                 <td className="m-num m-mono">{s.credits}</td>
                 <td><StatusBadge status={s.status} /></td>
-                <td style={{ fontSize: "12.5px", color: "var(--m-text-2)" }}>{truncateString(s.advisorName, 20)}</td>
-                <td className="m-mono" style={{ fontSize: "11.5px", color: "var(--m-text-3)" }}>{s.lastActive}</td>
+                <td className="m-td-dim">{truncateString(s.advisorName, 20)}</td>
+                <td className="m-mono m-td-id">{s.lastActive}</td>
                 <td>
                   <button className="m-btn m-btn--ghost m-btn--icon m-btn--sm">
                     <EllipsisIcon size={14} />
@@ -354,8 +352,8 @@ export function StudentsTable({ rows, total }: Props) {
         {/* Footer */}
         <div className="m-card__foot">
           <span>
-            Showing <b style={{ color: "var(--m-text)" }}>{displayed.length}</b>{" "}
-            of <b style={{ color: "var(--m-text)" }}>{footerTotal.toLocaleString()}</b>
+            Showing <b>{displayed.length}</b>{" "}
+            of <b>{footerTotal.toLocaleString()}</b>
             {isFiltered ? " matching" : ""}
           </span>
           <div className="m-spacer" />
