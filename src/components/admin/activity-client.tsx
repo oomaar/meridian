@@ -12,22 +12,22 @@ import { NOW } from "@/fake-db/seed";
 
 type FilterId = "all" | "submission" | "grade" | "enrollment" | "announce" | "system";
 
-const TYPE_FILTERS: { id: FilterId; label: string; count: number; types: ActivityType[] | null }[] = [
-  { id: "all",        label: "All events",    count: 412, types: null },
-  { id: "submission", label: "Submissions",   count: 168, types: ["assignment_submitted"] },
-  { id: "grade",      label: "Grades",        count: 88,  types: ["assignment_graded", "grade_posted"] },
-  { id: "enrollment", label: "Enrollment",    count: 42,  types: ["course_enrolled", "course_dropped", "roster_imported"] },
-  { id: "announce",   label: "Announcements", count: 24,  types: ["instructor_announcement", "policy_published", "deadline_approaching"] },
-  { id: "system",     label: "System",        count: 90,  types: ["semester_published", "user_invited", "comment_added"] },
+const TYPE_FILTERS: { id: FilterId; label: string; types: ActivityType[] | null }[] = [
+  { id: "all",        label: "All events",    types: null },
+  { id: "submission", label: "Submissions",   types: ["assignment_submitted"] },
+  { id: "grade",      label: "Grades",        types: ["assignment_graded", "grade_posted"] },
+  { id: "enrollment", label: "Enrollment",    types: ["course_enrolled", "course_dropped", "roster_imported"] },
+  { id: "announce",   label: "Announcements", types: ["instructor_announcement", "policy_published", "deadline_approaching"] },
+  { id: "system",     label: "System",        types: ["semester_published", "user_invited", "comment_added"] },
 ];
 
 type TimeRangeId = "1h" | "6h" | "24h" | "7d" | "30d";
 const TIME_RANGES: { id: TimeRangeId; label: string; mins: number }[] = [
-  { id: "1h",  label: "Last hour",     mins: 60        },
-  { id: "6h",  label: "Last 6 hours",  mins: 360       },
-  { id: "24h", label: "Last 24 hours", mins: 1_440     },
-  { id: "7d",  label: "Last 7 days",   mins: 10_080    },
-  { id: "30d", label: "Last 30 days",  mins: 43_200    },
+  { id: "1h",  label: "Last hour",     mins: 60     },
+  { id: "6h",  label: "Last 6 hours",  mins: 360    },
+  { id: "24h", label: "Last 24 hours", mins: 1_440  },
+  { id: "7d",  label: "Last 7 days",   mins: 10_080 },
+  { id: "30d", label: "Last 30 days",  mins: 43_200 },
 ];
 
 const TRIGGERS = [
@@ -59,15 +59,22 @@ function relTime(isoTs: string): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
-function filterEvents(
-  events: Activity[],
-  typeFilter: FilterId,
-  timeRange: TimeRangeId,
-): Activity[] {
+function computeCounts(events: Activity[]): Record<FilterId, number> {
+  const counts: Record<FilterId, number> = {
+    all: events.length, submission: 0, grade: 0, enrollment: 0, announce: 0, system: 0,
+  };
+  for (const ev of events) {
+    for (const f of TYPE_FILTERS.slice(1)) {
+      if (f.types!.includes(ev.type)) counts[f.id]++;
+    }
+  }
+  return counts;
+}
+
+function filterEvents(events: Activity[], typeFilter: FilterId, timeRange: TimeRangeId): Activity[] {
   const tf = TYPE_FILTERS.find((f) => f.id === typeFilter)!;
   const tr = TIME_RANGES.find((r) => r.id === timeRange)!;
   const cutoff = new Date(NOW.getTime() - tr.mins * 60_000);
-
   return events.filter((ev) => {
     const inTime = new Date(ev.timestamp) >= cutoff;
     const inType = tf.types === null || tf.types.includes(ev.type);
@@ -101,33 +108,18 @@ function ExportButton() {
 
 // ─── New rule drawer ──────────────────────────────────────────────────────────
 
-function NewRuleDrawer({
-  onClose,
-  onSave,
-}: {
-  onClose: () => void;
-  onSave: (label: string) => void;
-}) {
+function NewRuleDrawer({ onClose, onSave }: { onClose: () => void; onSave: (label: string) => void }) {
   const [name,    setName]    = useState("");
   const [trigger, setTrigger] = useState(TRIGGERS[0]);
   const [notify,  setNotify]  = useState(NOTIFY_TARGETS[0]);
   const [channel, setChannel] = useState(CHANNELS[2]);
-  const [save,    setSave]    = useState<"idle" | "saving" | "saved">("idle");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (save !== "idle" || !name.trim()) return;
-    setSave("saving");
-    setTimeout(() => {
-      setSave("saved");
-      setTimeout(() => {
-        onSave(`${trigger} — ${channel.split(" ")[0]} ${notify}`);
-        onClose();
-      }, 700);
-    }, 1000);
+    if (!name.trim()) return;
+    onSave(`${name.trim()} — ${channel} · ${notify}`);
+    onClose();
   }
-
-  const canSave = name.trim() && save === "idle";
 
   return (
     <>
@@ -193,17 +185,9 @@ function NewRuleDrawer({
         </form>
 
         <div className="m-sheet__foot">
-          <button className="m-btn m-btn--ghost" onClick={onClose} disabled={save === "saving"}>
-            Cancel
-          </button>
-          <button
-            className="m-btn m-btn--primary"
-            disabled={!canSave}
-            onClick={handleSubmit}
-          >
-            {save === "idle"   && <><ZapIcon size={13} /> Save rule</>}
-            {save === "saving" && <><Loader2Icon size={13} className="m-spin" /> Saving…</>}
-            {save === "saved"  && <><CheckIcon size={13} /> Saved!</>}
+          <button className="m-btn m-btn--ghost" onClick={onClose}>Cancel</button>
+          <button className="m-btn m-btn--primary" disabled={!name.trim()} onClick={handleSubmit}>
+            <ZapIcon size={13} /> Save rule
           </button>
         </div>
       </div>
@@ -216,12 +200,14 @@ function NewRuleDrawer({
 function FiltersPanel({
   typeFilter,
   timeRange,
+  counts,
   onType,
   onTime,
   onClose,
 }: {
   typeFilter: FilterId;
   timeRange: TimeRangeId;
+  counts: Record<FilterId, number>;
   onType: (v: FilterId) => void;
   onTime: (v: TimeRangeId) => void;
   onClose: () => void;
@@ -244,10 +230,10 @@ function FiltersPanel({
           <button
             key={f.id}
             className={`m-activity-filters__opt${typeFilter === f.id ? " m-activity-filters__opt--active" : ""}`}
-            onClick={() => { onType(f.id); }}
+            onClick={() => onType(f.id)}
           >
             <span className="m-activity-filters__opt-label">{f.label}</span>
-            <span className="m-activity-filters__opt-count">{f.count}</span>
+            <span className="m-activity-filters__opt-count">{counts[f.id]}</span>
           </button>
         ))}
       </div>
@@ -258,7 +244,7 @@ function FiltersPanel({
           <button
             key={r.id}
             className={`m-activity-filters__opt${timeRange === r.id ? " m-activity-filters__opt--active" : ""}`}
-            onClick={() => { onTime(r.id); }}
+            onClick={() => onTime(r.id)}
           >
             <span className="m-activity-filters__opt-label">{r.label}</span>
           </button>
@@ -283,14 +269,11 @@ export function ActivityClient({ events }: { events: Activity[] }) {
   const [timeRange,   setTimeRange]   = useState<TimeRangeId>("24h");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [ruleDrawer,  setRuleDrawer]  = useState(false);
-  const [rules,       setRules]       = useState(INIT_RULES);
+  const [rules,       setRules]       = useState<string[]>(INIT_RULES);
 
+  const counts   = computeCounts(events);
   const filtered = filterEvents(events, typeFilter, timeRange);
   const hasFilters = typeFilter !== "all" || timeRange !== "24h";
-
-  function addRule(label: string) {
-    setRules((prev) => [...prev, label]);
-  }
 
   return (
     <>
@@ -321,6 +304,7 @@ export function ActivityClient({ events }: { events: Activity[] }) {
               <FiltersPanel
                 typeFilter={typeFilter}
                 timeRange={timeRange}
+                counts={counts}
                 onType={setTypeFilter}
                 onTime={setTimeRange}
                 onClose={() => setFiltersOpen(false)}
@@ -361,10 +345,7 @@ export function ActivityClient({ events }: { events: Activity[] }) {
                   <div key={ev.id} className="m-feed-item">
                     <span className={`m-feed-item__dot m-feed-item__dot--${ev.dot}`} />
                     <div>
-                      <div
-                        className="m-feed-item__body"
-                        dangerouslySetInnerHTML={{ __html: ev.body }}
-                      />
+                      <div className="m-feed-item__body" dangerouslySetInnerHTML={{ __html: ev.body }} />
                       <div className="m-event-meta">
                         <span className="m-mono">evt_{(0x13d92 + i).toString(16)}</span>
                         {" · "}
@@ -385,10 +366,7 @@ export function ActivityClient({ events }: { events: Activity[] }) {
               <div className="m-card__head">
                 <div className="m-card__title">By type</div>
                 {typeFilter !== "all" && (
-                  <button
-                    className="m-btn m-btn--ghost m-btn--sm"
-                    onClick={() => setTypeFilter("all")}
-                  >
+                  <button className="m-btn m-btn--ghost m-btn--sm" onClick={() => setTypeFilter("all")}>
                     <XIcon size={12} /> Clear
                   </button>
                 )}
@@ -401,7 +379,7 @@ export function ActivityClient({ events }: { events: Activity[] }) {
                     onClick={() => setTypeFilter(t.id)}
                   >
                     <span className="m-type-row__label">{t.label}</span>
-                    <span className="m-type-row__count">{t.count}</span>
+                    <span className="m-type-row__count">{counts[t.id]}</span>
                   </div>
                 ))}
               </div>
@@ -438,7 +416,10 @@ export function ActivityClient({ events }: { events: Activity[] }) {
       {ruleDrawer && (
         <NewRuleDrawer
           onClose={() => setRuleDrawer(false)}
-          onSave={addRule}
+          onSave={(label) => {
+            setRules((prev) => [...prev, label]);
+            setRuleDrawer(false);
+          }}
         />
       )}
     </>

@@ -163,7 +163,7 @@ export type AdminActivityData = {
 };
 
 export function getAdminActivityPage(): AdminActivityData {
-  return { events: db.activity.slice(0, 50) };
+  return { events: db.activity };
 }
 
 export type AdminNotificationsData = {
