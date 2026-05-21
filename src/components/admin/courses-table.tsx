@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { EllipsisIcon, GridIcon, ListIcon, SearchIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { EllipsisIcon, EyeIcon, GridIcon, ListIcon, SearchIcon, Trash2Icon } from "lucide-react";
 import { ProgressBar } from "@/components/progress-bar";
 import type { AdminCourseRow } from "@/fake-db/dashboards";
 import type { CourseStatus } from "@/fake-db/types";
@@ -83,10 +84,7 @@ function FilterMenu({
         <div className="m-filter-panel">
           <button
             className={`m-filter-panel__opt${value === "all" ? " m-filter-panel__opt--active" : ""}`}
-            onClick={() => {
-              onChange("all");
-              setOpen(false);
-            }}
+            onClick={() => { onChange("all"); setOpen(false); }}
           >
             All
           </button>
@@ -94,14 +92,104 @@ function FilterMenu({
             <button
               key={opt.value}
               className={`m-filter-panel__opt${value === opt.value ? " m-filter-panel__opt--active" : ""}`}
-              onClick={() => {
-                onChange(opt.value);
-                setOpen(false);
-              }}
+              onClick={() => { onChange(opt.value); setOpen(false); }}
             >
               {opt.label}
             </button>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── row action menu ─────────────────────────────────────────────────────────
+
+function RowMenu({
+  courseCode,
+  onDelete,
+}: {
+  courseCode: string;
+  onDelete: () => void;
+}) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDown(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+        setConfirming(false);
+      }
+    }
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  function toggle(e: React.MouseEvent) {
+    e.stopPropagation();
+    setOpen((o) => !o);
+    setConfirming(false);
+  }
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        className="m-btn m-btn--ghost m-btn--icon m-btn--sm"
+        onClick={toggle}
+        aria-label="Actions"
+      >
+        <EllipsisIcon size={14} />
+      </button>
+
+      {open && (
+        <div className="m-card-menu" onMouseDown={(e) => e.stopPropagation()}>
+          {confirming ? (
+            <div className="m-card-menu__confirm">
+              <span className="m-card-menu__confirm-label">Remove this course?</span>
+              <div className="m-card-menu__confirm-actions">
+                <button
+                  className="m-btn m-btn--ghost m-btn--sm"
+                  onClick={(e) => { e.stopPropagation(); setConfirming(false); }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="m-btn m-btn--ghost m-btn--sm m-btn--danger"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete();
+                    setOpen(false);
+                    setConfirming(false);
+                  }}
+                >
+                  <Trash2Icon size={12} /> Delete
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <button
+                className="m-card-menu__item"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/admin/courses/${courseCode}`);
+                }}
+              >
+                <EyeIcon size={13} className="m-card-menu__icon" /> View course
+              </button>
+              <div className="m-card-menu__sep" />
+              <button
+                className="m-card-menu__item m-card-menu__item--danger"
+                onClick={(e) => { e.stopPropagation(); setConfirming(true); }}
+              >
+                <Trash2Icon size={13} className="m-card-menu__icon" /> Delete course
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>
@@ -113,12 +201,14 @@ function FilterMenu({
 type Props = { rows: AdminCourseRow[]; total: number };
 
 export function CoursesTable({ rows, total }: Props) {
+  const router = useRouter();
   const [q, setQ] = useState("");
   const [dept, setDept] = useState("all");
   const [level, setLevel] = useState("all");
   const [modality, setModality] = useState("all");
   const [view, setView] = useState<"table" | "grid">("table");
   const [visible, setVisible] = useState(PAGE_SIZE);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
   // derive unique dept options from the data
   const deptOptions = Array.from(new Set(rows.map((r) => r.deptCode)))
@@ -131,8 +221,13 @@ export function CoursesTable({ rows, total }: Props) {
     setVisible(PAGE_SIZE);
   };
 
+  function deleteRow(id: string) {
+    setDeletedIds((prev) => new Set([...prev, id]));
+  }
+
   // apply all filters
   const filtered = rows.filter((r) => {
+    if (deletedIds.has(r.id)) return false;
     if (
       q &&
       !(r.code + " " + r.title + " " + r.instructorName)
@@ -148,8 +243,8 @@ export function CoursesTable({ rows, total }: Props) {
 
   const displayed = filtered.slice(0, visible);
   const hasMore = visible < filtered.length;
-  const isFiltered = filtered.length < total;
-  const footerTotal = isFiltered ? filtered.length : total;
+  const isFiltered = filtered.length < (total - deletedIds.size);
+  const footerTotal = isFiltered ? filtered.length : (total - deletedIds.size);
   const footerSuffix = isFiltered ? " matching" : "";
 
   return (
@@ -184,16 +279,10 @@ export function CoursesTable({ rows, total }: Props) {
         />
         <div className="m-spacer" />
         <div className="m-seg">
-          <button
-            aria-pressed={view === "table"}
-            onClick={() => setView("table")}
-          >
+          <button aria-pressed={view === "table"} onClick={() => setView("table")}>
             <ListIcon size={12} />
           </button>
-          <button
-            aria-pressed={view === "grid"}
-            onClick={() => setView("grid")}
-          >
+          <button aria-pressed={view === "grid"} onClick={() => setView("grid")}>
             <GridIcon size={12} />
           </button>
         </div>
@@ -218,14 +307,15 @@ export function CoursesTable({ rows, total }: Props) {
           </thead>
           <tbody>
             {displayed.map((c) => (
-              <tr key={c.id} className="m-table__row-link">
+              <tr
+                key={c.id}
+                className="m-table__row-link"
+                onClick={() => router.push(`/admin/courses/${c.code}`)}
+              >
                 <td className="m-mono">{c.code}</td>
                 <td>
                   <div className="m-course-title-cell" title={c.title}>
-                    <span
-                      className="m-dept-swatch"
-                      style={{ background: c.deptColor }}
-                    />
+                    <span className="m-dept-swatch" style={{ background: c.deptColor }} />
                     {truncateString(c.title, 32)}
                   </div>
                 </td>
@@ -239,9 +329,7 @@ export function CoursesTable({ rows, total }: Props) {
                 <td>
                   <div className="m-cap-cell">
                     <ProgressBar value={c.enrolled / c.cap} />
-                    <span className="m-cap-cell__label">
-                      {c.enrolled}/{c.cap}
-                    </span>
+                    <span className="m-cap-cell__label">{c.enrolled}/{c.cap}</span>
                   </div>
                 </td>
                 <td className="m-num m-mono">
@@ -249,20 +337,18 @@ export function CoursesTable({ rows, total }: Props) {
                 </td>
                 <td
                   className="m-num m-mono"
-                  style={{
-                    color:
-                      c.ungraded > 10 ? "var(--m-warning)" : "var(--m-text-2)",
-                  }}
+                  style={{ color: c.ungraded > 10 ? "var(--m-warning)" : "var(--m-text-2)" }}
                 >
                   {c.ungraded || "—"}
                 </td>
                 <td>
                   <StatusBadge status={c.status} />
                 </td>
-                <td>
-                  <button className="m-btn m-btn--ghost m-btn--icon m-btn--sm">
-                    <EllipsisIcon size={14} />
-                  </button>
+                <td onClick={(e) => e.stopPropagation()}>
+                  <RowMenu
+                    courseCode={c.code}
+                    onDelete={() => deleteRow(c.id)}
+                  />
                 </td>
               </tr>
             ))}
@@ -274,21 +360,27 @@ export function CoursesTable({ rows, total }: Props) {
       {view === "grid" && (
         <div className="m-course-grid">
           {displayed.map((c) => (
-            <div key={c.id} className="m-card" style={{ cursor: "pointer" }}>
+            <div
+              key={c.id}
+              className="m-card"
+              style={{ cursor: "pointer" }}
+              onClick={() => router.push(`/admin/courses/${c.code}`)}
+            >
               <div
                 className="m-course-banner"
-                style={{
-                  background: `linear-gradient(135deg, ${c.deptColor}30, ${c.deptColor}08)`,
-                }}
+                style={{ background: `linear-gradient(135deg, ${c.deptColor}30, ${c.deptColor}08)` }}
               >
-                <span
-                  className="m-course-banner__code"
-                  style={{ color: c.deptColor }}
-                >
+                <span className="m-course-banner__code" style={{ color: c.deptColor }}>
                   {c.code}
                 </span>
                 <span className="m-spacer" />
                 <StatusBadge status={c.status} />
+                <div onClick={(e) => e.stopPropagation()}>
+                  <RowMenu
+                    courseCode={c.code}
+                    onDelete={() => deleteRow(c.id)}
+                  />
+                </div>
               </div>
               <div className="m-course-banner__body">
                 <div
@@ -301,27 +393,17 @@ export function CoursesTable({ rows, total }: Props) {
                 >
                   {c.title}
                 </div>
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: "var(--m-text-3)",
-                    marginBottom: 12,
-                  }}
-                >
+                <div style={{ fontSize: 12, color: "var(--m-text-3)", marginBottom: 12 }}>
                   Prof. {c.instructorName} · {c.credits} cr.
                 </div>
                 <div className="m-cap-cell" style={{ marginBottom: 8 }}>
                   <ProgressBar value={c.enrolled / c.cap} />
-                  <span className="m-cap-cell__label">
-                    {c.enrolled}/{c.cap}
-                  </span>
+                  <span className="m-cap-cell__label">{c.enrolled}/{c.cap}</span>
                 </div>
                 <div style={{ display: "flex", gap: 6 }}>
                   <span className="m-badge">{c.modality}</span>
                   {c.ungraded > 10 && (
-                    <span className="m-badge m-badge--warning">
-                      {c.ungraded} ungraded
-                    </span>
+                    <span className="m-badge m-badge--warning">{c.ungraded} ungraded</span>
                   )}
                 </div>
               </div>
@@ -335,9 +417,7 @@ export function CoursesTable({ rows, total }: Props) {
         <span>
           Showing <b style={{ color: "var(--m-text)" }}>{displayed.length}</b>{" "}
           of{" "}
-          <b style={{ color: "var(--m-text)" }}>
-            {footerTotal.toLocaleString()}
-          </b>
+          <b style={{ color: "var(--m-text)" }}>{footerTotal.toLocaleString()}</b>
           {footerSuffix}
         </span>
         <div className="m-spacer" />
