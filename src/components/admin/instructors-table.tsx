@@ -160,7 +160,7 @@ function RowMenu({ onDelete }: { onDelete: () => void }) {
   }, [open]);
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
+    <div ref={ref} className="m-pos-rel">
       <button
         className="m-btn m-btn--ghost m-btn--icon m-btn--sm"
         onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); setConfirming(false); }}
@@ -298,7 +298,7 @@ export function InstructorsTable({ rows, total }: Props) {
                   </div>
                 </div>
               </td>
-              <td style={{ fontSize: "12.5px", color: "var(--m-text-2)" }}>
+              <td className="m-td-dim">
                 {inst.title}
               </td>
               <td>
@@ -318,10 +318,7 @@ export function InstructorsTable({ rows, total }: Props) {
               <td>
                 <InstructorStatusBadge status={inst.status} />
               </td>
-              <td
-                className="m-mono"
-                style={{ fontSize: "11.5px", color: "var(--m-text-3)" }}
-              >
+              <td className="m-mono m-td-id">
                 {inst.hireDate}
               </td>
               <td onClick={(e) => e.stopPropagation()}>
@@ -335,11 +332,9 @@ export function InstructorsTable({ rows, total }: Props) {
       {/* Footer */}
       <div className="m-card__foot">
         <span>
-          Showing <b style={{ color: "var(--m-text)" }}>{displayed.length}</b>{" "}
+          Showing <b>{displayed.length}</b>{" "}
           of{" "}
-          <b style={{ color: "var(--m-text)" }}>
-            {footerTotal.toLocaleString()}
-          </b>
+          <b>{footerTotal.toLocaleString()}</b>
           {isFiltered ? " matching" : ""}
         </span>
         <div className="m-spacer" />
