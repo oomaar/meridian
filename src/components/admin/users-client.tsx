@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { CheckIcon, MoreHorizontalIcon, FilterIcon } from "lucide-react";
+import { CheckIcon, MoreHorizontalIcon, FilterIcon, Trash2Icon } from "lucide-react";
 import type { AdminUserRow, AdminUsersData, RoleSummaryCard } from "@/fake-db/dashboards";
 import type { UserStatus } from "@/fake-db/types";
 import { InviteUserButton } from "./invite-user-button";
@@ -96,6 +96,68 @@ function FilterMenu<T extends string>({
               {o.label}
             </button>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Row menu ─────────────────────────────────────────────────────────────────
+
+function RowMenu({ onDelete }: { onDelete: () => void }) {
+  const [open, setOpen]             = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDown(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+        setConfirming(false);
+      }
+    }
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        className="m-btn m-btn--ghost m-btn--icon m-btn--sm"
+        onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); setConfirming(false); }}
+      >
+        <MoreHorizontalIcon size={14} />
+      </button>
+
+      {open && (
+        <div className="m-card-menu" onMouseDown={(e) => e.stopPropagation()}>
+          {confirming ? (
+            <div className="m-card-menu__confirm">
+              <span className="m-card-menu__confirm-label">Remove this user?</span>
+              <div className="m-card-menu__confirm-actions">
+                <button
+                  className="m-btn m-btn--ghost m-btn--sm"
+                  onClick={(e) => { e.stopPropagation(); setConfirming(false); }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="m-btn m-btn--ghost m-btn--sm m-btn--danger"
+                  onClick={(e) => { e.stopPropagation(); onDelete(); setOpen(false); setConfirming(false); }}
+                >
+                  <Trash2Icon size={12} /> Delete
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              className="m-card-menu__item m-card-menu__item--danger"
+              onClick={(e) => { e.stopPropagation(); setConfirming(true); }}
+            >
+              <Trash2Icon size={13} className="m-card-menu__icon" /> Delete user
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -254,10 +316,8 @@ export function UsersClient({ data }: { data: AdminUsersData }) {
                       <td><MfaBadge mfa={u.mfa} /></td>
                       <td className="m-mono" style={{ color: "var(--m-text-3)", fontSize: 12 }}>{u.lastLogin}</td>
                       <td><UserStatusBadge status={u.status} /></td>
-                      <td>
-                        <button className="m-btn m-btn--ghost m-btn--icon m-btn--sm">
-                          <MoreHorizontalIcon size={14} />
-                        </button>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <RowMenu onDelete={() => setRows((prev) => prev.filter((r) => r.id !== u.id))} />
                       </td>
                     </tr>
                   ))}
