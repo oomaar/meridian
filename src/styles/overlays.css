@@ -436,3 +436,163 @@
   font-size: 12px;
   color: var(--m-text-3);
 }
+
+/* ── Modal / dialog ─────────────────────────────────────────────────────────
+   Centred overlay modal. Wider than a sheet — used for reports, charts, etc. */
+.m-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--m-overlay);
+  z-index: 200;
+}
+.m-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(680px, 96vw);
+  max-height: min(88vh, 800px);
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: 12px;
+  box-shadow: var(--m-shadow-lg);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  animation: m-modal-in 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes m-modal-in {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1);    }
+}
+.m-modal__head {
+  padding: 18px 22px 16px;
+  border-bottom: 1px solid var(--m-line);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.m-modal__title {
+  font-family: var(--m-font-serif);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--m-text);
+  line-height: 1.2;
+}
+.m-modal__sub {
+  font-size: 12px;
+  color: var(--m-text-3);
+  margin-top: 3px;
+}
+.m-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.m-modal__foot {
+  padding: 14px 22px;
+  border-top: 1px solid var(--m-line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* stat grid inside report modal — 2×3 key-number tiles */
+.m-modal-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--m-line);
+  border: 1px solid var(--m-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.m-modal-stat {
+  background: var(--m-surface);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.m-modal-stat__label {
+  font-size: 11px;
+  color: var(--m-text-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.m-modal-stat__value {
+  font-family: var(--m-font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--m-text);
+  line-height: 1.1;
+}
+
+/* horizontal rule inside modal body */
+.m-rule {
+  border: none;
+  border-top: 1px solid var(--m-line);
+  margin: 0;
+}
+
+/* breakdown bar row — label + track + percentage */
+.m-modal-breakdown-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 36px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.m-modal-breakdown-row:last-child { margin-bottom: 0; }
+.m-modal-breakdown-row__label {
+  font-size: 12.5px;
+  color: var(--m-text-2);
+  white-space: nowrap;
+}
+.m-modal-breakdown-row__track {
+  height: 6px;
+  background: var(--m-line-soft);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.m-modal-breakdown-row__fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+.m-modal-breakdown-row__pct {
+  font-family: var(--m-font-mono);
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  text-align: right;
+}
+
+/* insight bullets */
+.m-modal-insights {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-modal-insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--m-text-2);
+  line-height: 1.55;
+}
+.m-modal-insight__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--m-accent);
+  flex-shrink: 0;
+  margin-top: 6px;
+}

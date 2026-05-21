@@ -34,6 +34,12 @@
   border-color: var(--m-line-strong);
   background: var(--m-elevated);
 }
+.m-field__textarea {
+  height: auto;
+  resize: vertical;
+  padding: 10px 12px;
+  line-height: 1.55;
+}
 
 /* select chevron — overlays the native <select> to match m-field__input */
 .m-field__select {
