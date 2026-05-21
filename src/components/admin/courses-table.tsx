@@ -136,7 +136,7 @@ function RowMenu({
   }
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
+    <div ref={ref} className="m-pos-rel">
       <button
         className="m-btn m-btn--ghost m-btn--icon m-btn--sm"
         onClick={toggle}
@@ -319,7 +319,7 @@ export function CoursesTable({ rows, total }: Props) {
                     {truncateString(c.title, 32)}
                   </div>
                 </td>
-                <td style={{ fontSize: "12.5px", color: "var(--m-text-2)" }}>
+                <td className="m-td-dim">
                   Prof. {c.instructorName}
                 </td>
                 <td>
@@ -362,8 +362,7 @@ export function CoursesTable({ rows, total }: Props) {
           {displayed.map((c) => (
             <div
               key={c.id}
-              className="m-card"
-              style={{ cursor: "pointer" }}
+              className="m-card m-table__row-link"
               onClick={() => router.push(`/admin/courses/${c.code}`)}
             >
               <div
@@ -383,24 +382,15 @@ export function CoursesTable({ rows, total }: Props) {
                 </div>
               </div>
               <div className="m-course-banner__body">
-                <div
-                  style={{
-                    fontFamily: "var(--m-font-serif)",
-                    fontSize: 16,
-                    fontWeight: 500,
-                    marginBottom: 6,
-                  }}
-                >
-                  {c.title}
-                </div>
-                <div style={{ fontSize: 12, color: "var(--m-text-3)", marginBottom: 12 }}>
+                <div className="m-course-card__title">{c.title}</div>
+                <div className="m-course-card__meta">
                   Prof. {c.instructorName} · {c.credits} cr.
                 </div>
-                <div className="m-cap-cell" style={{ marginBottom: 8 }}>
+                <div className="m-cap-cell m-mt-6">
                   <ProgressBar value={c.enrolled / c.cap} />
                   <span className="m-cap-cell__label">{c.enrolled}/{c.cap}</span>
                 </div>
-                <div style={{ display: "flex", gap: 6 }}>
+                <div className="m-course-card__tags m-mt-4">
                   <span className="m-badge">{c.modality}</span>
                   {c.ungraded > 10 && (
                     <span className="m-badge m-badge--warning">{c.ungraded} ungraded</span>
@@ -415,9 +405,9 @@ export function CoursesTable({ rows, total }: Props) {
       {/* Footer */}
       <div className="m-card__foot">
         <span>
-          Showing <b style={{ color: "var(--m-text)" }}>{displayed.length}</b>{" "}
+          Showing <b>{displayed.length}</b>{" "}
           of{" "}
-          <b style={{ color: "var(--m-text)" }}>{footerTotal.toLocaleString()}</b>
+          <b>{footerTotal.toLocaleString()}</b>
           {footerSuffix}
         </span>
         <div className="m-spacer" />
