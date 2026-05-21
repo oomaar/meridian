@@ -340,6 +340,10 @@
   align-items: center;
 }
 .m-page__body { padding: 24px 32px 64px; }
+.m-page__header--no-border {
+  border-bottom: none;
+  padding-bottom: 0;
+}
 
 /* buttons */
 .m-btn {

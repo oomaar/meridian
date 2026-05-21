@@ -1085,6 +1085,215 @@
   line-height: 1;
 }
 
+/* ── Tabs ────────────────────────────────────────────── */
+
+.m-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 6px 32px 0;
+  border-bottom: 1px solid var(--m-line);
+  background: var(--m-canvas);
+  flex-shrink: 0;
+}
+
+.m-tab {
+  padding: 7px 14px;
+  font-size: 13.5px;
+  color: var(--m-text-3);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 400;
+  transition: color 0.12s;
+  white-space: nowrap;
+}
+.m-tab:hover { color: var(--m-text); }
+.m-tab[aria-selected="true"] {
+  color: var(--m-text);
+  font-weight: 500;
+  border-bottom-color: var(--m-accent);
+}
+
+/* ── Settings ────────────────────────────────────────── */
+
+/* key-value info row */
+.m-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--m-line-soft);
+  font-size: 13px;
+  gap: 12px;
+}
+.m-info-row:last-child { border-bottom: none; }
+.m-info-row__label { color: var(--m-text-3); flex-shrink: 0; }
+.m-info-row__value { color: var(--m-text); text-align: right; }
+
+/* large avatar on profile page */
+.m-settings-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--m-accent-bg);
+  color: var(--m-accent);
+  border: 1px solid var(--m-line);
+  display: grid;
+  place-items: center;
+  font-family: var(--m-font-serif);
+  font-size: 36px;
+  font-weight: 400;
+}
+
+/* theme picker — 3-col grid of clickable preview tiles */
+.m-theme-picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.m-theme-option {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--m-line);
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+  font-family: inherit;
+  transition: border-color 0.12s, background 0.12s;
+}
+.m-theme-option:hover { border-color: var(--m-line-strong); }
+.m-theme-option--active {
+  border-color: var(--m-accent);
+  background: var(--m-accent-bg);
+}
+.m-theme-option__preview {
+  height: 56px;
+  border-radius: 4px;
+  border: 1px solid var(--m-line);
+  overflow: hidden;
+  position: relative;
+}
+.m-theme-option__preview[data-mode="light"] { background: #f1ece1; }
+.m-theme-option__preview[data-mode="dark"]  { background: #15110e; }
+.m-theme-option__preview[data-mode="system"] { display: flex; }
+.m-theme-option__half {
+  flex: 1;
+  height: 100%;
+}
+.m-theme-option__half--light { background: #f1ece1; }
+.m-theme-option__half--dark  { background: #15110e; }
+.m-theme-option__footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--m-text-2);
+}
+
+/* density picker — 2-col grid */
+.m-density-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.m-density-option {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--m-line);
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+  font-family: inherit;
+  transition: border-color 0.12s, background 0.12s;
+}
+.m-density-option:hover { border-color: var(--m-line-strong); }
+.m-density-option--active {
+  border-color: var(--m-accent);
+  background: var(--m-accent-bg);
+}
+.m-density-option__bars {
+  display: flex;
+  flex-direction: column;
+}
+.m-density-option__bar {
+  height: 6px;
+  background: var(--m-line-soft);
+  border-radius: 2px;
+}
+.m-density-option__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--m-text-2);
+  text-transform: capitalize;
+}
+
+/* session item */
+.m-session-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--m-line);
+  border-radius: 7px;
+}
+.m-session-item__info { flex: 1; min-width: 0; }
+.m-session-item__device {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--m-text);
+}
+.m-session-item__meta {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  margin-top: 2px;
+}
+
+/* danger ghost variant */
+.m-btn--danger {
+  color: var(--m-danger) !important;
+}
+.m-btn--danger:hover {
+  background: var(--m-danger-bg) !important;
+}
+
+/* integration card */
+.m-integration-card {
+  padding: 18px;
+}
+.m-integration-card__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.m-integration-card__logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: var(--m-surface-2);
+  border: 1px solid var(--m-line);
+  display: grid;
+  place-items: center;
+  font-family: var(--m-font-serif);
+  font-size: 17px;
+  color: var(--m-text-2);
+  flex-shrink: 0;
+}
+.m-integration-card__foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* ── Users & Roles ───────────────────────────────────── */
 
 /* role summary card */
