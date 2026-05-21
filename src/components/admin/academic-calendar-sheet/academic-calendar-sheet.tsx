@@ -3,91 +3,22 @@
 import { useState } from "react";
 import { CalendarIcon, XIcon } from "lucide-react";
 import type { AdminSemesterCard } from "@/fake-db/dashboards";
+import { EVENTS_BY_CODE } from "./data/EVENTS_BY_CODE";
+import { KIND_COLOR } from "./data/KIND_COLOR";
+import { KIND_LABEL } from "./data/KIND_LABEL";
 
-// ─── Academic events per term ─────────────────────────────────────────────────
-
-type EventKind = "start" | "deadline" | "break" | "end" | "exam" | "milestone";
-
-interface AcademicEvent {
-  date: string;
-  label: string;
-  kind: EventKind;
-}
-
-const EVENTS_BY_CODE: Record<string, AcademicEvent[]> = {
-  SP25: [
-    { date: "Jan 13", label: "Spring 2025 begins",      kind: "start" },
-    { date: "Jan 24", label: "Last day to add/drop",    kind: "deadline" },
-    { date: "Mar 10", label: "Spring break",            kind: "break" },
-    { date: "Mar 31", label: "Withdrawal deadline",     kind: "deadline" },
-    { date: "Apr 28", label: "Reading week",            kind: "break" },
-    { date: "May 5",  label: "Final examinations",      kind: "exam" },
-    { date: "May 22", label: "Commencement",            kind: "end" },
-  ],
-  FA25: [
-    { date: "Aug 25", label: "Fall 2025 begins",        kind: "start" },
-    { date: "Sep 5",  label: "Last day to add/drop",    kind: "deadline" },
-    { date: "Oct 13", label: "Fall break",              kind: "break" },
-    { date: "Nov 3",  label: "Withdrawal deadline",     kind: "deadline" },
-    { date: "Nov 27", label: "Thanksgiving recess",     kind: "break" },
-    { date: "Dec 8",  label: "Final examinations",      kind: "exam" },
-    { date: "Dec 19", label: "Semester ends",           kind: "end" },
-  ],
-  SP26: [
-    { date: "Jan 12", label: "Spring 2026 begins",      kind: "start" },
-    { date: "Jan 23", label: "Last day to add/drop",    kind: "deadline" },
-    { date: "Mar 9",  label: "Spring break",            kind: "break" },
-    { date: "Mar 30", label: "Withdrawal deadline",     kind: "deadline" },
-    { date: "Apr 27", label: "Reading week",            kind: "break" },
-    { date: "May 4",  label: "Final examinations",      kind: "exam" },
-    { date: "May 22", label: "Commencement",            kind: "end" },
-  ],
-  FA26: [
-    { date: "Aug 24", label: "Fall 2026 begins",        kind: "start" },
-    { date: "Sep 4",  label: "Last day to add/drop",    kind: "deadline" },
-    { date: "Oct 12", label: "Fall break",              kind: "break" },
-    { date: "Nov 2",  label: "Withdrawal deadline",     kind: "deadline" },
-    { date: "Nov 26", label: "Thanksgiving recess",     kind: "break" },
-    { date: "Dec 7",  label: "Final examinations",      kind: "exam" },
-    { date: "Dec 18", label: "Semester ends",           kind: "end" },
-  ],
-  SP27: [
-    { date: "Jan 11", label: "Spring 2027 begins",      kind: "start" },
-    { date: "Jan 22", label: "Last day to add/drop",    kind: "deadline" },
-    { date: "Mar 15", label: "Spring break (tentative)", kind: "break" },
-    { date: "May 21", label: "Semester ends (tentative)", kind: "end" },
-  ],
+type AcademicCalendarSheetProps = {
+  semesters: AdminSemesterCard[];
 };
-
-const KIND_COLOR: Record<EventKind, string> = {
-  start:     "var(--m-success)",
-  end:       "var(--m-text-3)",
-  deadline:  "var(--m-danger)",
-  break:     "var(--m-info)",
-  exam:      "var(--m-warning)",
-  milestone: "var(--m-accent)",
-};
-
-const KIND_LABEL: Record<EventKind, string> = {
-  start:     "Start",
-  end:       "End",
-  deadline:  "Deadline",
-  break:     "Break",
-  exam:      "Exams",
-  milestone: "Milestone",
-};
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export function AcademicCalendarSheet({
   semesters,
-}: {
-  semesters: AdminSemesterCard[];
-}) {
+}: AcademicCalendarSheetProps) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string | null>(null);
 
-  const activeSem = semesters.find((s) => s.status === "active") ?? semesters[0];
+  const activeSem =
+    semesters.find((s) => s.status === "active") ?? semesters[0];
   const selectedCode = active ?? activeSem?.code ?? semesters[0]?.code;
   const events = EVENTS_BY_CODE[selectedCode] ?? [];
 
@@ -96,7 +27,6 @@ export function AcademicCalendarSheet({
       <button className="m-btn" onClick={() => setOpen(true)}>
         <CalendarIcon size={14} /> Academic calendar
       </button>
-
       {open && (
         <>
           <div className="m-sheet-overlay" onClick={() => setOpen(false)} />
@@ -115,7 +45,6 @@ export function AcademicCalendarSheet({
                 <XIcon size={15} />
               </button>
             </div>
-
             {/* Semester tabs */}
             <div className="m-cal-tabs">
               {semesters.map((sem) => (
@@ -129,7 +58,6 @@ export function AcademicCalendarSheet({
                 </button>
               ))}
             </div>
-
             <div className="m-sheet__body">
               {/* Date range header */}
               {semesters.find((s) => s.code === selectedCode) && (
@@ -146,7 +74,7 @@ export function AcademicCalendarSheet({
                       style={{
                         ["--m-bar" as string]: `${Math.round(
                           (semesters.find((s) => s.code === selectedCode)
-                            ?.progress ?? 0) * 100
+                            ?.progress ?? 0) * 100,
                         )}%`,
                       }}
                     />
@@ -157,13 +85,12 @@ export function AcademicCalendarSheet({
                   >
                     {Math.round(
                       (semesters.find((s) => s.code === selectedCode)
-                        ?.progress ?? 0) * 100
+                        ?.progress ?? 0) * 100,
                     )}
                     % complete
                   </span>
                 </div>
               )}
-
               {/* Events timeline */}
               {events.length > 0 ? (
                 <div className="m-cal-events">
@@ -199,9 +126,11 @@ export function AcademicCalendarSheet({
                 </p>
               )}
             </div>
-
             <div className="m-sheet__foot">
-              <button className="m-btn m-btn--ghost" onClick={() => setOpen(false)}>
+              <button
+                className="m-btn m-btn--ghost"
+                onClick={() => setOpen(false)}
+              >
                 Close
               </button>
             </div>

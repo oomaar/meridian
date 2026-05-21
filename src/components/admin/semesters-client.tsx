@@ -1,22 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import type { AdminSemesterCard, AdminSemestersData } from "@/fake-db/dashboards";
+import type {
+  AdminSemesterCard,
+  AdminSemestersData,
+} from "@/fake-db/dashboards";
 import type { SemesterStatus } from "@/fake-db/types";
 import { NewTermButton } from "./new-term-button";
-import { AcademicCalendarSheet } from "./academic-calendar-sheet";
+import { AcademicCalendarSheet } from "./academic-calendar-sheet/academic-calendar-sheet";
 
 // ─── Timeline bounds (must mirror server-side constants) ─────────────────────
 
 const TL_START_MS = new Date("2025-01-01").getTime();
-const TL_END_MS   = new Date("2027-07-01").getTime();
-const TL_SPAN_MS  = TL_END_MS - TL_START_MS;
+const TL_END_MS = new Date("2027-07-01").getTime();
+const TL_SPAN_MS = TL_END_MS - TL_START_MS;
 
 export function computeBar(startIso: string, endIso: string) {
-  const left  = ((new Date(startIso).getTime() - TL_START_MS) / TL_SPAN_MS) * 100;
-  const right = ((new Date(endIso).getTime()   - TL_START_MS) / TL_SPAN_MS) * 100;
+  const left =
+    ((new Date(startIso).getTime() - TL_START_MS) / TL_SPAN_MS) * 100;
+  const right = ((new Date(endIso).getTime() - TL_START_MS) / TL_SPAN_MS) * 100;
   return {
-    tlLeft:  Math.max(0, left),
+    tlLeft: Math.max(0, left),
     tlWidth: Math.max(0, Math.min(100, right) - Math.max(0, left)),
   };
 }
@@ -25,10 +29,10 @@ export function computeBar(startIso: string, endIso: string) {
 
 function SemStatusBadge({ status }: { status: SemesterStatus }) {
   const map: Record<SemesterStatus, { label: string; tone: string }> = {
-    active:   { label: "Active",   tone: "success" },
+    active: { label: "Active", tone: "success" },
     upcoming: { label: "Upcoming", tone: "info" },
     planning: { label: "Planning", tone: "" },
-    past:     { label: "Archived", tone: "" },
+    past: { label: "Archived", tone: "" },
   };
   const { label, tone } = map[status];
   return (
@@ -42,7 +46,7 @@ function SemStatusBadge({ status }: { status: SemesterStatus }) {
 // ─── Timeline ─────────────────────────────────────────────────────────────────
 
 function toneFor(status: SemesterStatus) {
-  if (status === "active")   return "accent";
+  if (status === "active") return "accent";
   if (status === "upcoming") return "info";
   if (status === "planning") return "planning";
   return "muted";
@@ -61,10 +65,18 @@ function Timeline({
     <div className="m-tl-wrap">
       <div className="m-tl-baseline" />
       {tlLabels.map((l) => (
-        <div key={l.label} className="m-tl-tick" style={{ left: `${l.pct}%` }} />
+        <div
+          key={l.label}
+          className="m-tl-tick"
+          style={{ left: `${l.pct}%` }}
+        />
       ))}
       {tlLabels.map((l) => (
-        <div key={l.label + "-lbl"} className="m-tl-label m-mono" style={{ left: `${l.pct}%` }}>
+        <div
+          key={l.label + "-lbl"}
+          className="m-tl-label m-mono"
+          style={{ left: `${l.pct}%` }}
+        >
           {l.label}
         </div>
       ))}
@@ -79,7 +91,7 @@ function Timeline({
             {sem.status === "active" && <span className="m-pulse-dot" />}
             <span className="m-tl-bar__label">{sem.name}</span>
           </div>
-        ) : null
+        ) : null,
       )}
       <div className="m-tl-today" style={{ left: `${todayPct}%` }}>
         <div className="m-tl-today__dot" />
@@ -96,10 +108,24 @@ function SemCard({ sem }: { sem: AdminSemesterCard }) {
     <div className="m-card">
       <div className="m-card__head">
         <div style={{ flex: 1 }}>
-          <div style={{ fontFamily: "var(--m-font-serif)", fontSize: 17, fontWeight: 500, lineHeight: 1.2 }}>
+          <div
+            style={{
+              fontFamily: "var(--m-font-serif)",
+              fontSize: 17,
+              fontWeight: 500,
+              lineHeight: 1.2,
+            }}
+          >
             {sem.name}
           </div>
-          <div style={{ fontSize: 12, color: "var(--m-text-3)", fontFamily: "var(--m-font-mono)", marginTop: 2 }}>
+          <div
+            style={{
+              fontSize: 12,
+              color: "var(--m-text-3)",
+              fontFamily: "var(--m-font-mono)",
+              marginTop: 2,
+            }}
+          >
             {sem.dateRange}
           </div>
         </div>
@@ -107,13 +133,22 @@ function SemCard({ sem }: { sem: AdminSemesterCard }) {
       </div>
 
       <div style={{ padding: "14px 18px" }}>
-        <div style={{ fontSize: 11, color: "var(--m-text-3)", marginBottom: 6, fontFamily: "var(--m-font-mono)" }}>
+        <div
+          style={{
+            fontSize: 11,
+            color: "var(--m-text-3)",
+            marginBottom: 6,
+            fontFamily: "var(--m-font-mono)",
+          }}
+        >
           {Math.round(sem.progress * 100)}% complete
         </div>
         <div className="m-progress m-progress--lg">
           <div
             className="m-progress__bar"
-            style={{ ["--m-bar" as string]: `${Math.round(sem.progress * 100)}%` }}
+            style={{
+              ["--m-bar" as string]: `${Math.round(sem.progress * 100)}%`,
+            }}
           />
         </div>
 
@@ -121,7 +156,9 @@ function SemCard({ sem }: { sem: AdminSemesterCard }) {
           {(["students", "courses", "instructors"] as const).map((k) => (
             <div key={k} className="m-sem-stat">
               <span className="m-sem-stat__label">{k.toUpperCase()}</span>
-              <span className="m-sem-stat__value">{sem.stats[k].toLocaleString()}</span>
+              <span className="m-sem-stat__value">
+                {sem.stats[k].toLocaleString()}
+              </span>
             </div>
           ))}
         </div>
@@ -132,7 +169,9 @@ function SemCard({ sem }: { sem: AdminSemesterCard }) {
           <button className="m-btn m-btn--sm">Overview</button>
           <button className="m-btn m-btn--sm m-btn--ghost">Catalog</button>
           {sem.status === "planning" && (
-            <button className="m-btn m-btn--sm m-btn--ghost">Roll forward course list</button>
+            <button className="m-btn m-btn--sm m-btn--ghost">
+              Roll forward course list
+            </button>
           )}
         </div>
       </div>
@@ -143,7 +182,9 @@ function SemCard({ sem }: { sem: AdminSemesterCard }) {
 // ─── Main client component ────────────────────────────────────────────────────
 
 export function SemestersClient({ data }: { data: AdminSemestersData }) {
-  const [semesters, setSemesters] = useState<AdminSemesterCard[]>(data.semesters);
+  const [semesters, setSemesters] = useState<AdminSemesterCard[]>(
+    data.semesters,
+  );
 
   function handleAdd(card: AdminSemesterCard) {
     setSemesters((prev) => {
