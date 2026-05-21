@@ -36,6 +36,7 @@ import type {
   SemesterStatus,
   Student,
   StudentStatus,
+  UserStatus,
 } from "../types";
 import { db } from "../universe";
 
@@ -456,4 +457,146 @@ export function getAdminSemestersPage(): AdminSemestersData {
     todayPct: Math.min(100, Math.max(0, tlPct(NOW))),
     tlLabels: TL_LABELS,
   };
+}
+
+// ─── Admin Users & Roles ──────────────────────────────────────────────────────
+
+function fmtRelative(iso: string | null): string {
+  if (!iso) return "Never";
+  const diffMs = NOW.getTime() - new Date(iso).getTime();
+  const mins = Math.floor(diffMs / 60_000);
+  if (mins < 1)  return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24)  return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7)  return `${days}d ago`;
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function hashLastLogin(id: string): string | null {
+  const h = strHash(id + "login");
+  if (h % 12 === 0) return null;
+  const minsAgo = h % (60 * 24 * 14); // up to 14 days ago
+  return new Date(NOW.getTime() - minsAgo * 60_000).toISOString();
+}
+
+const ROLE_META: Record<string, { label: string; color: string }> = {
+  admin:      { label: "Administrator", color: "var(--m-danger)"  },
+  registrar:  { label: "Registrar",     color: "var(--m-accent)"  },
+  admissions: { label: "Admissions",    color: "var(--m-warning)" },
+  it:         { label: "IT Staff",      color: "var(--m-info)"    },
+  dean:       { label: "Dean & Chair",  color: "var(--m-warning)" },
+};
+
+export type AdminUserRow = {
+  id: string;
+  fullName: string;
+  email: string;
+  roleId: string;
+  roleLabel: string;
+  roleColor: string;
+  mfa: boolean;
+  lastLogin: string;
+  status: UserStatus;
+};
+
+export type RoleSummaryCard = {
+  id: string;
+  name: string;
+  count: number;
+  scope: string;
+  color: string;
+};
+
+export type AdminUsersData = {
+  rows: AdminUserRow[];
+  total: number;
+  roleSummaries: RoleSummaryCard[];
+};
+
+export function getAdminUsersPage(): AdminUsersData {
+  // ── Staff accounts (admin, registrar, dean, etc.) ─────────────────────────
+  const staffRows: AdminUserRow[] = db.users.map((u) => {
+    const meta = ROLE_META[u.role] ?? { label: u.role, color: "var(--m-text-2)" };
+    return {
+      id:        u.id,
+      fullName:  u.fullName,
+      email:     u.email,
+      roleId:    u.role,
+      roleLabel: meta.label,
+      roleColor: meta.color,
+      mfa:       u.mfa,
+      lastLogin: fmtRelative(u.lastLogin),
+      status:    u.status,
+    };
+  });
+
+  // ── Faculty (instructors) ─────────────────────────────────────────────────
+  const facultyRows: AdminUserRow[] = db.instructors.map((inst) => ({
+    id:        inst.id,
+    fullName:  inst.fullName,
+    email:     inst.email,
+    roleId:    "faculty",
+    roleLabel: "Faculty",
+    roleColor: "var(--m-info)",
+    mfa:       strHash(inst.id + "mfa") % 3 !== 0,
+    lastLogin: fmtRelative(hashLastLogin(inst.id)),
+    status:    inst.status === "active" ? "active" : "suspended",
+  }));
+
+  // ── Teaching Assistants (deterministic subset of students) ────────────────
+  const TA_COUNT = 240;
+  const taIdSet = new Set<string>();
+  const taRows: AdminUserRow[] = [];
+  for (const s of db.students) {
+    if (taRows.length >= TA_COUNT) break;
+    if (strHash(s.id + "ta") % 62 === 0) {
+      taIdSet.add(s.id);
+      taRows.push({
+        id:        `ta-${s.id}`,
+        fullName:  s.fullName,
+        email:     s.email.replace("@student.", "@ta."),
+        roleId:    "ta",
+        roleLabel: "Teaching Asst.",
+        roleColor: "var(--m-success)",
+        mfa:       strHash(s.id + "tamfa") % 2 === 0,
+        lastLogin: fmtRelative(hashLastLogin(s.id + "ta")),
+        status:    "active",
+      });
+    }
+  }
+
+  // ── Students (all, excluding TAs) ─────────────────────────────────────────
+  const studentRows: AdminUserRow[] = db.students
+    .filter((s) => !taIdSet.has(s.id))
+    .map((s) => ({
+      id:        s.id,
+      fullName:  s.fullName,
+      email:     s.email,
+      roleId:    "student",
+      roleLabel: "Student",
+      roleColor: "var(--m-text-2)",
+      mfa:       strHash(s.id + "mfa") % 5 === 0,
+      lastLogin: fmtRelative(hashLastLogin(s.id)),
+      status:    (s.status === "active" || s.status === "probation" ? "active" : "suspended") as UserStatus,
+    }));
+
+  const rows = [...staffRows, ...facultyRows, ...taRows, ...studentRows];
+
+  // ── Role summary cards ────────────────────────────────────────────────────
+  const countByRole = new Map<string, number>();
+  for (const u of db.users) {
+    countByRole.set(u.role, (countByRole.get(u.role) ?? 0) + 1);
+  }
+  const roleSummaries: RoleSummaryCard[] = [
+    { id: "admin",     name: "Administrators",      count: countByRole.get("admin") ?? 0, scope: "Full system access",              color: "var(--m-danger)"  },
+    { id: "registrar", name: "Registrar staff",     count: countByRole.get("registrar") ?? 0, scope: "Roster, holds, transcripts",  color: "var(--m-accent)"  },
+    { id: "dean",      name: "Deans & Chairs",      count: countByRole.get("dean") ?? 0,  scope: "Department oversight",            color: "var(--m-warning)" },
+    { id: "faculty",   name: "Faculty",              count: facultyRows.length,            scope: "Course delivery, grading",        color: "var(--m-info)"    },
+    { id: "ta",        name: "Teaching Assistants", count: taRows.length,                 scope: "Assist on assigned sections",     color: "var(--m-success)" },
+    { id: "student",   name: "Students",             count: studentRows.length,            scope: "Personal data & enrolled courses",color: "var(--m-text-2)"  },
+  ];
+
+  return { rows, total: rows.length, roleSummaries };
 }

@@ -335,3 +335,104 @@
   padding: 6px;
   z-index: 300;
 }
+
+/* ── Permissions matrix sheet ───────────────────────────────────────────────*/
+
+.m-perm-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--m-line);
+  border-radius: 8px;
+}
+
+.m-perm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.m-perm-table__cat-head {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+  min-width: 160px;
+}
+
+.m-perm-table__role-head {
+  padding: 10px 12px;
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.m-perm-table__cat {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--m-text-2);
+  border-bottom: 1px solid var(--m-line-soft);
+  white-space: nowrap;
+}
+
+.m-perm-table__cell {
+  padding: 8px 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--m-line-soft);
+}
+
+.m-perm-table tr:last-child td {
+  border-bottom: none;
+}
+
+.m-perm-table tbody tr:hover td {
+  background: var(--m-surface-2);
+}
+
+.m-perm-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--role-color, var(--m-text-2));
+}
+.m-perm-role-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--role-color, var(--m-text-2));
+  flex-shrink: 0;
+}
+
+/* access level cells */
+.m-perm-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.m-perm-cell--full {
+  color: var(--m-success);
+}
+.m-perm-cell--read {
+  color: var(--m-text-3);
+}
+.m-perm-cell--none {
+  color: var(--m-text-4);
+}
+
+/* legend row at bottom of permissions sheet */
+.m-perm-legend {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 12px 0 4px;
+  font-size: 12px;
+  color: var(--m-text-3);
+}
