@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { CheckIcon, Loader2Icon, SendIcon, XIcon } from "lucide-react";
+import type { AdminInstructorRow } from "@/fake-db/dashboards";
+import type { InstructorTitle } from "@/fake-db/types";
 
 const DEPARTMENTS = [
   { code: "CS",   name: "Computer Science" },
@@ -29,6 +31,14 @@ const TITLES = [
   "Adjunct",
 ];
 
+const DEPT_COLORS: Record<string, string> = {
+  CS: "var(--m-info)", MATH: "#9a7fc4", PHYS: "var(--m-accent)",
+  BIO: "var(--m-success)", CHEM: "var(--m-success)", ENG: "var(--m-accent)",
+  LIT: "var(--m-accent)", HIST: "var(--m-warning)", PHIL: "var(--m-info)",
+  ECON: "var(--m-danger)", SOC: "var(--m-warning)", POLI: "var(--m-danger)",
+  ART: "var(--m-warning)", MUS: "#9a7fc4", LING: "var(--m-info)",
+};
+
 const BLANK = {
   firstName: "",
   lastName: "",
@@ -46,7 +56,7 @@ function deriveEmail(first: string, last: string): string {
   return `${[f, l].filter(Boolean).join(".")}@aldridge.edu`;
 }
 
-export function InviteInstructorButton() {
+export function InviteInstructorButton({ onAdd }: { onAdd?: (row: AdminInstructorRow) => void } = {}) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ ...BLANK });
   const [emailTouched, setEmailTouched] = useState(false);
@@ -71,6 +81,21 @@ export function InviteInstructorButton() {
     setSave("sending");
     setTimeout(() => {
       setSave("sent");
+      const dept = DEPARTMENTS.find((d) => d.code === form.dept);
+      onAdd?.({
+        id:               `new-${Date.now()}`,
+        fullName:         `${form.firstName.trim()} ${form.lastName.trim()}`,
+        email:            form.email.trim(),
+        title:            form.title as InstructorTitle,
+        deptCode:         form.dept,
+        deptName:         dept?.name ?? form.dept,
+        deptColor:        DEPT_COLORS[form.dept] ?? "var(--m-accent)",
+        status:           "active",
+        rating:           0,
+        courseCount:      0,
+        activeCourseCount: 0,
+        hireDate:         String(new Date().getFullYear()),
+      });
       setTimeout(() => {
         setSave("idle");
         setOpen(false);
