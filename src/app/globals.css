@@ -62,6 +62,23 @@
   --m-shadow-lg:
     0 24px 60px rgba(0, 0, 0, 0.55), 0 8px 16px rgba(0, 0, 0, 0.35);
   --m-ring: 0 0 0 3px rgba(193, 154, 107, 0.25);
+
+  /* ── ShadCN dark-mode bridge ── */
+  --background: var(--m-canvas);
+  --foreground: var(--m-text);
+  --popover: var(--m-surface);
+  --popover-foreground: var(--m-text);
+  --primary: var(--m-accent);
+  --primary-foreground: var(--m-on-accent);
+  --secondary: var(--m-surface-2);
+  --secondary-foreground: var(--m-text);
+  --muted: var(--m-surface-2);
+  --muted-foreground: var(--m-text-3);
+  --accent: var(--m-surface-2);
+  --accent-foreground: var(--m-text);
+  --border: var(--m-line);
+  --input: var(--m-line);
+  --ring: var(--m-accent-lo);
 }
 
 [data-theme="light"] {
