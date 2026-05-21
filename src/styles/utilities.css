@@ -25,3 +25,28 @@
 .theme-icon-moon { display: none; }
 [data-theme="light"] .theme-icon-sun { display: none; }
 [data-theme="light"] .theme-icon-moon { display: inline-flex; }
+
+/* flex helpers */
+.m-flex-1 { flex: 1; min-width: 0; }
+.m-shrink-0 { flex-shrink: 0; }
+.m-fw-500 { font-weight: 500; }
+.m-pos-rel { position: relative; }
+.m-flex-end { display: flex; justify-content: flex-end; }
+.m-grid--top { align-items: start; }
+
+/* colour helpers */
+.m-text-2      { color: var(--m-text-2); }
+.m-text-3      { color: var(--m-text-3); }
+.m-text-danger { color: var(--m-danger); }
+
+/* gap overrides (combineable with .m-stack / .m-row / .m-grid) */
+.m-gap-8  { gap: 8px; }
+.m-gap-10 { gap: 10px; }
+.m-gap-12 { gap: 12px; }
+.m-gap-14 { gap: 14px; }
+.m-gap-16 { gap: 16px; }
+.m-gap-28 { gap: 28px; }
+
+/* margin helpers */
+.m-mt-4  { margin-top: 4px; }
+.m-mt-6  { margin-top: 6px; }
