@@ -638,3 +638,304 @@ export function getAdminUsersPage(): AdminUsersData {
 
   return { rows, total: rows.length, roleSummaries };
 }
+
+// ─── Admin Course Detail ──────────────────────────────────────────────────────
+
+const MODULE_TITLES = [
+  "Introduction & Foundations",
+  "Core Concepts & Theory",
+  "Advanced Techniques",
+  "Implementation & Practice",
+  "Case Studies & Applications",
+  "Review & Assessment",
+];
+
+const LESSON_TITLES: Record<string, string[]> = {
+  video:      ["Lecture overview", "Concept walkthrough", "Demo session", "Recorded lecture"],
+  reading:    ["Course readings", "Supplemental materials", "Research paper", "Textbook chapter"],
+  quiz:       ["Module quiz", "Checkpoint quiz", "Self-assessment"],
+  assignment: ["Problem set", "Lab exercise", "Mini project", "Written response"],
+};
+
+const MODULE_LESSON_SHAPES = [
+  ["video", "reading", "video", "quiz"],
+  ["video", "reading", "video", "reading", "assignment", "quiz"],
+  ["video", "video", "reading", "assignment", "quiz"],
+  ["video", "reading", "assignment", "reading", "assignment"],
+  ["video", "video", "reading", "assignment", "quiz"],
+  ["video", "reading", "assignment", "quiz"],
+] as const;
+
+const RESOURCE_NAMES = [
+  "Course syllabus.pdf",
+  "Lecture slides — Module 1.pdf",
+  "Reading list.docx",
+  "Assignment rubric.pdf",
+  "Lab instructions.pdf",
+];
+
+const LAST_ACTIVE_DETAIL = [
+  "Just now", "5m ago", "1h ago", "2h ago", "4h ago",
+  "8h ago", "1d ago", "2d ago", "3d ago",
+];
+
+const STANDINGS = ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"];
+
+function minsAgoLabel(mins: number): string {
+  if (mins < 60) return `${mins}m ago`;
+  const h = Math.floor(mins / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
+export type AdminCourseModule = {
+  id: string;
+  title: string;
+  lessonCount: number;
+  totalMin: number;
+  released: number;
+  state: "complete" | "active" | "draft";
+};
+
+export type AdminCourseLesson = {
+  id: string;
+  title: string;
+  kind: "video" | "reading" | "quiz" | "assignment";
+  duration: string;
+  state: "released" | "drafting" | "upcoming" | "scheduled";
+};
+
+export type AdminCourseRosterRow = {
+  id: string;
+  studentNumber: string;
+  name: string;
+  standing: string;
+  grade: number | null;
+  attendance: number;
+  submitted: number;
+  totalAssignments: number;
+  lastActive: string;
+};
+
+export type AdminCourseSubmission = {
+  id: string;
+  studentName: string;
+  assignmentTitle: string;
+  submittedAt: string;
+  attempts: number;
+  status: "submitted" | "graded" | "late";
+};
+
+export type AdminCourseDetailData = {
+  course: {
+    id: string; code: string; title: string; description: string;
+    credits: number; level: number; modality: string;
+    deptCode: string; deptColor: string;
+    location: { building: string; room: string };
+    meetingLabel: string; status: CourseStatus;
+    enrolled: number; cap: number; avgGrade: number | null;
+    ungraded: number; taCount: number; weekCount: number;
+  };
+  instructor: { id: string; name: string; email: string };
+  teachingTeam: { id: string; name: string; role: string }[];
+  modules: AdminCourseModule[];
+  moduleLessons: Record<string, AdminCourseLesson[]>;
+  resources: { name: string; size: string; uploaded: string }[];
+  recentSubmissions: AdminCourseSubmission[];
+  roster: AdminCourseRosterRow[];
+  gradeDistribution: number[];
+  gradeSummary: { mean: number; median: number; stdev: number; failRate: number };
+  engagement: { l: string; v: number }[];
+  assignments: {
+    id: string; title: string; type: string; due: string;
+    status: string; submitted: number; total: number;
+  }[];
+} | null;
+
+export function getAdminCourseDetail(code: string): AdminCourseDetailData {
+  const course = db.courses.find((c) => c.code === code);
+  if (!course) return null;
+
+  const instructor = db.instructors.find((i) => i.id === course.instructorId);
+  const dept       = db.departments.find((d) => d.id === course.departmentId);
+  if (!instructor || !dept) return null;
+
+  const deptCode  = dept.code;
+  const deptColor = DEPT_COLORS_MAP[deptCode] ?? "var(--m-accent)";
+  const h         = strHash(course.id);
+
+  // assignments for this course
+  const assignments = db.assignments.filter((a) => a.courseId === course.id);
+  const ungraded    = assignments.filter((a) => a.status === "grading").length;
+  const avgGrade    = h % 8 === 0 ? null : 55 + (h % 4000) / 100;
+
+  // meeting label
+  const mt = course.meetingTimes;
+  const meetingLabel = mt.length > 0
+    ? `${mt.map((t) => t.day).join("/")} ${mt[0].start}–${mt[0].end}`
+    : "TBD";
+
+  const modality = MODALITIES[h % MODALITIES.length];
+  const level    = courseLevel(course.code);
+  const taCount  = (h % 3) + 1;
+
+  // teaching team
+  const possibleTAs = db.students
+    .filter((s) => strHash(s.id + "ta") % 62 === 0)
+    .slice(0, 12);
+  const teamTAs = possibleTAs
+    .slice(h % Math.max(1, possibleTAs.length - taCount), (h % Math.max(1, possibleTAs.length - taCount)) + taCount)
+    .slice(0, taCount);
+  const teachingTeam = [
+    { id: instructor.id, name: `Prof. ${instructor.firstName} ${instructor.lastName}`, role: "Instructor of Record" },
+    ...teamTAs.map((ta, i) => ({
+      id: `ta-${ta.id}`,
+      name: `${ta.firstName} ${ta.lastName}`,
+      role: i === 0 ? "Lead TA" : "Teaching Assistant",
+    })),
+  ];
+
+  // modules
+  const numModules = 4 + (h % 3);
+  const modules: AdminCourseModule[] = Array.from({ length: numModules }, (_, i) => {
+    const mh = strHash(course.id + `mod${i}`);
+    const lessonCount = 4 + (mh % 5);
+    const totalMin    = lessonCount * (20 + (mh % 30));
+    const state: "complete" | "active" | "draft" =
+      i === 0 ? "complete" : i === 1 ? "active" : mh % 3 === 0 ? "draft" : "draft";
+    const released = state === "complete" ? lessonCount : state === "active" ? Math.floor(lessonCount / 2) : 0;
+    return { id: `M-0${i + 1}`, title: MODULE_TITLES[i % MODULE_TITLES.length], lessonCount, totalMin, released, state };
+  });
+
+  // lessons per module
+  const moduleLessons: Record<string, AdminCourseLesson[]> = {};
+  for (const mod of modules) {
+    const mIdx = parseInt(mod.id.replace("M-0", "")) - 1;
+    const shape = MODULE_LESSON_SHAPES[mIdx % MODULE_LESSON_SHAPES.length];
+    moduleLessons[mod.id] = shape.map((kind, li) => {
+      const lh    = strHash(course.id + mod.id + String(li));
+      const opts  = LESSON_TITLES[kind];
+      const title = opts[lh % opts.length];
+      const dMin  = kind === "video" ? 15 + (lh % 30) : kind === "reading" ? 10 + (lh % 20) : 20 + (lh % 15);
+      const state: AdminCourseLesson["state"] =
+        mod.state === "complete"  ? "released"  :
+        mod.state === "draft"     ? "scheduled" :
+        li < mod.released         ? "released"  :
+        li === mod.released       ? "drafting"  :
+        li === mod.released + 1   ? "upcoming"  : "scheduled";
+      return {
+        id: `${mod.id}-L${String(li + 1).padStart(2, "0")}`,
+        title,
+        kind,
+        duration: kind === "reading" ? `${dMin} min read` : `${dMin} min`,
+        state,
+      };
+    });
+  }
+
+  // resources
+  const numRes   = 3 + (h % 3);
+  const resources = RESOURCE_NAMES.slice(0, numRes).map((name, i) => ({
+    name,
+    size: `${100 + (strHash(course.id + name) % 900)}KB`,
+    uploaded: `${3 + i} days ago`,
+  }));
+
+  // recent submissions
+  const subStatuses = ["submitted", "graded", "late"] as const;
+  const recentSubmissions: AdminCourseSubmission[] = [];
+  const courseStudents = db.students.filter((s) => course.studentIds.includes(s.id)).slice(0, 12);
+  const courseAssigns  = assignments.slice(0, 4);
+  outer: for (const s of courseStudents) {
+    for (const a of courseAssigns) {
+      if (recentSubmissions.length >= 8) break outer;
+      const sh = strHash(s.id + a.id);
+      if (sh % 4 === 0) continue;
+      recentSubmissions.push({
+        id: `${s.id}-${a.id}`,
+        studentName: s.fullName,
+        assignmentTitle: a.title,
+        submittedAt: minsAgoLabel(sh % (7 * 24 * 60)),
+        attempts: 1 + (sh % 3),
+        status: subStatuses[sh % subStatuses.length],
+      });
+    }
+  }
+
+  // roster (up to 30 enrolled students)
+  const rosterStudents = db.students.filter((s) => course.studentIds.includes(s.id)).slice(0, 30);
+  const roster: AdminCourseRosterRow[] = rosterStudents.map((s) => {
+    const sh = strHash(s.id + course.id);
+    return {
+      id: s.id,
+      studentNumber: `STU-${s.id.slice(-5).toUpperCase()}`,
+      name: s.fullName,
+      standing: STANDINGS[(s.year - 1) % STANDINGS.length],
+      grade: avgGrade ? Math.max(52, Math.min(100, Math.round(avgGrade + (sh % 22) - 10))) : null,
+      attendance: 60 + (sh % 41),
+      submitted: 4 + (sh % (Math.max(1, assignments.length))),
+      totalAssignments: assignments.length,
+      lastActive: LAST_ACTIVE_DETAIL[sh % LAST_ACTIVE_DETAIL.length],
+    };
+  });
+
+  // grade distribution (bars at 50,55,…,100)
+  const peak = 80 + (h % 10);
+  const gradeDistribution = Array.from({ length: 11 }, (_, i) => {
+    const g = 50 + i * 5;
+    return Math.max(0, Math.round(
+      rosterStudents.length * Math.exp(-0.5 * ((g - peak) / 12) ** 2) / (12 * Math.sqrt(2 * Math.PI)) * 5 +
+      (strHash(course.id + String(i)) % 3)
+    ));
+  });
+
+  // grade summary from roster
+  const grades = roster.map((r) => r.grade ?? 0).filter(Boolean);
+  const mean   = grades.length ? grades.reduce((a, b) => a + b, 0) / grades.length : 0;
+  const sorted = [...grades].sort((a, b) => a - b);
+  const median  = sorted[Math.floor(sorted.length / 2)] ?? 0;
+  const stdev   = grades.length
+    ? Math.sqrt(grades.reduce((a, g) => a + (g - mean) ** 2, 0) / grades.length)
+    : 0;
+  const failRate = grades.filter((g) => g < 60).length / (grades.length || 1) * 100;
+
+  // engagement (12-week trend)
+  const engagement = Array.from({ length: 12 }, (_, i) => ({
+    l: `W${i + 1}`,
+    v: 60 + (strHash(course.id + `eng${i}`) % 40),
+  }));
+
+  return {
+    course: {
+      id: course.id, code: course.code, title: course.title,
+      description: course.description, credits: course.credits,
+      level, modality, deptCode, deptColor,
+      location: course.location, meetingLabel, status: course.status,
+      enrolled: course.studentIds.length, cap: course.enrollmentCap,
+      avgGrade, ungraded, taCount, weekCount: 16,
+    },
+    instructor: {
+      id: instructor.id,
+      name: `Prof. ${instructor.firstName} ${instructor.lastName}`,
+      email: `${instructor.firstName.toLowerCase()}.${instructor.lastName.toLowerCase()}@aldridge.edu`,
+    },
+    teachingTeam,
+    modules,
+    moduleLessons,
+    resources,
+    recentSubmissions,
+    roster,
+    gradeDistribution,
+    gradeSummary: {
+      mean: Math.round(mean * 10) / 10,
+      median: Math.round(median * 10) / 10,
+      stdev: Math.round(stdev * 10) / 10,
+      failRate: Math.round(failRate * 10) / 10,
+    },
+    engagement,
+    assignments: assignments.slice(0, 8).map((a) => ({
+      id: a.id, title: a.title, type: a.type, due: a.dueDate,
+      status: a.status, submitted: a.submissionCount, total: a.enrolledCount,
+    })),
+  };
+}
