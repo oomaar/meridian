@@ -81,7 +81,7 @@ function FilterMenu<T extends string>({
   const selected = options.find((o) => o.value === value);
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
+    <div ref={ref} className="m-pos-rel">
       <button className="m-filter" onClick={() => setOpen((p) => !p)}>
         <FilterIcon size={12} /> {label}: <b>{selected?.label ?? value}</b>
       </button>
@@ -122,7 +122,7 @@ function RowMenu({ onDelete }: { onDelete: () => void }) {
   }, [open]);
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
+    <div ref={ref} className="m-pos-rel">
       <button
         className="m-btn m-btn--ghost m-btn--icon m-btn--sm"
         onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); setConfirming(false); }}
@@ -265,7 +265,7 @@ export function UsersClient({ data }: { data: AdminUsersData }) {
                 <div className="m-card__sub">system accounts · {data.total.toLocaleString()} total</div>
               </div>
               <div className="m-spacer" />
-              <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <div className="m-card-filters">
                 <input
                   className="m-field__input m-users-search"
                   placeholder="Search name or email…"
@@ -305,8 +305,8 @@ export function UsersClient({ data }: { data: AdminUsersData }) {
                   {visible_rows.map((u) => (
                     <tr key={u.id}>
                       <td><Avatar name={u.fullName} size="sm" /></td>
-                      <td style={{ fontWeight: 500 }}>{u.fullName}</td>
-                      <td className="m-mono" style={{ fontSize: 12, color: "var(--m-text-2)" }}>{u.email}</td>
+                      <td className="m-fw-500">{u.fullName}</td>
+                      <td className="m-mono m-td-dim">{u.email}</td>
                       <td>
                         <span className="m-role-pill" style={{ "--role-color": u.roleColor } as React.CSSProperties}>
                           <span className="m-role-pill__dot" />
@@ -314,7 +314,7 @@ export function UsersClient({ data }: { data: AdminUsersData }) {
                         </span>
                       </td>
                       <td><MfaBadge mfa={u.mfa} /></td>
-                      <td className="m-mono" style={{ color: "var(--m-text-3)", fontSize: 12 }}>{u.lastLogin}</td>
+                      <td className="m-mono m-text-3">{u.lastLogin}</td>
                       <td><UserStatusBadge status={u.status} /></td>
                       <td onClick={(e) => e.stopPropagation()}>
                         <RowMenu onDelete={() => setRows((prev) => prev.filter((r) => r.id !== u.id))} />
@@ -323,7 +323,7 @@ export function UsersClient({ data }: { data: AdminUsersData }) {
                   ))}
                   {visible_rows.length === 0 && (
                     <tr>
-                      <td colSpan={8} style={{ textAlign: "center", padding: "32px 0", color: "var(--m-text-3)", fontSize: 13 }}>
+                      <td colSpan={8} className="m-table-empty">
                         No users match the current filters.
                       </td>
                     </tr>
