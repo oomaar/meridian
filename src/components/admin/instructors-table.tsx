@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { EllipsisIcon, SearchIcon, StarIcon } from "lucide-react";
+import { EllipsisIcon, SearchIcon, StarIcon, Trash2Icon } from "lucide-react";
 import type { AdminInstructorRow } from "@/fake-db/dashboards";
 import type { InstructorStatus, InstructorTitle } from "@/fake-db/types";
 
@@ -140,6 +140,62 @@ function FilterMenu({
   );
 }
 
+// ─── row menu ────────────────────────────────────────────────────────────────
+
+function RowMenu({ onDelete }: { onDelete: () => void }) {
+  const [open, setOpen]           = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDown(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+        setConfirming(false);
+      }
+    }
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        className="m-btn m-btn--ghost m-btn--icon m-btn--sm"
+        onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); setConfirming(false); }}
+      >
+        <EllipsisIcon size={14} />
+      </button>
+
+      {open && (
+        <div className="m-card-menu" onMouseDown={(e) => e.stopPropagation()}>
+          {confirming ? (
+            <div className="m-card-menu__confirm">
+              <span className="m-card-menu__confirm-label">Remove this instructor?</span>
+              <div className="m-card-menu__confirm-actions">
+                <button className="m-btn m-btn--ghost m-btn--sm"
+                  onClick={(e) => { e.stopPropagation(); setConfirming(false); }}>
+                  Cancel
+                </button>
+                <button className="m-btn m-btn--ghost m-btn--sm m-btn--danger"
+                  onClick={(e) => { e.stopPropagation(); onDelete(); setOpen(false); setConfirming(false); }}>
+                  <Trash2Icon size={12} /> Delete
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button className="m-card-menu__item m-card-menu__item--danger"
+              onClick={(e) => { e.stopPropagation(); setConfirming(true); }}>
+              <Trash2Icon size={13} className="m-card-menu__icon" /> Delete instructor
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── main component ───────────────────────────────────────────────────────────
 
 type Props = { rows: AdminInstructorRow[]; total: number };
@@ -150,6 +206,7 @@ export function InstructorsTable({ rows, total }: Props) {
   const [titleFilter, setTitleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [visible, setVisible] = useState(PAGE_SIZE);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
   const deptOptions = Array.from(
     new Map(rows.map((r) => [r.deptCode, r.deptName]))
@@ -163,6 +220,7 @@ export function InstructorsTable({ rows, total }: Props) {
   };
 
   const filtered = rows.filter((r) => {
+    if (deletedIds.has(r.id)) return false;
     if (
       q &&
       !(r.fullName + " " + r.email + " " + r.deptCode)
@@ -178,8 +236,8 @@ export function InstructorsTable({ rows, total }: Props) {
 
   const displayed = filtered.slice(0, visible);
   const hasMore = visible < filtered.length;
-  const isFiltered = filtered.length < total;
-  const footerTotal = isFiltered ? filtered.length : total;
+  const isFiltered = filtered.length < (total - deletedIds.size);
+  const footerTotal = isFiltered ? filtered.length : (total - deletedIds.size);
 
   return (
     <div className="m-card">
@@ -266,10 +324,8 @@ export function InstructorsTable({ rows, total }: Props) {
               >
                 {inst.hireDate}
               </td>
-              <td>
-                <button className="m-btn m-btn--ghost m-btn--icon m-btn--sm">
-                  <EllipsisIcon size={14} />
-                </button>
+              <td onClick={(e) => e.stopPropagation()}>
+                <RowMenu onDelete={() => setDeletedIds((prev) => new Set([...prev, inst.id]))} />
               </td>
             </tr>
           ))}
