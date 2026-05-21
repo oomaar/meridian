@@ -1453,6 +1453,24 @@
   font-weight: 500;
 }
 
+/* feed body — fixed height, internal scroll */
+.m-card__body--feed {
+  height: 506px;
+  overflow-y: auto;
+}
+
+/* active type-row */
+.m-type-row--active {
+  background: var(--m-accent-bg);
+}
+.m-type-row--active .m-type-row__label {
+  color: var(--m-accent);
+  font-weight: 500;
+}
+.m-type-row--active .m-type-row__count {
+  color: var(--m-accent);
+}
+
 /* ── Card kebab menu ─────────────────────────────────────────────────────────
    Floating dropdown from the three-dots button in a card header. */
 .m-card-menu {
