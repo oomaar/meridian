@@ -741,6 +741,35 @@
   white-space: nowrap;
 }
 
+/* unread count inside the segment button on the notifications inbox */
+.m-notif-seg-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: var(--m-accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  margin-left: 5px;
+}
+
+/* empty state for unread filter */
+.m-notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--m-text-3);
+  font-size: 13px;
+  padding: 48px 20px;
+}
+
 /* delivery preference row — channel setting inside notification settings card */
 .m-pref-row {
   display: flex;

@@ -171,7 +171,7 @@ export type AdminNotificationsData = {
 };
 
 export function getAdminNotificationsPage(): AdminNotificationsData {
-  return { notifications: db.notifications.slice(0, 10) };
+  return { notifications: db.notifications };
 }
 
 const DEPT_COLORS_MAP: Record<string, string> = {
