@@ -443,6 +443,9 @@
 .m-table__row-link {
   cursor: pointer;
 }
+.m-table__row--selected td {
+  background: var(--m-accent-bg) !important;
+}
 
 /* filter chip */
 .m-filter {
@@ -1198,6 +1201,33 @@
   font-weight: 500;
   border-bottom-color: var(--m-accent);
 }
+.m-tab__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  padding: 0 4px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--m-surface-2);
+  color: var(--m-text-3);
+  font-size: 10.5px;
+  font-weight: 500;
+  margin-left: 5px;
+  font-family: var(--m-font-mono);
+}
+
+/* ── Placeholder ─────────────────────────────────────── */
+.m-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--m-text-3);
+  font-size: 13px;
+  border: 1px dashed var(--m-line);
+  border-radius: 8px;
+  min-height: 280px;
+}
 
 /* ── Settings ────────────────────────────────────────── */
 
@@ -1542,3 +1572,96 @@
 .m-card-menu__item:hover .m-card-menu__icon {
   color: var(--m-accent);
 }
+.m-card-menu__item--danger { color: var(--m-danger); }
+.m-card-menu__item--danger .m-card-menu__icon { color: var(--m-danger); }
+.m-card-menu__item--danger:hover { background: var(--m-danger-bg); color: var(--m-danger); }
+.m-card-menu__item--danger:hover .m-card-menu__icon { color: var(--m-danger); }
+.m-card-menu__sep {
+  height: 1px;
+  background: var(--m-line-soft);
+  margin: 3px 4px;
+}
+.m-card-menu__confirm {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.m-card-menu__confirm-label {
+  font-size: 12px;
+  color: var(--m-text-2);
+  padding: 0 2px;
+}
+.m-card-menu__confirm-actions {
+  display: flex;
+  gap: 5px;
+}
+
+/* ── Toggle switch ────────────────────────────────────── */
+.m-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--m-text-2);
+}
+.m-toggle__track {
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--m-surface-2);
+  border: 1px solid var(--m-line);
+  position: relative;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.m-toggle__thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--m-text-3);
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.15s, background 0.15s;
+}
+.m-toggle[aria-pressed="true"] .m-toggle__track {
+  background: var(--m-accent);
+  border-color: var(--m-accent);
+}
+.m-toggle[aria-pressed="true"] .m-toggle__thumb {
+  background: #fff;
+  transform: translateX(16px);
+}
+
+/* ── Settings section card ───────────────────────────── */
+.m-settings-section {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--m-line-soft);
+}
+.m-settings-section:last-child { border-bottom: none; }
+.m-settings-section__title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  margin: 0 0 14px;
+}
+.m-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--m-line-soft);
+  font-size: 13px;
+}
+.m-settings-row:last-child { border-bottom: none; }
+.m-settings-row__label { color: var(--m-text-3); flex-shrink: 0; }
+.m-settings-row__value { color: var(--m-text); }
