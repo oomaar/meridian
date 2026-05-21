@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { AdminStudentRow } from "@/fake-db/dashboards";
 import { StudentsTable } from "./students-table";
-import { AddStudentButton } from "./add-student-button";
+import { AddStudentButton } from "./add-student/add-student-button";
 import { ImportRosterButton } from "./import-roster-button";
 import { ExportStudentsButton } from "./export-students-button";
 
@@ -16,7 +16,7 @@ export function StudentsClient({
 }) {
   const [extra, setExtra] = useState<AdminStudentRow[]>([]);
 
-  const allRows  = [...extra, ...rows];
+  const allRows = [...extra, ...rows];
   const allTotal = total + extra.length;
 
   return (
@@ -32,7 +32,9 @@ export function StudentsClient({
         <div className="m-page__actions">
           <ImportRosterButton />
           <ExportStudentsButton />
-          <AddStudentButton onAdd={(row) => setExtra((prev) => [row, ...prev])} />
+          <AddStudentButton
+            onAdd={(row) => setExtra((prev) => [row, ...prev])}
+          />
         </div>
       </div>
       <div className="m-page__body">
