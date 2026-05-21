@@ -40,6 +40,37 @@ import type {
 } from "../types";
 import { db } from "../universe";
 
+const WEEK_MS = 7 * 86_400_000;
+const DAY_MS  = 86_400_000;
+const WEEKDAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+
+function generateDailyThroughput(): SubmissionThroughputPoint[] {
+  const buckets = new Array<number>(7).fill(0);
+  const periodStart = NOW.getTime() - 7 * DAY_MS;
+  for (const a of db.assignments) {
+    const dueMs = new Date(a.dueDate).getTime();
+    if (dueMs < periodStart || dueMs > NOW.getTime()) continue;
+    const d = Math.min(6, Math.floor((dueMs - periodStart) / DAY_MS));
+    buckets[d] += Math.round(a.submissionCount / 7);
+  }
+  return buckets.map((v, i) => ({
+    l: WEEKDAY[new Date(periodStart + (i + 0.5) * DAY_MS).getUTCDay()],
+    v,
+  }));
+}
+
+function generateTermThroughput(startDate: string): SubmissionThroughputPoint[] {
+  const elapsed = Math.max(WEEK_MS, NOW.getTime() - new Date(startDate).getTime());
+  const weeks   = Math.ceil(elapsed / WEEK_MS);
+  return generateSubmissionThroughput(weeks);
+}
+
+export type ThroughputByWindow = {
+  "7d":   SubmissionThroughputPoint[];
+  "12w":  SubmissionThroughputPoint[];
+  "term": SubmissionThroughputPoint[];
+};
+
 export type AdminOverviewData = {
   activeSemester: Semester | undefined;
   analytics: SemesterAnalytics | null;
@@ -47,6 +78,7 @@ export type AdminOverviewData = {
   departmentLoad: DepartmentLoad;
   recentActivity: Activity[];
   submissionThroughput: SubmissionThroughputPoint[];
+  throughputByWindow: ThroughputByWindow;
   submissionsLast7d: number;
   totals: {
     students: number;
@@ -57,19 +89,25 @@ export type AdminOverviewData = {
 };
 
 export function getAdminOverview(): AdminOverviewData {
-  const sem = getActiveSemester();
+  const sem  = getActiveSemester();
+  const tp12 = generateSubmissionThroughput(12);
   return {
     activeSemester: sem,
     analytics: sem ? generateSemesterAnalytics(sem.id) : null,
     enrollmentTrend: generateEnrollmentTrend(),
     departmentLoad: generateDepartmentLoad(),
     recentActivity: generateRecentActivity(12),
-    submissionThroughput: generateSubmissionThroughput(12),
+    submissionThroughput: tp12,
+    throughputByWindow: {
+      "7d":   generateDailyThroughput(),
+      "12w":  tp12,
+      "term": sem ? generateTermThroughput(sem.startDate) : tp12,
+    },
     submissionsLast7d: generateSubmissionsLast7d(),
     totals: {
-      students: db.students.length,
-      instructors: db.instructors.length,
-      courses: db.courses.length,
+      students:     db.students.length,
+      instructors:  db.instructors.length,
+      courses:      db.courses.length,
       activeCourses: db.courses.filter((c) => c.status === "active").length,
     },
   };
