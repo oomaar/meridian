@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { AdminInstructorRow } from "@/fake-db/dashboards";
 import { InstructorsTable } from "./instructors-table";
 import { InviteInstructorButton } from "./invite-instructor-button";
-import { ExportStudentsButton } from "./export-students-button";
+import { ExportStudentsButton } from "./students-client/components/export-students-button";
 
 export function InstructorsClient({
   rows,
@@ -15,7 +15,7 @@ export function InstructorsClient({
 }) {
   const [extra, setExtra] = useState<AdminInstructorRow[]>([]);
 
-  const allRows  = [...extra, ...rows];
+  const allRows = [...extra, ...rows];
   const allTotal = total + extra.length;
 
   return (
@@ -30,7 +30,9 @@ export function InstructorsClient({
         </div>
         <div className="m-page__actions">
           <ExportStudentsButton />
-          <InviteInstructorButton onAdd={(row) => setExtra((prev) => [row, ...prev])} />
+          <InviteInstructorButton
+            onAdd={(row) => setExtra((prev) => [row, ...prev])}
+          />
         </div>
       </div>
       <div className="m-page__body">
