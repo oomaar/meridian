@@ -2,18 +2,17 @@
 
 import { useState } from "react";
 import type { AdminStudentRow } from "@/fake-db/dashboards";
-import { StudentsTable } from "./students-table";
-import { AddStudentButton } from "./add-student/add-student-button";
-import { ImportRosterButton } from "./import-roster-button";
-import { ExportStudentsButton } from "./export-students-button";
+import { StudentsTable } from "./components/students-table/students-table";
+import { AddStudentButton } from "./components/add-student/add-student-button";
+import { ImportRosterButton } from "./components/import-roster/import-roster-button";
+import { ExportStudentsButton } from "./components/export-students-button";
 
-export function StudentsClient({
-  rows,
-  total,
-}: {
+type StudentsClientProps = {
   rows: AdminStudentRow[];
   total: number;
-}) {
+};
+
+export function StudentsClient({ rows, total }: StudentsClientProps) {
   const [extra, setExtra] = useState<AdminStudentRow[]>([]);
 
   const allRows = [...extra, ...rows];
