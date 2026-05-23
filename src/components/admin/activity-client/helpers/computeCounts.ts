@@ -1,4 +1,4 @@
-import { Activity } from "@/fake-db";
+import type { Activity } from "@/fake-db/types/activity";
 import { FilterId } from "../types/FilterId";
 import { TYPE_FILTERS } from "../data/TYPE_FILTERS";
 

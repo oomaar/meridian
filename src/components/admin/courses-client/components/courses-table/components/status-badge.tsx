@@ -1,4 +1,4 @@
-import { CourseStatus } from "@/fake-db";
+import type { CourseStatus } from "@/fake-db/types/courses";
 
 type StatusBadgeProps = { status: CourseStatus };
 

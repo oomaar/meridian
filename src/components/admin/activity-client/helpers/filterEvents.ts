@@ -1,4 +1,5 @@
-import { Activity, NOW } from "@/fake-db";
+import type { Activity } from "@/fake-db/types/activity";
+import { NOW } from "@/fake-db/seed";
 import { FilterId } from "../types/FilterId";
 import { TimeRangeId } from "../types/TimeRangeId";
 import { TYPE_FILTERS } from "../data/TYPE_FILTERS";

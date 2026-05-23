@@ -1,4 +1,4 @@
-import { NotificationKind } from "@/fake-db";
+import type { NotificationKind } from "@/fake-db/types/notifications";
 
 type KIND = Record<
   NotificationKind,

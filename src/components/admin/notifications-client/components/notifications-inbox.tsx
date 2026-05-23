@@ -1,4 +1,4 @@
-import { Notification } from "@/fake-db";
+import type { Notification } from "@/fake-db/types/notifications";
 import { FilterState } from "../notifications-client";
 import { BellIcon } from "lucide-react";
 import { KIND_META } from "../data/KIND_META";
