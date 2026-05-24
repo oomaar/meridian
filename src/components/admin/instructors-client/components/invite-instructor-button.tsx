@@ -4,11 +4,11 @@ import { useState } from "react";
 import { CheckIcon, Loader2Icon, SendIcon, XIcon } from "lucide-react";
 import type { AdminInstructorRow } from "@/fake-db/dashboards";
 import type { InstructorTitle } from "@/fake-db/types";
-import { TITLES } from "./data/TITLES";
 import { DEPARTMENTS } from "@/fake-db/lookups";
-import { BLANK } from "./data/BLANK";
-import { DEPT_COLORS } from "./data/DEPT_COLORS";
-import { deriveEmail } from "./helpers/deriveEmail";
+import { TITLES } from "../data/TITLES";
+import { BLANK } from "../data/BLANK";
+import { DEPT_COLORS } from "../data/DEPT_COLORS";
+import { deriveEmail } from "../helpers/deriveEmail";
 
 type SaveState = "idle" | "sending" | "sent";
 
