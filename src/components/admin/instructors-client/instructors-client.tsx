@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import type { AdminInstructorRow } from "@/fake-db/dashboards";
-import { InstructorsTable } from "./instructors-table";
-import { InviteInstructorButton } from "./invite-instructor-button";
-import { ExportStudentsButton } from "./students-client/components/export-students-button";
+import { InstructorsTable } from "./components/instructors-table";
+import { ExportStudentsButton } from "../students-client/components/export-students-button";
+import { InviteInstructorButton } from "./components/invite-instructor-button";
 
 export function InstructorsClient({
   rows,
