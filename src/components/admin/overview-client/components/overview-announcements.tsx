@@ -1,4 +1,4 @@
-import { PostAnnouncementButton } from "../../post-announcement-button";
+import { PostAnnouncementButton } from "./post-announcement-button";
 import { ANNOUNCEMENTS } from "../data/ANNOUNCEMENTS";
 
 export function OverviewAnnouncements() {

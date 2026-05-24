@@ -2,7 +2,7 @@ import type { Semester, SemesterAnalytics } from "@/fake-db";
 import type { Meta } from "../types/Meta";
 import { ExportButton } from "../../activity-client/ExportButton";
 import { NewCourseButton } from "../../courses-client/components/new-course-button";
-import { PostAnnouncementButton } from "../../post-announcement-button";
+import { PostAnnouncementButton } from "./post-announcement-button";
 import { greeting } from "../helpers/greeting";
 
 type OverviewHeaderProps = {
