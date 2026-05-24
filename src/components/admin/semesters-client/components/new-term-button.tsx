@@ -4,9 +4,9 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { CheckIcon, Loader2Icon, PlusIcon, XIcon } from "lucide-react";
 import { DatePicker } from "@/components/ui/date-picker";
-import { computeBar } from "./semesters-client";
 import type { AdminSemesterCard } from "@/fake-db/dashboards";
 import type { SemesterStatus } from "@/fake-db/types";
+import { computeBar } from "../computeBar";
 
 interface NewTermButtonProps {
   onAdd: (card: AdminSemesterCard) => void;
@@ -27,8 +27,10 @@ export function NewTermButton({ onAdd }: NewTermButtonProps) {
   const [save, setSave] = useState<SaveState>("idle");
 
   function reset() {
-    setName(""); setCode("");
-    setStartDate(undefined); setEndDate(undefined);
+    setName("");
+    setCode("");
+    setStartDate(undefined);
+    setEndDate(undefined);
     setSave("idle");
   }
 
@@ -47,17 +49,17 @@ export function NewTermButton({ onAdd }: NewTermButtonProps) {
       setSave("saved");
 
       const startIso = format(startDate, "yyyy-MM-dd");
-      const endIso   = format(endDate, "yyyy-MM-dd");
+      const endIso = format(endDate, "yyyy-MM-dd");
       const { tlLeft, tlWidth } = computeBar(startIso, endIso);
 
       const card: AdminSemesterCard = {
-        id:        `sem-${code.toLowerCase()}-new-${Date.now()}`,
+        id: `sem-${code.toLowerCase()}-new-${Date.now()}`,
         code,
         name,
         dateRange: fmtRange(startDate, endDate),
-        status:    "planning" as SemesterStatus,
-        progress:  0,
-        stats:     { students: 0, courses: 0, instructors: 0 },
+        status: "planning" as SemesterStatus,
+        progress: 0,
+        stats: { students: 0, courses: 0, instructors: 0 },
         tlLeft,
         tlWidth,
       };
@@ -82,7 +84,12 @@ export function NewTermButton({ onAdd }: NewTermButtonProps) {
       {open && (
         <>
           <div className="m-sheet-overlay" onClick={handleClose} />
-          <div className="m-sheet" role="dialog" aria-modal="true" aria-label="New term">
+          <div
+            className="m-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="New term"
+          >
             <div className="m-sheet__head">
               <span className="m-sheet__title">New term</span>
               <button
@@ -156,9 +163,21 @@ export function NewTermButton({ onAdd }: NewTermButtonProps) {
                 disabled={!canSubmit}
                 onClick={handleSubmit}
               >
-                {save === "idle"   && <><PlusIcon size={13} /> Create term</>}
-                {save === "saving" && <><Loader2Icon size={13} className="m-spin" /> Creating…</>}
-                {save === "saved"  && <><CheckIcon size={13} /> Created!</>}
+                {save === "idle" && (
+                  <>
+                    <PlusIcon size={13} /> Create term
+                  </>
+                )}
+                {save === "saving" && (
+                  <>
+                    <Loader2Icon size={13} className="m-spin" /> Creating…
+                  </>
+                )}
+                {save === "saved" && (
+                  <>
+                    <CheckIcon size={13} /> Created!
+                  </>
+                )}
               </button>
             </div>
           </div>
