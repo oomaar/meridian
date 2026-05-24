@@ -2,34 +2,21 @@
 
 import { useState } from "react";
 import { CheckIcon, Loader2Icon, MegaphoneIcon, XIcon } from "lucide-react";
-
-const CHANNELS = [
-  "All faculty",
-  "All students",
-  "All staff",
-  "CS · Faculty",
-  "CS · Students",
-  "MATH · Faculty",
-  "MATH · Students",
-  "BIO · Faculty",
-  "ECON · Students",
-  "Students · UG",
-  "Students · Grad",
-  "Dean's office",
-  "Office of the Registrar",
-];
-
-type SaveState = "idle" | "posting" | "posted";
+import type { SaveState } from "../types/SaveState";
+import { CHANNELS } from "../data/CHANNELS";
 
 export function PostAnnouncementButton() {
-  const [open,    setOpen]    = useState(false);
-  const [title,   setTitle]   = useState("");
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
   const [channel, setChannel] = useState("All faculty");
-  const [body,    setBody]    = useState("");
-  const [save,    setSave]    = useState<SaveState>("idle");
+  const [body, setBody] = useState("");
+  const [save, setSave] = useState<SaveState>("idle");
 
   function reset() {
-    setTitle(""); setChannel("All faculty"); setBody(""); setSave("idle");
+    setTitle("");
+    setChannel("All faculty");
+    setBody("");
+    setSave("idle");
   }
 
   function handleClose() {
@@ -44,7 +31,10 @@ export function PostAnnouncementButton() {
     setSave("posting");
     setTimeout(() => {
       setSave("posted");
-      setTimeout(() => { setOpen(false); reset(); }, 900);
+      setTimeout(() => {
+        setOpen(false);
+        reset();
+      }, 900);
     }, 1200);
   }
 
@@ -59,10 +49,18 @@ export function PostAnnouncementButton() {
       {open && (
         <>
           <div className="m-sheet-overlay" onClick={handleClose} />
-          <div className="m-sheet" role="dialog" aria-modal="true" aria-label="Post announcement">
+          <div
+            className="m-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Post announcement"
+          >
             <div className="m-sheet__head">
               <span className="m-sheet__title">Post announcement</span>
-              <button className="m-btn m-btn--ghost m-btn--icon m-btn--sm" onClick={handleClose}>
+              <button
+                className="m-btn m-btn--ghost m-btn--icon m-btn--sm"
+                onClick={handleClose}
+              >
                 <XIcon size={15} />
               </button>
             </div>
@@ -76,7 +74,9 @@ export function PostAnnouncementButton() {
                   onChange={(e) => setChannel(e.target.value)}
                 >
                   {CHANNELS.map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
                   ))}
                 </select>
               </label>
@@ -112,7 +112,11 @@ export function PostAnnouncementButton() {
             </form>
 
             <div className="m-sheet__foot">
-              <button className="m-btn m-btn--ghost" onClick={handleClose} disabled={save === "posting"}>
+              <button
+                className="m-btn m-btn--ghost"
+                onClick={handleClose}
+                disabled={save === "posting"}
+              >
                 Cancel
               </button>
               <button
@@ -120,9 +124,21 @@ export function PostAnnouncementButton() {
                 disabled={!canSubmit}
                 onClick={handleSubmit}
               >
-                {save === "idle"    && <><MegaphoneIcon size={13} /> Publish</>}
-                {save === "posting" && <><Loader2Icon size={13} className="m-spin" /> Publishing…</>}
-                {save === "posted"  && <><CheckIcon size={13} /> Published!</>}
+                {save === "idle" && (
+                  <>
+                    <MegaphoneIcon size={13} /> Publish
+                  </>
+                )}
+                {save === "posting" && (
+                  <>
+                    <Loader2Icon size={13} className="m-spin" /> Publishing…
+                  </>
+                )}
+                {save === "posted" && (
+                  <>
+                    <CheckIcon size={13} /> Published!
+                  </>
+                )}
               </button>
             </div>
           </div>
