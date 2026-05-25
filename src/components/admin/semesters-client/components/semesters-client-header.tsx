@@ -1,6 +1,6 @@
-import { NewTermButton } from "./new-term-button";
 import { AcademicCalendarSheet } from "../sheets/academic-calendar-sheet/academic-calendar-sheet";
 import type { AdminSemesterCard } from "@/fake-db/dashboards";
+import { NewTermSheet } from "../sheets/new-term-sheet/new-term-sheet";
 
 type SemestersClientHeaderProps = {
   handleAdd(card: AdminSemesterCard): void;
@@ -20,7 +20,7 @@ export default function SemestersClientHeader({
       </div>
       <div className="m-page__actions">
         <AcademicCalendarSheet semesters={semesters} />
-        <NewTermButton onAdd={handleAdd} />
+        <NewTermSheet onAdd={handleAdd} />
       </div>
     </div>
   );
