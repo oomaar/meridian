@@ -1,16 +1,13 @@
 import { Dispatch, SetStateAction } from "react";
-import { TABS } from "../tabs/data/TABS";
-import type { TabId } from "../tabs/types/TabId";
+import type { TabId } from "./types/TabId";
+import { TABS } from "./data/TABS";
 
 type SettingsClientTabsProps = {
   tab: TabId;
   setTab: Dispatch<SetStateAction<TabId>>;
 };
 
-export default function SettingsClientTabs({
-  tab,
-  setTab,
-}: SettingsClientTabsProps) {
+export function SettingsClientTabs({ tab, setTab }: SettingsClientTabsProps) {
   return (
     <div className="m-tabs">
       {TABS.map((t) => (

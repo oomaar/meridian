@@ -1,6 +1,6 @@
-import { TabId } from "../types/TabId";
+import type { Tab } from "../types/Tab";
 
-export const TABS: { id: TabId; label: string }[] = [
+export const TABS: Tab[] = [
   { id: "profile", label: "Profile" },
   { id: "appearance", label: "Appearance" },
   { id: "security", label: "Security" },
