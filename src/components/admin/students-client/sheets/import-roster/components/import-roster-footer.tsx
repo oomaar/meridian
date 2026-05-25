@@ -1,43 +1,20 @@
 import { Loader2Icon, UploadIcon } from "lucide-react";
-import { ImportState } from "../import-roster-button";
-import { Dispatch, SetStateAction } from "react";
+import type { ImportRosterForm } from "../types/ImportRosterForm";
 
 type ImportRosterFooterProps = {
   handleClose: () => void;
-  file: File | null;
-  state: ImportState;
-  setState: Dispatch<SetStateAction<ImportState>>;
-  setProgress: Dispatch<SetStateAction<number>>;
+  form: ImportRosterForm;
+  handleImport(): void;
 };
 
 export function ImportRosterFooter({
   handleClose,
-  file,
-  state,
-  setState,
-  setProgress,
+  form,
+  handleImport,
 }: ImportRosterFooterProps) {
-  function handleImport() {
-    if (!file || state !== "idle") return;
-    setState("uploading");
-    setProgress(0);
-
-    // simulate upload progress
-    const tick = setInterval(() => {
-      setProgress((p) => {
-        if (p >= 100) {
-          clearInterval(tick);
-          setState("done");
-          return 100;
-        }
-        return p + Math.random() * 18 + 4;
-      });
-    }, 120);
-  }
-
   return (
     <div className="m-sheet__foot">
-      {state === "done" ? (
+      {form.state === "done" ? (
         <button className="m-btn m-btn--primary" onClick={handleClose}>
           Done
         </button>
@@ -46,16 +23,16 @@ export function ImportRosterFooter({
           <button
             className="m-btn m-btn--ghost"
             onClick={handleClose}
-            disabled={state === "uploading"}
+            disabled={form.state === "uploading"}
           >
             Cancel
           </button>
           <button
             className="m-btn m-btn--primary"
-            disabled={!file || state !== "idle"}
+            disabled={!form.file || form.state !== "idle"}
             onClick={handleImport}
           >
-            {state === "uploading" ? (
+            {form.state === "uploading" ? (
               <>
                 <Loader2Icon size={13} className="m-spin" /> Importing…
               </>

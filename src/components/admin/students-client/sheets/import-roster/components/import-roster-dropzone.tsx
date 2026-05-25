@@ -1,20 +1,21 @@
 import { FileTextIcon, UploadIcon } from "lucide-react";
 import { Dispatch, SetStateAction, useRef } from "react";
+import { ImportRosterForm } from "../types/ImportRosterForm";
 
 type ImportRosterDropzoneProps = {
-  file: File | null;
-  setFile: Dispatch<SetStateAction<File | null>>;
+  form: ImportRosterForm;
+  setForm: Dispatch<SetStateAction<ImportRosterForm>>;
 };
 
 export function ImportRosterDropzone({
-  file,
-  setFile,
+  form,
+  setForm,
 }: ImportRosterDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function handleFile(f: File | null) {
-    if (!f) return;
-    setFile(f);
+  function handleFile(file: File | null) {
+    if (!file) return;
+    setForm({ ...form, file });
   }
 
   function handleDrop(e: React.DragEvent) {
@@ -25,7 +26,7 @@ export function ImportRosterDropzone({
 
   return (
     <div
-      className={`m-dropzone${file ? " m-dropzone--has-file" : ""}`}
+      className={`m-dropzone${form.file ? " m-dropzone--has-file" : ""}`}
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
       onClick={() => inputRef.current?.click()}
@@ -37,12 +38,12 @@ export function ImportRosterDropzone({
         style={{ display: "none" }}
         onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
       />
-      {file ? (
+      {form.file ? (
         <div className="m-dropzone__file">
           <FileTextIcon size={20} />
-          <span>{file.name}</span>
+          <span>{form.file.name}</span>
           <span className="m-dropzone__size">
-            {(file.size / 1024).toFixed(1)} KB
+            {(form.file.size / 1024).toFixed(1)} KB
           </span>
         </div>
       ) : (
