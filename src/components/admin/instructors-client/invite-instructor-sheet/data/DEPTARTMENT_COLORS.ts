@@ -1,4 +1,4 @@
-export const DEPT_COLORS: Record<string, string> = {
+export const DEPTARTMENT_COLORS: Record<string, string> = {
   CS: "var(--m-info)",
   MATH: "#9a7fc4",
   PHYS: "var(--m-accent)",
