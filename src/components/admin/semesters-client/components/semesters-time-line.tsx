@@ -1,13 +1,17 @@
 import type { AdminSemesterCard } from "@/fake-db/dashboards";
 import { toneFor } from "../helpers/toneFor";
 
-type TimelineProps = {
+type SemestersTimelineProps = {
   semesters: AdminSemesterCard[];
   todayPct: number;
   tlLabels: { label: string; pct: number }[];
 };
 
-export function Timeline({ semesters, todayPct, tlLabels }: TimelineProps) {
+export function SemestersTimeline({
+  semesters,
+  todayPct,
+  tlLabels,
+}: SemestersTimelineProps) {
   return (
     <div className="m-tl-wrap">
       <div className="m-tl-baseline" />
