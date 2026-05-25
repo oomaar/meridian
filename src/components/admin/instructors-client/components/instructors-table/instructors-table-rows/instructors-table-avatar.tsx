@@ -1,7 +1,7 @@
 import { AVATAR_COLORS } from "../data/AVATAR_COLORS";
 import { strHash } from "../helpers/strHash";
 
-export function Avatar({ name }: { name: string }) {
+export function InstructorsTableAvatar({ name }: { name: string }) {
   const initials = name
     .replace(/^(Prof\.|Dr\.|Mr\.) /, "")
     .split(" ")

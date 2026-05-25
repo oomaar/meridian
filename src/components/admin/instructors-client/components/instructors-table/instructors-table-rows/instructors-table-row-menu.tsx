@@ -1,9 +1,11 @@
 import { EllipsisIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-type RowMenuProps = { onDelete: () => void };
+type InstructorsTableRowMenuProps = { onDelete: () => void };
 
-export function RowMenu({ onDelete }: RowMenuProps) {
+export function InstructorsTableRowMenu({
+  onDelete,
+}: InstructorsTableRowMenuProps) {
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

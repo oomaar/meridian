@@ -1,8 +1,10 @@
 import { StarIcon } from "lucide-react";
 
-type RatingPipProps = { rating: number };
+type InstructorsTableRatingPipProps = { rating: number };
 
-export function RatingPip({ rating }: RatingPipProps) {
+export function InstructorsTableRatingPip({
+  rating,
+}: InstructorsTableRatingPipProps) {
   const color =
     rating >= 4.5
       ? "var(--m-success)"

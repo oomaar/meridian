@@ -1,18 +1,20 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 
-type FilterMenuProps = {
+type InstructorsTableFilterMenuProps = {
   label: string;
   value: string;
   options: { value: string; label: string }[];
   onChange: (v: string) => void;
 };
 
-export function FilterMenu({
+export function InstructorsTableFilterMenu({
   label,
   value,
   options,
   onChange,
-}: FilterMenuProps) {
+}: InstructorsTableFilterMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const isActive = value !== "all";

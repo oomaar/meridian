@@ -1,25 +1,23 @@
 import { Dispatch, SetStateAction } from "react";
-import { PAGE_SIZE } from "./instructors-table";
 import type { AdminInstructorRow } from "@/fake-db/dashboards";
+import { INSTRUCTORS_TABLE_PAGE_SIZE } from "./instructors-table";
 
 type InstructorsTableFooterProps = {
   footerTotal: number;
-  visible: number;
   setVisible: Dispatch<SetStateAction<number>>;
   hasMore: boolean;
   isFiltered: boolean;
   displayed: AdminInstructorRow[];
-  filtered: AdminInstructorRow[];
+  loadMoreCount: number;
 };
 
 export function InstructorsTableFooter({
   footerTotal,
-  visible,
   setVisible,
   hasMore,
   isFiltered,
   displayed,
-  filtered,
+  loadMoreCount,
 }: InstructorsTableFooterProps) {
   return (
     <div className="m-card__foot">
@@ -32,11 +30,9 @@ export function InstructorsTableFooter({
       <button
         className="m-btn m-btn--ghost m-btn--sm"
         disabled={!hasMore}
-        onClick={() => setVisible((v) => v + PAGE_SIZE)}
+        onClick={() => setVisible((v) => v + INSTRUCTORS_TABLE_PAGE_SIZE)}
       >
-        {hasMore
-          ? `Load ${Math.min(PAGE_SIZE, filtered.length - visible)} more`
-          : "All loaded"}
+        {hasMore ? `Load ${loadMoreCount} more` : "All loaded"}
       </button>
     </div>
   );
