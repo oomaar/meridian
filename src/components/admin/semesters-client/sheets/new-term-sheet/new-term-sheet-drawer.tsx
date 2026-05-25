@@ -4,7 +4,7 @@ import { useState, Dispatch, SetStateAction } from "react";
 import { format } from "date-fns";
 import { CheckIcon, Loader2Icon, PlusIcon, XIcon } from "lucide-react";
 import { DatePicker } from "@/components/ui/date-picker";
-import { computeBar } from "../../computeBar";
+import { computeBar } from "./helpers/computeBar";
 import { fmtRange } from "./helpers/fmtRange";
 import type { AdminSemesterCard } from "@/fake-db/dashboards";
 import type { SemesterStatus } from "@/fake-db/types";
