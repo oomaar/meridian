@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Channel } from "./types/Channel";
-import { NOTIF_EVENTS } from "./data/NOTIF_EVENTS";
+import { NOTIFICATIONS_EVENTS } from "./data/NOTIFICATIONS_EVENTS";
 import { CardSection } from "../components/card-section";
 import { CheckIcon, Loader2Icon } from "lucide-react";
 
@@ -8,7 +8,7 @@ export function SettingsNotificationsTab() {
   const [prefs, setPrefs] = useState<Record<string, Record<Channel, boolean>>>(
     () =>
       Object.fromEntries(
-        NOTIF_EVENTS.map((ev, i) => [
+        NOTIFICATIONS_EVENTS.map((ev, i) => [
           ev,
           { email: i % 2 === 0, inapp: true, push: i < 3 },
         ]),
@@ -67,7 +67,7 @@ export function SettingsNotificationsTab() {
           </tr>
         </thead>
         <tbody>
-          {NOTIF_EVENTS.map((ev) => (
+          {NOTIFICATIONS_EVENTS.map((ev) => (
             <tr key={ev}>
               <td className="text-[13px]">{ev}</td>
               {(["email", "inapp", "push"] as Channel[]).map((ch) => (

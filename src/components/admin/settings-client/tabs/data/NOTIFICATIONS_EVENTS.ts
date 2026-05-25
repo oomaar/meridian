@@ -1,4 +1,4 @@
-export const NOTIF_EVENTS = [
+export const NOTIFICATIONS_EVENTS = [
   "New petition routed to me",
   "Grading SLA breach in my courses",
   "Probation review trigger",
