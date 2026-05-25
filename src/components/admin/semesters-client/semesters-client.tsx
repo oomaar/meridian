@@ -7,7 +7,7 @@ import type {
 } from "@/fake-db/dashboards";
 import SemestersClientHeader from "./components/semesters-client-header";
 import { SemestersClientCard } from "./components/semesters-client-card";
-import { Timeline } from "./components/time-line";
+import { SemestersTimeline } from "./components/semesters-time-line";
 
 type SemestersClientProps = { data: AdminSemestersData };
 
@@ -35,8 +35,8 @@ export function SemestersClient({ data }: SemestersClientProps) {
                 <div className="m-card__sub">2025 – 2027 academic years</div>
               </div>
             </div>
-            <div style={{ padding: "24px 20px 20px" }}>
-              <Timeline
+            <div className="pt-6 px-5 pb-5">
+              <SemestersTimeline
                 semesters={semesters}
                 todayPct={data.todayPct}
                 tlLabels={data.tlLabels}
@@ -44,8 +44,8 @@ export function SemestersClient({ data }: SemestersClientProps) {
             </div>
           </div>
           <div className="m-grid m-grid-2">
-            {semesters.map((sem) => (
-              <SemestersClientCard key={sem.id} sem={sem} />
+            {semesters.map((semester) => (
+              <SemestersClientCard key={semester.id} semester={semester} />
             ))}
           </div>
         </div>
