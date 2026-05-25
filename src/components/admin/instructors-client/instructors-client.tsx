@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import type { AdminInstructorRow } from "@/fake-db/dashboards";
-import { InstructorsTable } from "./components/instructors-table";
-import { ExportStudentsButton } from "../students-client/components/export-students-button";
-import { InviteInstructorButton } from "./components/invite-instructor-button";
+import { InstructorsTable } from "./components/instructors-table/instructors-table";
+import { InstructorsClientHeader } from "./components/instructors-client-header";
 
 export function InstructorsClient({
   rows,
@@ -20,21 +19,7 @@ export function InstructorsClient({
 
   return (
     <>
-      <div className="m-page__header">
-        <div className="m-page__title">
-          <span className="m-page__eyebrow">Academics · Spring 2026</span>
-          <h1 className="m-page__h">Instructors</h1>
-          <p className="m-page__sub">
-            {allTotal.toLocaleString()} faculty across 15 departments.
-          </p>
-        </div>
-        <div className="m-page__actions">
-          <ExportStudentsButton />
-          <InviteInstructorButton
-            onAdd={(row) => setExtra((prev) => [row, ...prev])}
-          />
-        </div>
-      </div>
+      <InstructorsClientHeader total={allTotal} setExtra={setExtra} />
       <div className="m-page__body">
         <InstructorsTable rows={allRows} total={allTotal} />
       </div>
