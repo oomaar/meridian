@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type { Channel } from "./types/Channel";
+import type { Channel } from "../types/Channel";
 import { NOTIFICATIONS_EVENTS } from "./data/NOTIFICATIONS_EVENTS";
-import { CardSection } from "../components/card-section";
+import { CardSection } from "../../components/card-section";
 import { CheckIcon, Loader2Icon } from "lucide-react";
 
 export function SettingsNotificationsTab() {
