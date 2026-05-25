@@ -1,9 +1,9 @@
 import type { AdminSemesterCard } from "@/fake-db/dashboards";
 import { SemestersStatusBadge } from "./semesters-status-badge";
 
-type SemestersClientCardProps = { sem: AdminSemesterCard };
+type SemestersClientCardProps = { semester: AdminSemesterCard };
 
-export function SemestersClientCard({ sem }: SemestersClientCardProps) {
+export function SemestersClientCard({ semester }: SemestersClientCardProps) {
   return (
     <div className="m-card">
       <div className="m-card__head">
@@ -16,7 +16,7 @@ export function SemestersClientCard({ sem }: SemestersClientCardProps) {
               lineHeight: 1.2,
             }}
           >
-            {sem.name}
+            {semester.name}
           </div>
           <div
             style={{
@@ -26,10 +26,10 @@ export function SemestersClientCard({ sem }: SemestersClientCardProps) {
               marginTop: 2,
             }}
           >
-            {sem.dateRange}
+            {semester.dateRange}
           </div>
         </div>
-        <SemestersStatusBadge status={sem.status} />
+        <SemestersStatusBadge status={semester.status} />
       </div>
 
       <div className="px-3.5 py-4.5">
@@ -41,13 +41,13 @@ export function SemestersClientCard({ sem }: SemestersClientCardProps) {
             fontFamily: "var(--m-font-mono)",
           }}
         >
-          {Math.round(sem.progress * 100)}% complete
+          {Math.round(semester.progress * 100)}% complete
         </div>
         <div className="m-progress m-progress--lg">
           <div
             className="m-progress__bar"
             style={{
-              ["--m-bar" as string]: `${Math.round(sem.progress * 100)}%`,
+              ["--m-bar" as string]: `${Math.round(semester.progress * 100)}%`,
             }}
           />
         </div>
@@ -57,7 +57,7 @@ export function SemestersClientCard({ sem }: SemestersClientCardProps) {
             <div key={k} className="m-sem-stat">
               <span className="m-sem-stat__label">{k.toUpperCase()}</span>
               <span className="m-sem-stat__value">
-                {sem.stats[k].toLocaleString()}
+                {semester.stats[k].toLocaleString()}
               </span>
             </div>
           ))}
@@ -68,7 +68,7 @@ export function SemestersClientCard({ sem }: SemestersClientCardProps) {
         <div className="flex flex-wrap gap-2">
           <button className="m-btn m-btn--sm">Overview</button>
           <button className="m-btn m-btn--sm m-btn--ghost">Catalog</button>
-          {sem.status === "planning" && (
+          {semester.status === "planning" && (
             <button className="m-btn m-btn--sm m-btn--ghost">
               Roll forward course list
             </button>

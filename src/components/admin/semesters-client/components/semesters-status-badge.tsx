@@ -9,7 +9,9 @@ export function SemestersStatusBadge({ status }: SemestersStatusBadgeProps) {
     planning: { label: "Planning", tone: "" },
     past: { label: "Archived", tone: "" },
   };
+
   const { label, tone } = map[status];
+
   return (
     <span className={`m-badge${tone ? ` m-badge--${tone}` : ""}`}>
       {tone === "success" && <span className="m-badge__dot" />}
