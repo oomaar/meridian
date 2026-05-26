@@ -1,8 +1,22 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { XIcon, ZapIcon } from "lucide-react";
 import { TRIGGERS } from "./data/TRIGGERS";
 import { NOTIFY_TARGETS } from "./data/NOTIFY_TARGETS";
 import { CHANNELS } from "./data/CHANNELS";
-import { XIcon, ZapIcon } from "lucide-react";
+
+type Form = {
+  name: string;
+  trigger: string;
+  notify: string;
+  channel: string;
+};
+
+const initialForm: Form = {
+  name: "",
+  trigger: TRIGGERS[0],
+  notify: NOTIFY_TARGETS[0],
+  channel: CHANNELS[2],
+};
 
 type NewRuleDrawerProps = {
   onClose: () => void;
@@ -10,15 +24,12 @@ type NewRuleDrawerProps = {
 };
 
 export function NewRuleDrawer({ onClose, onSave }: NewRuleDrawerProps) {
-  const [name, setName] = useState("");
-  const [trigger, setTrigger] = useState(TRIGGERS[0]);
-  const [notify, setNotify] = useState(NOTIFY_TARGETS[0]);
-  const [channel, setChannel] = useState(CHANNELS[2]);
+  const [form, setForm] = useState<Form>(initialForm);
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!name.trim()) return;
-    onSave(`${name.trim()} — ${channel} · ${notify}`);
+    if (!form.name.trim()) return;
+    onSave(`${form.name.trim()} — ${form.channel} · ${form.notify}`);
     onClose();
   }
 
@@ -46,8 +57,8 @@ export function NewRuleDrawer({ onClose, onSave }: NewRuleDrawerProps) {
             <input
               className="m-field__input"
               placeholder="e.g. Alert Dean on SLA breach"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
             />
           </label>
@@ -55,8 +66,8 @@ export function NewRuleDrawer({ onClose, onSave }: NewRuleDrawerProps) {
             <span className="m-field__label">Trigger event</span>
             <select
               className="m-field__input m-field__select"
-              value={trigger}
-              onChange={(e) => setTrigger(e.target.value)}
+              value={form.trigger}
+              onChange={(e) => setForm({ ...form, trigger: e.target.value })}
             >
               {TRIGGERS.map((t) => (
                 <option key={t}>{t}</option>
@@ -67,8 +78,8 @@ export function NewRuleDrawer({ onClose, onSave }: NewRuleDrawerProps) {
             <span className="m-field__label">Notify</span>
             <select
               className="m-field__input m-field__select"
-              value={notify}
-              onChange={(e) => setNotify(e.target.value)}
+              value={form.notify}
+              onChange={(e) => setForm({ ...form, notify: e.target.value })}
             >
               {NOTIFY_TARGETS.map((t) => (
                 <option key={t}>{t}</option>
@@ -79,8 +90,8 @@ export function NewRuleDrawer({ onClose, onSave }: NewRuleDrawerProps) {
             <span className="m-field__label">Channel</span>
             <select
               className="m-field__input m-field__select"
-              value={channel}
-              onChange={(e) => setChannel(e.target.value)}
+              value={form.channel}
+              onChange={(e) => setForm({ ...form, channel: e.target.value })}
             >
               {CHANNELS.map((c) => (
                 <option key={c}>{c}</option>
@@ -88,10 +99,10 @@ export function NewRuleDrawer({ onClose, onSave }: NewRuleDrawerProps) {
             </select>
           </label>
           <p className="m-invite-note">
-            This rule will fire whenever <b>{trigger.toLowerCase()}</b> is
-            detected and will notify <b>{notify}</b> via{" "}
-            <b>{channel.toLowerCase()}</b>. Rules can be paused or deleted at
-            any time.
+            This rule will fire whenever <b>{form.trigger.toLowerCase()}</b> is
+            detected and will notify <b>{form.notify}</b> via{" "}
+            <b>{form.channel.toLowerCase()}</b>. Rules can be paused or deleted
+            at any time.
           </p>
         </form>
         <div className="m-sheet__foot">
@@ -100,7 +111,7 @@ export function NewRuleDrawer({ onClose, onSave }: NewRuleDrawerProps) {
           </button>
           <button
             className="m-btn m-btn--primary"
-            disabled={!name.trim()}
+            disabled={!form.name.trim()}
             onClick={handleSubmit}
           >
             <ZapIcon size={13} /> Save rule

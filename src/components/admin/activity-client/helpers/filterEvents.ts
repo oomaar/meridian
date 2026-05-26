@@ -2,8 +2,8 @@ import type { Activity } from "@/fake-db/types/activity";
 import { NOW } from "@/fake-db/seed";
 import { FilterId } from "../types/FilterId";
 import { TimeRangeId } from "../types/TimeRangeId";
-import { TYPE_FILTERS } from "../data/TYPE_FILTERS";
 import { TIME_RANGES } from "../data/TIME_RANGES";
+import { TYPE_FILTERS } from "../components/activity-client-by-type-section/data/TYPE_FILTERS";
 
 export function filterEvents(
   events: Activity[],

@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
-import { TIME_RANGES } from "./data/TIME_RANGES";
-import { TYPE_FILTERS } from "./data/TYPE_FILTERS";
-import { FilterId } from "./types/FilterId";
-import { TimeRangeId } from "./types/TimeRangeId";
+import { TIME_RANGES } from "../data/TIME_RANGES";
+import { FilterId } from "../types/FilterId";
+import { TimeRangeId } from "../types/TimeRangeId";
+import { TYPE_FILTERS } from "./activity-client-by-type-section/data/TYPE_FILTERS";
 
 type FiltersPanelProps = {
   typeFilter: FilterId;

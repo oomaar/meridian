@@ -1,5 +1,5 @@
 import type { ActivityType } from "@/fake-db/types/activity";
-import { FilterId } from "../types/FilterId";
+import type { FilterId } from "../../../types/FilterId";
 
 export const TYPE_FILTERS: {
   id: FilterId;

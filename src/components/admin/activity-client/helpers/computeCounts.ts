@@ -1,6 +1,6 @@
 import type { Activity } from "@/fake-db/types/activity";
 import { FilterId } from "../types/FilterId";
-import { TYPE_FILTERS } from "../data/TYPE_FILTERS";
+import { TYPE_FILTERS } from "../components/activity-client-by-type-section/data/TYPE_FILTERS";
 
 export function computeCounts(events: Activity[]): Record<FilterId, number> {
   const counts: Record<FilterId, number> = {
