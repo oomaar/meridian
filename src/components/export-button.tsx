@@ -1,7 +1,11 @@
-import { CheckIcon, DownloadIcon, Loader2Icon } from "lucide-react";
 import { useState } from "react";
+import { CheckIcon, DownloadIcon, Loader2Icon } from "lucide-react";
 
-export function ExportButton() {
+type ExportButtonProps = {
+  title?: string;
+};
+
+export function ExportButton({ title }: ExportButtonProps) {
   const [state, setState] = useState<"idle" | "prep" | "ready">("idle");
 
   function handleExport() {
@@ -11,7 +15,7 @@ export function ExportButton() {
       window.print();
       setState("ready");
       setTimeout(() => setState("idle"), 2000);
-    }, 700);
+    }, 800);
   }
 
   return (
@@ -22,7 +26,7 @@ export function ExportButton() {
     >
       {state === "idle" && (
         <>
-          <DownloadIcon size={14} /> Export
+          <DownloadIcon size={14} /> {title || "Export"}
         </>
       )}
       {state === "prep" && (

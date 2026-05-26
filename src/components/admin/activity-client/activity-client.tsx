@@ -8,11 +8,11 @@ import { NewRuleDrawer } from "./NewRuleDrawer";
 import { TYPE_FILTERS } from "./data/TYPE_FILTERS";
 import { relTime } from "./helpers/relTime";
 import { FiltersPanel } from "./FiltersPanel";
-import { ExportButton } from "./ExportButton";
 import { computeCounts } from "./helpers/computeCounts";
 import { filterEvents } from "./helpers/filterEvents";
 import { TimeRangeId } from "./types/TimeRangeId";
 import { INIT_RULES } from "./data/INIT_RULES";
+import { ExportButton } from "@/components/export-button";
 
 type ActivityClientProps = { events: Activity[] };
 
@@ -39,7 +39,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
           </p>
         </div>
         <div className="m-page__actions">
-          <ExportButton />
+          <ExportButton title="Export audit log" />
           <div style={{ position: "relative" }}>
             <button
               className={`m-btn${hasFilters ? " m-btn--primary" : ""}`}

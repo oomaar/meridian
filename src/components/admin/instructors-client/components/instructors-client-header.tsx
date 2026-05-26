@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
-import { ExportStudentsButton } from "../../students-client/components/export-students-button";
 import { InviteInstructorSheet } from "../invite-instructor-sheet/invite-instructor-sheet";
 import type { AdminInstructorRow } from "@/fake-db/dashboards";
+import { ExportButton } from "@/components/export-button";
 
 type InstructorsClientHeaderProps = {
   total: number;
@@ -22,7 +22,7 @@ export function InstructorsClientHeader({
         </p>
       </div>
       <div className="m-page__actions">
-        <ExportStudentsButton />
+        <ExportButton />
         <InviteInstructorSheet
           onAdd={(row) => setExtra((prev) => [row, ...prev])}
         />
