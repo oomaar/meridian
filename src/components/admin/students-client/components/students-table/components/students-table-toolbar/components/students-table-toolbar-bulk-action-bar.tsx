@@ -8,7 +8,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
-import { BulkMessageSheet } from "../../../sheets/bulk-message-sheet";
+import { BulkMessageSheet } from "../../../../../sheets/bulk-message-sheet/bulk-message-sheet";
 
 type StudentsTableToolbarBulkActionBarProps = {
   selected: Set<string>;
