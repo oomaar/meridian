@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { AdminStudentRow } from "@/fake-db/dashboards";
 import { StudentsTable } from "./components/students-table/students-table";
-import { StudentsClientHeader } from "./students-client-header";
+import { StudentsClientHeader } from "./components/students-client-header";
 
 type StudentsClientProps = {
   rows: AdminStudentRow[];

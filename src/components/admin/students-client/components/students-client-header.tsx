@@ -1,8 +1,8 @@
 import type { AdminStudentRow } from "@/fake-db/dashboards";
 import { Dispatch, SetStateAction } from "react";
-import { ImportRosterSheet } from "./sheets/import-roster/import-roster-sheet";
-import { AddStudentSheet } from "./sheets/add-student-sheet/add-student-sheet";
 import { ExportButton } from "@/components/export-button";
+import { ImportRosterSheet } from "../sheets/import-roster/import-roster-sheet";
+import { AddStudentSheet } from "../sheets/add-student-sheet/add-student-sheet";
 
 type StudentsClientHeaderProps = {
   total: number;
