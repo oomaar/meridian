@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 
-type FilterMenuProps = {
+type StudentsTableToolbarFilterMenuProps = {
   label: string;
   value: string;
   options: { value: string; label: string }[];
   onChange: (v: string) => void;
 };
 
-export function FilterMenu({
+export function StudentsTableToolbarFilterMenu({
   label,
   value,
   options,
   onChange,
-}: FilterMenuProps) {
+}: StudentsTableToolbarFilterMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
