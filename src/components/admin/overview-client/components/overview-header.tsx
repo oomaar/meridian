@@ -1,6 +1,6 @@
 import type { Semester, SemesterAnalytics } from "@/fake-db";
 import type { Meta } from "../types/Meta";
-import { NewCourseButton } from "../../courses-client/components/new-course-button";
+import { NewCourseSheet } from "../../courses-client/sheets/new-course-sheet/new-course-sheet";
 import { PostAnnouncementButton } from "./post-announcement-button";
 import { greeting } from "../helpers/greeting";
 import { ExportButton } from "@/components/export-button";
@@ -38,7 +38,7 @@ export function OverviewHeader({ analytics, sem, meta }: OverviewHeaderProps) {
       <div className="m-page__actions">
         <ExportButton />
         <PostAnnouncementButton />
-        <NewCourseButton />
+        <NewCourseSheet />
       </div>
     </div>
   );

@@ -50,7 +50,7 @@ const BLANK = {
   status: "active",
 };
 
-export function NewCourseButton({
+export function NewCourseSheet({
   onAdd,
 }: { onAdd?: (row: AdminCourseRow) => void } = {}) {
   const [open, setOpen] = useState(false);

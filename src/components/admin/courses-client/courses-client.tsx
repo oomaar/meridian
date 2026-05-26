@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { CoursesViews } from "./components/courses-views";
-import { NewCourseButton } from "./components/new-course-button";
+import { NewCourseSheet } from "./sheets/new-course-sheet/new-course-sheet";
 import { SyncSISButton } from "./sheets/sync-sis-button";
 import type { AdminCourseRow } from "@/fake-db/dashboards";
 
@@ -30,9 +30,7 @@ export function CoursesClient({ rows, total }: CoursesClientProps) {
         </div>
         <div className="m-page__actions">
           <SyncSISButton />
-          <NewCourseButton
-            onAdd={(row) => setExtra((prev) => [row, ...prev])}
-          />
+          <NewCourseSheet onAdd={(row) => setExtra((prev) => [row, ...prev])} />
         </div>
       </div>
       <div className="m-page__body">
