@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { AdminCourseRow } from "@/fake-db/dashboards";
-import { CoursesTable } from "./components/courses-table/courses-table";
+import { CoursesViews } from "./components/courses-views";
 import { NewCourseButton } from "./components/new-course-button";
-import { SyncSISButton } from "./components/sync-sis-button";
+import { SyncSISButton } from "./sheets/sync-sis-button";
+import type { AdminCourseRow } from "@/fake-db/dashboards";
 
 type CoursesClientProps = {
   rows: AdminCourseRow[];
@@ -36,7 +36,7 @@ export function CoursesClient({ rows, total }: CoursesClientProps) {
         </div>
       </div>
       <div className="m-page__body">
-        <CoursesTable rows={allRows} total={allTotal} />
+        <CoursesViews rows={allRows} total={allTotal} />
       </div>
     </>
   );
