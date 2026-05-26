@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 
-type FilterMenuProps = {
+type CoursesViewsFilterMenuProps = {
   label: string;
   value: string;
   options: { value: string; label: string }[];
   onChange: (v: string) => void;
 };
 
-export function FilterMenu({
+export function CoursesViewsFilterMenu({
   label,
   value,
   options,
   onChange,
-}: FilterMenuProps) {
+}: CoursesViewsFilterMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const isActive = value !== "all";

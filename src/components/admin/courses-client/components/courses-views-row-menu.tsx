@@ -4,12 +4,15 @@ import { EllipsisIcon, EyeIcon, Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-type RowMenuProps = {
+type CoursesViewsRowMenuProps = {
   courseCode: string;
   onDelete: () => void;
 };
 
-export function RowMenu({ courseCode, onDelete }: RowMenuProps) {
+export function CoursesViewsRowMenu({
+  courseCode,
+  onDelete,
+}: CoursesViewsRowMenuProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);

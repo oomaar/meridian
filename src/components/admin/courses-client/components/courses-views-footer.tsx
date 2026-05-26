@@ -1,27 +1,24 @@
 import { AdminCourseRow } from "@/fake-db/dashboards";
 import { Dispatch, SetStateAction } from "react";
+import { COURSES_PAGE_SIZE } from "./courses-views";
 
-type CoursesTableFooterProps = {
+type CoursesViewsFooterProps = {
   hasMore: boolean;
   displayed: AdminCourseRow[];
   footerTotal: number;
   footerSuffix: "" | " matching";
-  PAGE_SIZE: number;
-  visible: number;
   setVisible: Dispatch<SetStateAction<number>>;
-  total: number;
+  loadMoreCount: number;
 };
 
-export function CoursesTableFooter({
+export function CoursesViewsFooter({
   hasMore,
   displayed,
   footerTotal,
   footerSuffix,
-  PAGE_SIZE,
-  visible,
   setVisible,
-  total,
-}: CoursesTableFooterProps) {
+  loadMoreCount,
+}: CoursesViewsFooterProps) {
   return (
     <div className="m-card__foot">
       <span>
@@ -33,11 +30,9 @@ export function CoursesTableFooter({
       <button
         className="m-btn m-btn--ghost m-btn--sm"
         disabled={!hasMore}
-        onClick={() => setVisible((v) => v + PAGE_SIZE)}
+        onClick={() => setVisible((v) => v + COURSES_PAGE_SIZE)}
       >
-        {hasMore
-          ? `Load ${Math.min(PAGE_SIZE, total - visible)} more`
-          : "All loaded"}
+        {hasMore ? `Load ${loadMoreCount} more` : "All loaded"}
       </button>
     </div>
   );

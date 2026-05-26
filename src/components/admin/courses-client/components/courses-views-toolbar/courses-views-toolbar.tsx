@@ -1,43 +1,31 @@
 "use client";
 
 import { GridIcon, ListIcon, SearchIcon } from "lucide-react";
-import { FilterMenu } from "./filter-menu";
-import { LEVEL_OPTIONS } from "../data/LEVEL_OPTIONS";
-import { MODALITY_OPTIONS } from "../data/MODALITY_OPTIONS";
+import { CoursesViewsFilterMenu } from "./courses-views-filter-menu";
+import { LEVEL_OPTIONS } from "./data/LEVEL_OPTIONS";
+import { MODALITY_OPTIONS } from "./data/MODALITY_OPTIONS";
 import { AdminCourseRow } from "@/fake-db/dashboards";
 import { Dispatch, SetStateAction } from "react";
+import type { CoursesViewsFilters } from "../../types/CoursesViewsFilters";
+import { COURSES_PAGE_SIZE } from "../courses-views";
 
-type CoursesTableToolbarProps = {
-  PAGE_SIZE: number;
+type CoursesViewsToolbarProps = {
+  filters: CoursesViewsFilters;
+  setFilters: Dispatch<SetStateAction<CoursesViewsFilters>>;
   rows: AdminCourseRow[];
   setVisible: Dispatch<SetStateAction<number>>;
-  searchQuery: string;
-  setSearchQuery: Dispatch<SetStateAction<string>>;
-  department: string;
-  setDepartment: Dispatch<SetStateAction<string>>;
-  level: string;
-  setLevel: Dispatch<SetStateAction<string>>;
-  modality: string;
-  setModality: Dispatch<SetStateAction<string>>;
   view: "table" | "grid";
   setView: Dispatch<SetStateAction<"table" | "grid">>;
 };
 
-export function CoursesTableToolbar({
-  PAGE_SIZE,
+export function CoursesViewsToolbar({
+  filters,
+  setFilters,
   rows,
   setVisible,
-  searchQuery,
-  setSearchQuery,
-  department,
-  setDepartment,
-  level,
-  setLevel,
-  modality,
-  setModality,
   view,
   setView,
-}: CoursesTableToolbarProps) {
+}: CoursesViewsToolbarProps) {
   // derive unique dept options from the data
   const deptOptions = Array.from(new Set(rows.map((r) => r.deptCode)))
     .sort()
@@ -46,7 +34,7 @@ export function CoursesTableToolbar({
   // wrap each filter setter so changing any filter resets pagination
   const reset = (setter: (v: string) => void) => (v: string) => {
     setter(v);
-    setVisible(PAGE_SIZE);
+    setVisible(COURSES_PAGE_SIZE);
   };
 
   return (
@@ -54,28 +42,36 @@ export function CoursesTableToolbar({
       <div className="m-search" style={{ maxWidth: 320 }}>
         <SearchIcon className="m-search__icon" size={14} />
         <input
-          value={searchQuery}
-          onChange={(e) => reset(setSearchQuery)(e.target.value)}
+          value={filters.search}
+          onChange={(e) =>
+            reset((v) => setFilters((prev) => ({ ...prev, search: v })))(
+              e.target.value,
+            )
+          }
           placeholder="Search code, title, instructor…"
         />
       </div>
-      <FilterMenu
+      <CoursesViewsFilterMenu
         label="Department"
-        value={department}
+        value={filters.department}
         options={deptOptions}
-        onChange={reset(setDepartment)}
+        onChange={reset((v) =>
+          setFilters((prev) => ({ ...prev, department: v })),
+        )}
       />
-      <FilterMenu
+      <CoursesViewsFilterMenu
         label="Level"
-        value={level}
+        value={filters.level}
         options={LEVEL_OPTIONS}
-        onChange={reset(setLevel)}
+        onChange={reset((v) => setFilters((prev) => ({ ...prev, level: v })))}
       />
-      <FilterMenu
+      <CoursesViewsFilterMenu
         label="Modality"
-        value={modality}
+        value={filters.modality}
         options={MODALITY_OPTIONS}
-        onChange={reset(setModality)}
+        onChange={reset((v) =>
+          setFilters((prev) => ({ ...prev, modality: v })),
+        )}
       />
       <div className="m-spacer" />
       <div className="m-seg">
