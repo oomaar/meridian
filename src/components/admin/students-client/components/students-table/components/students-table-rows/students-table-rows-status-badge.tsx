@@ -1,8 +1,10 @@
 import type { StudentStatus } from "@/fake-db/types/students";
 
-type StatusBadgeProps = { status: StudentStatus };
+type StudentsTableRowsStatusBadgeStatusBadgeProps = { status: StudentStatus };
 
-export function StatusBadge({ status }: StatusBadgeProps) {
+export function StudentsTableRowsStatusBadge({
+  status,
+}: StudentsTableRowsStatusBadgeStatusBadgeProps) {
   const map: Record<StudentStatus, { label: string; tone: string }> = {
     active: { label: "Active", tone: "success" },
     leave: { label: "On leave", tone: "warning" },

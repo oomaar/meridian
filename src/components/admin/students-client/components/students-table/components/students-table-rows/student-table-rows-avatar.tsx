@@ -1,9 +1,9 @@
-import { AVATAR_COLORS } from "../data/AVATAR_COLORS";
-import { strHash } from "../helpers/strHash";
+import { AVATAR_COLORS } from "./data/AVATAR_COLORS";
+import { strHash } from "../../helpers/strHash";
 
 type AvatarProps = { name: string };
 
-export function Avatar({ name }: AvatarProps) {
+export function StudentTableRowsAvatar({ name }: AvatarProps) {
   const ini = name
     .split(" ")
     .map((w) => w[0])
