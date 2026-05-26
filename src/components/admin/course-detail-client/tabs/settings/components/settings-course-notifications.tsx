@@ -1,4 +1,4 @@
-import { SettingsFormState } from "../settings";
+import type { SettingsFormState } from "../settings";
 
 type SettingsCourseNotificationsProps = {
   settingsForm: SettingsFormState;

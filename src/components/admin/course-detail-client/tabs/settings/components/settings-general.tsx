@@ -1,4 +1,4 @@
-import { AdminCourseDTO } from "@/fake-db/dashboards";
+import type { AdminCourseDTO } from "@/fake-db/dashboards";
 import { SettingsFormState } from "../settings";
 
 type SettingsGeneralProps = {

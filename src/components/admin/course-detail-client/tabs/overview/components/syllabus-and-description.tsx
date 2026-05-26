@@ -1,4 +1,4 @@
-import { AdminCourseDTO } from "@/fake-db/dashboards";
+import type { AdminCourseDTO } from "@/fake-db/dashboards";
 
 type SyllabusAndDescriptionProps = {
   course: AdminCourseDTO;

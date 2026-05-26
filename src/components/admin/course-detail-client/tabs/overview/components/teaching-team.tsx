@@ -1,8 +1,8 @@
 import { InboxIcon } from "lucide-react";
-import { AdminTeachingTeamDTO } from "@/fake-db/dashboards";
 import { Avatar } from "../../../components/avatar";
 import { useState } from "react";
 import { ComposeSheet } from "../../../sheets/compose-sheet";
+import type { AdminTeachingTeamDTO } from "@/fake-db/dashboards";
 
 type TeachingTeamProps = {
   teachingTeam: AdminTeachingTeamDTO[];

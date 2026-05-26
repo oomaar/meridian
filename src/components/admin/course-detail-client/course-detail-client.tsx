@@ -6,7 +6,7 @@ import { Tab } from "./types/Tab";
 import { CourseDetailClientHeader } from "./course-detail-client-header";
 import { CourseDetailClientTabs } from "./course-detail-client-tabs";
 import { Overview } from "./tabs/overview/overview";
-import Modules from "./tabs/modules/modules";
+import { Modules } from "./tabs/modules/modules";
 import { Roster } from "./tabs/roster/roster";
 import { Grades } from "./tabs/grades/grades";
 import { generateGradesValues } from "./helpers/generateGradesValues";

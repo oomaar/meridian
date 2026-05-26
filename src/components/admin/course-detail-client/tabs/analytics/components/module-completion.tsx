@@ -1,5 +1,5 @@
 import { ProgressBar } from "@/components/progress-bar";
-import { AdminCourseModule } from "@/fake-db/dashboards";
+import type { AdminCourseModule } from "@/fake-db/dashboards";
 
 type ModuleCompletionProps = { modules: AdminCourseModule[] };
 

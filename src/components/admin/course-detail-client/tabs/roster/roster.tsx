@@ -1,4 +1,7 @@
-import { AdminCourseDTO, AdminCourseRosterRow } from "@/fake-db/dashboards";
+import type {
+  AdminCourseDTO,
+  AdminCourseRosterRow,
+} from "@/fake-db/dashboards";
 import { RosterHeader } from "./components/roster-header";
 import { RosterTable } from "./components/roster-table";
 

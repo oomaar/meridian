@@ -1,6 +1,6 @@
 import { ProgressBar } from "@/components/progress-bar";
 import { Avatar } from "../../../components/avatar";
-import { AdminCourseRosterRow } from "@/fake-db/dashboards";
+import type { AdminCourseRosterRow } from "@/fake-db/dashboards";
 
 type RosterTableProps = {
   roster: AdminCourseRosterRow[];

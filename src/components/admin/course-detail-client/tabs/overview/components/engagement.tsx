@@ -1,5 +1,5 @@
 import { AreaChart } from "@/components/charts/area";
-import { AdminEngagementDTO } from "@/fake-db/dashboards";
+import type { AdminEngagementDTO } from "@/fake-db/dashboards";
 
 type EngagementProps = {
   engagement: AdminEngagementDTO[];

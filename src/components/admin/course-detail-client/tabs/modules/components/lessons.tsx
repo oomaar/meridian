@@ -1,5 +1,8 @@
-import { AdminCourseLesson, AdminCourseModule } from "@/fake-db/dashboards";
-import { LessonBadge } from "../../../components/lesson-badge";
+import type {
+  AdminCourseLesson,
+  AdminCourseModule,
+} from "@/fake-db/dashboards";
+import { LessonBadge } from "./lesson-badge";
 import { LessonStateIcon } from "../../../components/lesson-state-icon";
 
 type LessonsProps = {

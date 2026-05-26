@@ -1,4 +1,7 @@
-import { AdminCourseDTO, AdminCourseSubmission } from "@/fake-db/dashboards";
+import type {
+  AdminCourseDTO,
+  AdminCourseSubmission,
+} from "@/fake-db/dashboards";
 import { SubBadge } from "../../../components/sub-badge";
 import { Avatar } from "../../../components/avatar";
 

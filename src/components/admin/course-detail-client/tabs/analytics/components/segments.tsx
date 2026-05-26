@@ -1,4 +1,4 @@
-import { AdminCourseRosterRow } from "@/fake-db/dashboards";
+import type { AdminCourseRosterRow } from "@/fake-db/dashboards";
 
 type SegmentsProps = {
   roster: AdminCourseRosterRow[];

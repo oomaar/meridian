@@ -1,4 +1,4 @@
-import {
+import type {
   AdminCourseLesson,
   AdminCourseModule,
   AdminResourceDTO,
@@ -12,11 +12,7 @@ type ModulesProps = {
   resources: AdminResourceDTO[];
 };
 
-export default function Modules({
-  modules,
-  firstLessons,
-  resources,
-}: ModulesProps) {
+export function Modules({ modules, firstLessons, resources }: ModulesProps) {
   return (
     <div className="m-grid m-grid-2-1">
       <Lessons modules={modules} firstLessons={firstLessons} />

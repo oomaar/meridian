@@ -1,4 +1,4 @@
-import { AdminResourceDTO } from "@/fake-db/dashboards";
+import type { AdminResourceDTO } from "@/fake-db/dashboards";
 import {
   CheckIcon,
   DownloadIcon,

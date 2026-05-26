@@ -1,7 +1,7 @@
 import { ChartsHeader } from "./charts-header";
 import { AreaChart } from "@/components/charts/area";
 import { ChartsFooter } from "./charts-footer";
-import { AdminEngagementDTO } from "@/fake-db/dashboards";
+import type { AdminEngagementDTO } from "@/fake-db/dashboards";
 
 type AnalyticsChartsProps = {
   analyticsRange: "7d" | "12w" | "term";

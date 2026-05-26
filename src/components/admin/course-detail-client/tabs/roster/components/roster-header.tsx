@@ -1,4 +1,7 @@
-import { AdminCourseDTO, AdminCourseRosterRow } from "@/fake-db/dashboards";
+import type {
+  AdminCourseDTO,
+  AdminCourseRosterRow,
+} from "@/fake-db/dashboards";
 import { CheckIcon, DownloadIcon, InboxIcon, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 import { ComposeSheet } from "../../../sheets/compose-sheet";

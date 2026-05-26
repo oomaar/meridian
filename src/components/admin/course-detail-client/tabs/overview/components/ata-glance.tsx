@@ -1,5 +1,5 @@
 import { ProgressBar } from "@/components/progress-bar";
-import { AdminCourseDTO } from "@/fake-db/dashboards";
+import type { AdminCourseDTO } from "@/fake-db/dashboards";
 
 type AtaGlanceProps = {
   course: AdminCourseDTO;
