@@ -32,6 +32,7 @@ export function CourseDetailClientTabs({
           role="tab"
           className="m-tab"
           aria-selected={tab === t.id}
+          data-selected={tab === t.id}
           onClick={() => setTab(t.id)}
         >
           {t.label}
