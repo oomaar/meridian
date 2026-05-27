@@ -1,5 +1,19 @@
+"use client";
+
+import { useState } from "react";
+import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import type { AdminCourseDTO } from "@/fake-db/dashboards";
 import { SettingsFormState } from "../settings";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+const CREDITS = ["1", "2", "3", "4"];
+const MODALITIES = ["In-person", "Hybrid", "Online"];
+const POPOVER_CLASSES =
+  "p-1 gap-0 w-(--radix-popover-trigger-width) z-[300] m-popover";
 
 type SettingsGeneralProps = {
   settingsForm: SettingsFormState;
@@ -12,6 +26,10 @@ export function SettingsGeneral({
   setSF,
   course,
 }: SettingsGeneralProps) {
+  const [openField, setOpenField] = useState<"credits" | "modality" | null>(
+    null,
+  );
+
   return (
     <div className="m-card">
       <div className="m-settings-section">
@@ -26,29 +44,86 @@ export function SettingsGeneral({
         </div>
         <div className="m-settings-row">
           <span className="m-settings-row__label">Credits</span>
-          <select
-            className="m-field__input m-field__select m-field--md"
-            value={settingsForm.credits}
-            onChange={(e) => setSF("credits", e.target.value)}
+          <Popover
+            open={openField === "credits"}
+            onOpenChange={(o) => setOpenField(o ? "credits" : null)}
           >
-            {["1", "2", "3", "4"].map((v) => (
-              <option key={v} value={v}>
-                {v} credit{v !== "1" ? "s" : ""}
-              </option>
-            ))}
-          </select>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="m-field__input m-field__trigger m-field--md"
+              >
+                <span>
+                  {settingsForm.credits} credit
+                  {settingsForm.credits !== "1" ? "s" : ""}
+                </span>
+                <ChevronDownIcon size={14} className="m-field__chevron" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              sideOffset={6}
+              className={POPOVER_CLASSES}
+            >
+              {CREDITS.map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  className={`m-role-option${settingsForm.credits === v ? " m-role-option--active" : ""}`}
+                  onClick={() => {
+                    setSF("credits", v);
+                    setOpenField(null);
+                  }}
+                >
+                  <span>
+                    {v} credit{v !== "1" ? "s" : ""}
+                  </span>
+                  {settingsForm.credits === v && (
+                    <CheckIcon size={12} className="m-role-option__check" />
+                  )}
+                </button>
+              ))}
+            </PopoverContent>
+          </Popover>
         </div>
         <div className="m-settings-row">
           <span className="m-settings-row__label">Modality</span>
-          <select
-            className="m-field__input m-field__select m-field--md"
-            value={settingsForm.modality}
-            onChange={(e) => setSF("modality", e.target.value)}
+          <Popover
+            open={openField === "modality"}
+            onOpenChange={(o) => setOpenField(o ? "modality" : null)}
           >
-            {["In-person", "Hybrid", "Online"].map((m) => (
-              <option key={m}>{m}</option>
-            ))}
-          </select>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="m-field__input m-field__trigger m-field--md"
+              >
+                <span>{settingsForm.modality}</span>
+                <ChevronDownIcon size={14} className="m-field__chevron" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              sideOffset={6}
+              className={POPOVER_CLASSES}
+            >
+              {MODALITIES.map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  className={`m-role-option${settingsForm.modality === m ? " m-role-option--active" : ""}`}
+                  onClick={() => {
+                    setSF("modality", m);
+                    setOpenField(null);
+                  }}
+                >
+                  <span>{m}</span>
+                  {settingsForm.modality === m && (
+                    <CheckIcon size={12} className="m-role-option__check" />
+                  )}
+                </button>
+              ))}
+            </PopoverContent>
+          </Popover>
         </div>
         <div className="m-settings-row">
           <span className="m-settings-row__label">Location</span>
