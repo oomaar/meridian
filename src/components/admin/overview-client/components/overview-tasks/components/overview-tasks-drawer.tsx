@@ -2,17 +2,17 @@ import { XIcon } from "lucide-react";
 import { ALL_TASKS } from "../../../data/ALL_TASKS";
 import { Dispatch, SetStateAction } from "react";
 
-type TasksCardDrawerProps = {
+type OverviewTasksDrawerProps = {
   done: Set<string>;
   toggle: (id: string) => void;
   setDrawerOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export function TasksCardDrawer({
+export function OverviewTasksDrawer({
   done,
   toggle,
   setDrawerOpen,
-}: TasksCardDrawerProps) {
+}: OverviewTasksDrawerProps) {
   const open = ALL_TASKS.filter((t) => !done.has(t.id));
 
   return (

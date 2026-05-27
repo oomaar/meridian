@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { ALL_TASKS } from "../../data/ALL_TASKS";
-import { TasksCardHeader } from "./components/tasks-card-header";
-import { TasksCardDrawer } from "./components/tasks-card-drawer";
+import { OverviewTasksHeader } from "./components/overview-tasks-header";
+import { OverviewTasksDrawer } from "./components/overview-tasks-drawer";
 
-export function TasksCard() {
+export function OverviewTasks() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [done, setDone] = useState<Set<string>>(new Set());
 
@@ -22,7 +22,7 @@ export function TasksCard() {
   return (
     <>
       <div className="m-card">
-        <TasksCardHeader done={done} setDrawerOpen={setDrawerOpen} />
+        <OverviewTasksHeader done={done} setDrawerOpen={setDrawerOpen} />
         <div className="m-card__body m-card__body--flush">
           {ALL_TASKS.slice(0, 5).map((t) => (
             <div key={t.id} className="m-task-item">
@@ -50,9 +50,8 @@ export function TasksCard() {
           ))}
         </div>
       </div>
-
       {drawerOpen && (
-        <TasksCardDrawer
+        <OverviewTasksDrawer
           done={done}
           toggle={toggle}
           setDrawerOpen={setDrawerOpen}

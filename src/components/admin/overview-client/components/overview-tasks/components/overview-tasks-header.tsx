@@ -1,12 +1,15 @@
 import { Dispatch, SetStateAction } from "react";
 import { ALL_TASKS } from "../../../data/ALL_TASKS";
 
-type TasksCardHeaderProps = {
+type OverviewTasksHeaderProps = {
   done: Set<string>;
   setDrawerOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export function TasksCardHeader({ done, setDrawerOpen }: TasksCardHeaderProps) {
+export function OverviewTasksHeader({
+  done,
+  setDrawerOpen,
+}: OverviewTasksHeaderProps) {
   const open = ALL_TASKS.filter((t) => !done.has(t.id));
 
   return (
