@@ -4,7 +4,7 @@ import type { TpWindow } from "../../types/TpWindow";
 import { CARD_MENU_ITEMS } from "../../data/CARD_MENU_ITEMS";
 import { Dispatch, RefObject, SetStateAction } from "react";
 
-type ThroughputCardHeaderProps = {
+type OverviewThroughputHeaderProps = {
   win: TpWindow;
   setWin: Dispatch<SetStateAction<TpWindow>>;
   menuRef: RefObject<HTMLDivElement | null>;
@@ -12,13 +12,13 @@ type ThroughputCardHeaderProps = {
   setMenuOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export function ThroughputCardHeader({
+export function OverviewThroughputHeader({
   win,
   setWin,
   menuRef,
   menuOpen,
   setMenuOpen,
-}: ThroughputCardHeaderProps) {
+}: OverviewThroughputHeaderProps) {
   return (
     <div className="m-card__head">
       <h3 className="m-card__title">Submission throughput</h3>

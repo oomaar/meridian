@@ -4,15 +4,15 @@ import { ThroughputByWindow } from "@/fake-db/dashboards";
 import { useEffect, useRef, useState } from "react";
 import type { TpWindow } from "../../types/TpWindow";
 import { ReportModal } from "./report-modal/report-modal";
-import { ThroughputCardHeader } from "./throughput-card-header";
-import { ThroughputCardBody } from "./throughput-card-body";
+import { OverviewThroughputHeader } from "./overview-throughput-header";
+import { OverviewThroughputBody } from "./overview-throughput-body";
 
-type ThroughputCardProps = {
+type OverviewThroughputProps = {
   windows: ThroughputByWindow;
   submissionsLast7d: number;
 };
 
-export function ThroughputCard({ windows }: ThroughputCardProps) {
+export function OverviewThroughput({ windows }: OverviewThroughputProps) {
   const [win, setWin] = useState<TpWindow>("12w");
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
@@ -37,14 +37,14 @@ export function ThroughputCard({ windows }: ThroughputCardProps) {
   return (
     <>
       <div className="m-card">
-        <ThroughputCardHeader
+        <OverviewThroughputHeader
           win={win}
           setWin={setWin}
           menuRef={menuRef}
           menuOpen={menuOpen}
           setMenuOpen={setMenuOpen}
         />
-        <ThroughputCardBody
+        <OverviewThroughputBody
           data={data}
           win={win}
           peakPt={peakPt}

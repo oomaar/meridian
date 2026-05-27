@@ -4,7 +4,7 @@ import type { TpWindow } from "../../types/TpWindow";
 import { ArrowUpRightIcon } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
-type ThroughputCardBodyProps = {
+type OverviewThroughputBodyProps = {
   data: SubmissionThroughputPoint[];
   win: TpWindow;
   peakPt: SubmissionThroughputPoint;
@@ -12,13 +12,13 @@ type ThroughputCardBodyProps = {
   setReportOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export function ThroughputCardBody({
+export function OverviewThroughputBody({
   data,
   win,
   peakPt,
   median,
   setReportOpen,
-}: ThroughputCardBodyProps) {
+}: OverviewThroughputBodyProps) {
   return (
     <div className="m-card__body">
       <AreaChart data={data} height={200} />
