@@ -11,10 +11,14 @@ type OverviewBannerProps = {
     courses: number;
     activeCourses: number;
   };
-  sem?: Semester;
+  activeSemester?: Semester;
 };
 
-export function OverviewBanner({ meta, totals, sem }: OverviewBannerProps) {
+export function OverviewBanner({
+  meta,
+  totals,
+  activeSemester,
+}: OverviewBannerProps) {
   return (
     <div className="m-card">
       <div className="m-sem-banner">
@@ -22,19 +26,19 @@ export function OverviewBanner({ meta, totals, sem }: OverviewBannerProps) {
           <span className="m-pulse-dot" />
           <div>
             <div className="m-sem-banner__label">Active term</div>
-            <div className="m-sem-banner__name">{sem?.name}</div>
+            <div className="m-sem-banner__name">{activeSemester?.name}</div>
           </div>
         </div>
         <div className="m-sem-banner__track">
           <div className="m-sem-banner__dates">
-            {sem && <span>{fmtDate(sem.startDate)}</span>}
+            {activeSemester && <span>{fmtDate(activeSemester.startDate)}</span>}
             {meta && (
               <span>
                 Week {meta.weekNumber} of {meta.totalWeeks} ·{" "}
                 {Math.round((meta.progress ?? 0) * 100)}%
               </span>
             )}
-            {sem && <span>{fmtDate(sem.endDate)}</span>}
+            {activeSemester && <span>{fmtDate(activeSemester.endDate)}</span>}
           </div>
           <ProgressBar value={meta?.progress ?? 0} lg />
         </div>
