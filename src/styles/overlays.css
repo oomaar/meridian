@@ -6,6 +6,15 @@
    (.m-drawer*) will land here when we build them.
    ─────────────────────────────────────────────────────── */
 
+/* ── Meridian Popover skin ───────────────────────────────────────────────────
+   Plain (non-layered) CSS beats Tailwind's @layer utilities, so this always
+   wins over bg-popover / text-popover-foreground / ring-foreground. */
+.m-popover {
+  background: var(--m-surface);
+  color: var(--m-text);
+  border-color: var(--m-line);
+}
+
 /* ── Sheet / slide-in drawer ────────────────────────────────────────────────
    Usage: render .m-sheet-overlay as click-away backdrop, .m-sheet as the
    panel. Animates in from the right; close by un-mounting (no exit anim). */

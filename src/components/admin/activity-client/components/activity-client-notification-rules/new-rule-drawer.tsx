@@ -31,7 +31,7 @@ type NewRuleDrawerProps = {
 };
 
 const POPOVER_CLASSES =
-  "p-1 gap-0 w-(--radix-popover-trigger-width) z-[300] bg-m-surface text-m-text border-m-line";
+  "p-1 gap-0 w-(--radix-popover-trigger-width) z-[300] m-popover";
 
 export function NewRuleDrawer({ onClose, onSave }: NewRuleDrawerProps) {
   const [form, setForm] = useState<Form>(initialForm);

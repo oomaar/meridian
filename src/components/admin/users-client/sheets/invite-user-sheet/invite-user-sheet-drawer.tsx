@@ -214,7 +214,7 @@ export function InviteUserSheetDrawer({
               <PopoverContent
                 align="start"
                 sideOffset={6}
-                className="p-1 gap-0 w-(--radix-popover-trigger-width) z-300 bg-m-surface text-m-text border-m-line"
+                className="p-1 gap-0 w-(--radix-popover-trigger-width) z-[300] m-popover"
               >
                 {INVITE_USER_ROLES.map((r) => (
                   <button
