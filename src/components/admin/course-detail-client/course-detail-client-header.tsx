@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { AdminCourseDTO, AdminInstructorDTO } from "@/fake-db/dashboards";
-import { EditCourseSheet } from "./sheets/edit-course-sheet";
+import { EditCourseSheet } from "./sheets/edit-course-sheet/edit-course-sheet";
 import { ComposeSheet } from "./sheets/compose-sheet";
 
 type CourseDetailClientHeaderProps = {
