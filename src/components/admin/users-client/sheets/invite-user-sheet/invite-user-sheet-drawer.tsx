@@ -1,11 +1,22 @@
 "use client";
 
 import type { AdminUserRow } from "@/fake-db/dashboards";
-import { CheckIcon, Loader2Icon, PlusIcon, XIcon } from "lucide-react";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  Loader2Icon,
+  PlusIcon,
+  XIcon,
+} from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { deriveEmail } from "./helpers/deriveEmail";
 import { INVITE_USER_ROLES } from "./data/INVITE_USER_ROLES";
 import type { InviteUserRoleOption } from "./types/InviteUserRoleOption";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 type InviteUserSheetDrawerProps = {
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -37,6 +48,7 @@ export function InviteUserSheetDrawer({
   onAdd,
 }: InviteUserSheetDrawerProps) {
   const [form, setForm] = useState<Form>(initialFormState);
+  const [roleOpen, setRoleOpen] = useState(false);
 
   function reset() {
     setForm(initialFormState);
@@ -172,23 +184,61 @@ export function InviteUserSheetDrawer({
             />
           </label>
 
-          <label className="m-field">
+          <div className="m-field">
             <span className="m-field__label">Role</span>
-            <select
-              className="m-field__input"
-              value={form.role}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, role: e.target.value }))
-              }
-              required
-            >
-              {INVITE_USER_ROLES.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
-          </label>
+            <Popover open={roleOpen} onOpenChange={setRoleOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="m-field__input m-field__trigger"
+                >
+                  {(() => {
+                    const r =
+                      INVITE_USER_ROLES.find((r) => r.id === form.role) ??
+                      INVITE_USER_ROLES[0];
+                    return (
+                      <>
+                        <span
+                          className="m-role-pill__dot"
+                          style={
+                            { "--role-color": r.color } as React.CSSProperties
+                          }
+                        />
+                        <span>{r.label}</span>
+                      </>
+                    );
+                  })()}
+                  <ChevronDownIcon size={14} className="m-field__chevron" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                sideOffset={6}
+                className="p-1 gap-0 w-(--radix-popover-trigger-width) z-[300] bg-m-surface text-m-text border-m-line"
+              >
+                {INVITE_USER_ROLES.map((r) => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    className={`m-role-option${form.role === r.id ? " m-role-option--active" : ""}`}
+                    onClick={() => {
+                      setForm((prev) => ({ ...prev, role: r.id }));
+                      setRoleOpen(false);
+                    }}
+                  >
+                    <span
+                      className="m-role-pill__dot"
+                      style={{ "--role-color": r.color } as React.CSSProperties}
+                    />
+                    <span>{r.label}</span>
+                    {form.role === r.id && (
+                      <CheckIcon size={12} className="m-role-option__check" />
+                    )}
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
+          </div>
 
           <p className="m-invite-note">
             An invitation email will be sent to the address above. The user
