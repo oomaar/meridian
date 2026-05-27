@@ -1,5 +1,5 @@
-import { PostAnnouncementButton } from "./post-announcement-button";
 import { ANNOUNCEMENTS } from "../data/ANNOUNCEMENTS";
+import { PostAnnouncementSheet } from "../sheets/post-announcement-sheet";
 
 export function OverviewAnnouncements() {
   return (
@@ -7,7 +7,7 @@ export function OverviewAnnouncements() {
       <div className="m-card__head">
         <h3 className="m-card__title">Announcements</h3>
         <span className="m-card__sub">institution-wide</span>
-        <PostAnnouncementButton />
+        <PostAnnouncementSheet />
       </div>
       <div className="m-card__body m-card__body--flush">
         {ANNOUNCEMENTS.map((a) => (
