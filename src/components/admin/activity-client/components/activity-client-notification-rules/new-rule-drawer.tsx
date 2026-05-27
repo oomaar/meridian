@@ -1,8 +1,15 @@
+"use client";
+
 import { FormEvent, useState } from "react";
-import { XIcon, ZapIcon } from "lucide-react";
+import { CheckIcon, ChevronDownIcon, XIcon, ZapIcon } from "lucide-react";
 import { TRIGGERS } from "./data/TRIGGERS";
 import { NOTIFY_TARGETS } from "./data/NOTIFY_TARGETS";
 import { CHANNELS } from "./data/CHANNELS";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 type Form = {
   name: string;
@@ -23,14 +30,72 @@ type NewRuleDrawerProps = {
   onSave: (label: string) => void;
 };
 
+const POPOVER_CLASSES =
+  "p-1 gap-0 w-(--radix-popover-trigger-width) z-[300] bg-m-surface text-m-text border-m-line";
+
 export function NewRuleDrawer({ onClose, onSave }: NewRuleDrawerProps) {
   const [form, setForm] = useState<Form>(initialForm);
+  const [openField, setOpenField] = useState<
+    "trigger" | "notify" | "channel" | null
+  >(null);
+
+  function toggle(field: "trigger" | "notify" | "channel", open: boolean) {
+    setOpenField(open ? field : null);
+  }
+
+  function pick(field: keyof Form, value: string) {
+    setForm((f) => ({ ...f, [field]: value }));
+    setOpenField(null);
+  }
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!form.name.trim()) return;
     onSave(`${form.name.trim()} — ${form.channel} · ${form.notify}`);
     onClose();
+  }
+
+  function renderDropdown(
+    field: "trigger" | "notify" | "channel",
+    label: string,
+    options: string[],
+  ) {
+    const value = form[field];
+    return (
+      <div className="m-field">
+        <span className="m-field__label">{label}</span>
+        <Popover
+          open={openField === field}
+          onOpenChange={(o) => toggle(field, o)}
+        >
+          <PopoverTrigger asChild>
+            <button type="button" className="m-field__input m-field__trigger">
+              <span>{value}</span>
+              <ChevronDownIcon size={14} className="m-field__chevron" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="start"
+            sideOffset={6}
+            className={POPOVER_CLASSES}
+          >
+            {options.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                className={`m-role-option${value === opt ? " m-role-option--active" : ""}`}
+                onClick={() => pick(field, opt)}
+              >
+                <span>{opt}</span>
+                {value === opt && (
+                  <CheckIcon size={12} className="m-role-option__check" />
+                )}
+              </button>
+            ))}
+          </PopoverContent>
+        </Popover>
+      </div>
+    );
   }
 
   return (
@@ -62,42 +127,9 @@ export function NewRuleDrawer({ onClose, onSave }: NewRuleDrawerProps) {
               required
             />
           </label>
-          <label className="m-field">
-            <span className="m-field__label">Trigger event</span>
-            <select
-              className="m-field__input m-field__select"
-              value={form.trigger}
-              onChange={(e) => setForm({ ...form, trigger: e.target.value })}
-            >
-              {TRIGGERS.map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
-          </label>
-          <label className="m-field">
-            <span className="m-field__label">Notify</span>
-            <select
-              className="m-field__input m-field__select"
-              value={form.notify}
-              onChange={(e) => setForm({ ...form, notify: e.target.value })}
-            >
-              {NOTIFY_TARGETS.map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
-          </label>
-          <label className="m-field">
-            <span className="m-field__label">Channel</span>
-            <select
-              className="m-field__input m-field__select"
-              value={form.channel}
-              onChange={(e) => setForm({ ...form, channel: e.target.value })}
-            >
-              {CHANNELS.map((c) => (
-                <option key={c}>{c}</option>
-              ))}
-            </select>
-          </label>
+          {renderDropdown("trigger", "Trigger event", TRIGGERS)}
+          {renderDropdown("notify", "Notify", NOTIFY_TARGETS)}
+          {renderDropdown("channel", "Channel", CHANNELS)}
           <p className="m-invite-note">
             This rule will fire whenever <b>{form.trigger.toLowerCase()}</b> is
             detected and will notify <b>{form.notify}</b> via{" "}
