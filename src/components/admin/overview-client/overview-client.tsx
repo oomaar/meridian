@@ -1,22 +1,24 @@
 "use client";
 
 import type { AdminOverviewData } from "@/fake-db/dashboards";
-import { ThroughputCard } from "./components/throughput-card/throughput-card";
-import { TasksCard } from "./components/tasks-card/tasks-card";
-import { semesterMeta } from "./helpers/semesterMeta";
 import type { Meta } from "./types/Meta";
+import { OverviewThroughput } from "./components/overview-throughput/overview-throughput";
+import { OverviewTasks } from "./components/overview-tasks/overview-tasks";
+import { semesterMeta } from "./helpers/semesterMeta";
 import { OverviewBanner } from "./components/overview-banner";
 import { DEPT_COLORS } from "./data/DEPT_COLORS";
 import { OverviewHeader } from "./components/overview-header";
 import { OverviewAnnouncements } from "./components/overview-announcements";
-import { OverviewStats } from "./components/overview-stats";
+import { OverviewStats } from "./components/overview-stats/overview-stats";
 import { OverviewEnrollmentDepartment } from "./components/overview-enrollment-department";
 import { OverviewLiveActivity } from "./components/overview-live-activity";
 import { OverviewCourses } from "./components/overview-courses";
 
-export function OverviewClient({ data }: { data: AdminOverviewData }) {
+type OverviewClientProps = { data: AdminOverviewData };
+
+export function OverviewClient({ data }: OverviewClientProps) {
   const {
-    activeSemester: sem,
+    activeSemester,
     analytics,
     totals,
     submissionsLast7d,
@@ -25,7 +27,7 @@ export function OverviewClient({ data }: { data: AdminOverviewData }) {
     recentActivity,
   } = data;
 
-  const meta: Meta = sem ? semesterMeta(sem) : null;
+  const meta: Meta = activeSemester ? semesterMeta(activeSemester) : null;
 
   const deptBars = departmentLoad
     .filter((d) => d.totalStudents > 0)
@@ -39,25 +41,36 @@ export function OverviewClient({ data }: { data: AdminOverviewData }) {
 
   return (
     <>
-      <OverviewHeader analytics={analytics} meta={meta} sem={sem} />
+      <OverviewHeader
+        analytics={analytics}
+        meta={meta}
+        activeSemester={activeSemester}
+      />
       <div className="m-page__body">
         <div className="m-stack">
-          {sem && meta && (
-            <OverviewBanner meta={meta} totals={totals} sem={sem} />
+          {activeSemester && meta && (
+            <OverviewBanner
+              meta={meta}
+              totals={totals}
+              activeSemester={activeSemester}
+            />
           )}
           <OverviewStats
             totals={totals}
             submissionsLast7d={submissionsLast7d}
           />
           <div className="m-grid m-grid-2-1">
-            <ThroughputCard
+            <OverviewThroughput
               windows={throughputByWindow}
               submissionsLast7d={submissionsLast7d}
             />
-            <TasksCard />
+            <OverviewTasks />
           </div>
           <div className="m-grid m-grid-2-1">
-            <OverviewEnrollmentDepartment deptBars={deptBars} sem={sem} />
+            <OverviewEnrollmentDepartment
+              deptBars={deptBars}
+              sem={activeSemester}
+            />
             <OverviewLiveActivity recentActivity={recentActivity} />
           </div>
           <div className="m-grid m-grid-2">
