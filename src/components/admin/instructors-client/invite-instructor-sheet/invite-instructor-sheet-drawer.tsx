@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, Loader2Icon, SendIcon, XIcon } from "lucide-react";
+import { CheckIcon, ChevronDownIcon, Loader2Icon, SendIcon, XIcon } from "lucide-react";
 import { DEPARTMENTS } from "./data/DEPARTMENTS";
 import { TITLES } from "./data/TITLES";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -8,6 +8,14 @@ import { deriveEmail } from "./helpers/deriveEmail";
 import type { AdminInstructorRow } from "@/fake-db/dashboards";
 import type { InstructorTitle } from "@/fake-db";
 import { DEPTARTMENT_COLORS } from "./data/DEPTARTMENT_COLORS";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+const POPOVER_CLASSES =
+  "p-1 gap-0 w-(--radix-popover-trigger-width) z-[300] m-popover max-h-52 overflow-y-auto";
 
 type InviteInstructorSheetDrawerProps = {
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -41,6 +49,9 @@ export function InviteInstructorSheetDrawer({
   onAdd,
 }: InviteInstructorSheetDrawerProps) {
   const [form, setForm] = useState<Form>(initialForm);
+  const [openField, setOpenField] = useState<"department" | "title" | null>(
+    null,
+  );
 
   function set(key: string, val: string) {
     setForm((f) => {
@@ -147,34 +158,87 @@ export function InviteInstructorSheetDrawer({
           </label>
 
           <div className="m-fields-2">
-            <label className="m-field">
+            <div className="m-field">
               <span className="m-field__label">Department</span>
-              <select
-                className="m-field__input m-field__select"
-                value={form.department}
-                onChange={(e) => set("department", e.target.value)}
+              <Popover
+                open={openField === "department"}
+                onOpenChange={(o) => setOpenField(o ? "department" : null)}
               >
-                {DEPARTMENTS.map((d) => (
-                  <option key={d.code} value={d.code}>
-                    {d.code} — {d.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="m-field">
+                <PopoverTrigger asChild>
+                  <button type="button" className="m-field__input m-field__trigger">
+                    <span
+                      className="m-role-pill__dot"
+                      style={{ "--role-color": DEPTARTMENT_COLORS[form.department] ?? "var(--m-accent)" } as React.CSSProperties}
+                    />
+                    <span>
+                      {(() => {
+                        const d = DEPARTMENTS.find((d) => d.code === form.department);
+                        return d ? `${d.code} — ${d.name}` : form.department;
+                      })()}
+                    </span>
+                    <ChevronDownIcon size={14} className="m-field__chevron" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  sideOffset={6}
+                  className={POPOVER_CLASSES}
+                >
+                  {DEPARTMENTS.map((d) => (
+                    <button
+                      key={d.code}
+                      type="button"
+                      className={`m-role-option${form.department === d.code ? " m-role-option--active" : ""}`}
+                      onClick={() => {
+                        set("department", d.code);
+                        setOpenField(null);
+                      }}
+                    >
+                      <span
+                        className="m-role-pill__dot"
+                        style={{ "--role-color": DEPTARTMENT_COLORS[d.code] ?? "var(--m-accent)" } as React.CSSProperties}
+                      />
+                      <span>{d.code} — {d.name}</span>
+                      {form.department === d.code && (
+                        <CheckIcon size={12} className="m-role-option__check" />
+                      )}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="m-field">
               <span className="m-field__label">Rank</span>
-              <select
-                className="m-field__input m-field__select"
-                value={form.title}
-                onChange={(e) => set("title", e.target.value)}
+              <Popover
+                open={openField === "title"}
+                onOpenChange={(o) => setOpenField(o ? "title" : null)}
               >
-                {TITLES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <PopoverTrigger asChild>
+                  <button type="button" className="m-field__input m-field__trigger">
+                    <span>{form.title}</span>
+                    <ChevronDownIcon size={14} className="m-field__chevron" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="start" sideOffset={6} className={POPOVER_CLASSES}>
+                  {TITLES.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      className={`m-role-option${form.title === t ? " m-role-option--active" : ""}`}
+                      onClick={() => {
+                        set("title", t);
+                        setOpenField(null);
+                      }}
+                    >
+                      <span>{t}</span>
+                      {form.title === t && (
+                        <CheckIcon size={12} className="m-role-option__check" />
+                      )}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
 
           <p className="m-invite-note">
