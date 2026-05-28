@@ -1,10 +1,26 @@
 "use client";
 
 import type { AdminStudentRow } from "@/fake-db/dashboards";
-import { CheckIcon, Loader2Icon, PlusIcon, XIcon } from "lucide-react";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  Loader2Icon,
+  PlusIcon,
+  XIcon,
+} from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import type { StudentStatus } from "@/fake-db";
 import { PROGRAMS } from "@/fake-db/lookups";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { STANDINGS } from "./data/STANDINGS";
+import { STATUSES } from "./data/STATUSES";
+
+const POPOVER_CLASSES =
+  "p-1 gap-0 w-(--radix-popover-trigger-width) z-[300] m-popover max-h-52 overflow-y-auto";
 
 type SaveState = "idle" | "saving" | "saved";
 
@@ -40,6 +56,9 @@ export function AddStudentSheetDrawer({
   onAdd,
 }: AddStudentSheetDrawerProps) {
   const [form, setForm] = useState<Form>(initialForm);
+  const [openField, setOpenField] = useState<
+    "program" | "standing" | "status" | null
+  >(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -139,56 +158,131 @@ export function AddStudentSheetDrawer({
             />
           </label>
 
-          <label className="m-field">
+          <div className="m-field">
             <span className="m-field__label">Program</span>
-            <select
-              className="m-field__input m-field__select"
-              value={form.program}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, program: e.target.value }))
-              }
+            <Popover
+              open={openField === "program"}
+              onOpenChange={(o) => setOpenField(o ? "program" : null)}
             >
-              {PROGRAMS.map((p) => (
-                <option key={p.code} value={p.code}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </label>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="m-field__input m-field__trigger"
+                >
+                  <span>
+                    {PROGRAMS.find((p) => p.code === form.program)?.name ??
+                      form.program}
+                  </span>
+                  <ChevronDownIcon size={14} className="m-field__chevron" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                sideOffset={6}
+                className={POPOVER_CLASSES}
+              >
+                {PROGRAMS.map((p) => (
+                  <button
+                    key={p.code}
+                    type="button"
+                    className={`m-role-option${form.program === p.code ? " m-role-option--active" : ""}`}
+                    onClick={() => {
+                      setForm((f) => ({ ...f, program: p.code }));
+                      setOpenField(null);
+                    }}
+                  >
+                    <span>{p.name}</span>
+                    {form.program === p.code && (
+                      <CheckIcon size={12} className="m-role-option__check" />
+                    )}
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
+          </div>
 
           <div className="m-fields-2">
-            <label className="m-field">
+            <div className="m-field">
               <span className="m-field__label">Standing</span>
-              <select
-                className="m-field__input m-field__select"
-                value={form.standing}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, standing: e.target.value }))
-                }
+              <Popover
+                open={openField === "standing"}
+                onOpenChange={(o) => setOpenField(o ? "standing" : null)}
               >
-                {["Freshman", "Sophomore", "Junior", "Senior", "Graduate"].map(
-                  (s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ),
-                )}
-              </select>
-            </label>
-            <label className="m-field">
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="m-field__input m-field__trigger"
+                  >
+                    <span>{form.standing}</span>
+                    <ChevronDownIcon size={14} className="m-field__chevron" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  sideOffset={6}
+                  className={POPOVER_CLASSES}
+                >
+                  {STANDINGS.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      className={`m-role-option${form.standing === s ? " m-role-option--active" : ""}`}
+                      onClick={() => {
+                        setForm((f) => ({ ...f, standing: s }));
+                        setOpenField(null);
+                      }}
+                    >
+                      <span>{s}</span>
+                      {form.standing === s && (
+                        <CheckIcon size={12} className="m-role-option__check" />
+                      )}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="m-field">
               <span className="m-field__label">Status</span>
-              <select
-                className="m-field__input m-field__select"
-                value={form.status}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, status: e.target.value }))
-                }
+              <Popover
+                open={openField === "status"}
+                onOpenChange={(o) => setOpenField(o ? "status" : null)}
               >
-                <option value="active">Active</option>
-                <option value="leave">On leave</option>
-                <option value="probation">Probation</option>
-              </select>
-            </label>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="m-field__input m-field__trigger"
+                  >
+                    <span>
+                      {STATUSES.find((s) => s.value === form.status)?.label ??
+                        form.status}
+                    </span>
+                    <ChevronDownIcon size={14} className="m-field__chevron" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  sideOffset={6}
+                  className={POPOVER_CLASSES}
+                >
+                  {STATUSES.map((s) => (
+                    <button
+                      key={s.value}
+                      type="button"
+                      className={`m-role-option${form.status === s.value ? " m-role-option--active" : ""}`}
+                      onClick={() => {
+                        setForm((f) => ({ ...f, status: s.value }));
+                        setOpenField(null);
+                      }}
+                    >
+                      <span>{s.label}</span>
+                      {form.status === s.value && (
+                        <CheckIcon size={12} className="m-role-option__check" />
+                      )}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
         </form>
 
