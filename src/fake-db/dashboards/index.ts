@@ -930,7 +930,8 @@ export function getAdminCourseDetail(code: string): AdminCourseDetailData {
     { length: numModules },
     (_, i) => {
       const mh = strHash(course.id + `mod${i}`);
-      const lessonCount = 4 + (mh % 5);
+      const shape = MODULE_LESSON_SHAPES[i % MODULE_LESSON_SHAPES.length];
+      const lessonCount = shape.length;
       const totalMin = lessonCount * (20 + (mh % 30));
       const state: "complete" | "active" | "draft" =
         i === 0
