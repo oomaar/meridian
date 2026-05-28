@@ -8,14 +8,14 @@ import { Lessons } from "./components/lessons";
 
 type ModulesProps = {
   modules: AdminCourseModule[];
-  firstLessons: AdminCourseLesson[];
+  moduleLessons: Record<string, AdminCourseLesson[]>;
   resources: AdminResourceDTO[];
 };
 
-export function Modules({ modules, firstLessons, resources }: ModulesProps) {
+export function Modules({ modules, moduleLessons, resources }: ModulesProps) {
   return (
     <div className="m-grid m-grid-2-1">
-      <Lessons modules={modules} firstLessons={firstLessons} />
+      <Lessons modules={modules} moduleLessons={moduleLessons} />
       <Resources resources={resources} />
     </div>
   );

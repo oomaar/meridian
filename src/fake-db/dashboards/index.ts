@@ -888,7 +888,7 @@ export function getAdminCourseDetail(code: string): AdminCourseDetailData {
   // assignments for this course
   const assignments = db.assignments.filter((a) => a.courseId === course.id);
   const ungraded = assignments.filter((a) => a.status === "grading").length;
-  const avgGrade = h % 8 === 0 ? null : 55 + (h % 4000) / 100;
+  const avgGrade = h % 20 === 0 ? null : 68 + (h % 1500) / 100;
 
   // meeting label
   const mt = course.meetingTimes;
@@ -930,7 +930,8 @@ export function getAdminCourseDetail(code: string): AdminCourseDetailData {
     { length: numModules },
     (_, i) => {
       const mh = strHash(course.id + `mod${i}`);
-      const lessonCount = 4 + (mh % 5);
+      const shape = MODULE_LESSON_SHAPES[i % MODULE_LESSON_SHAPES.length];
+      const lessonCount = shape.length;
       const totalMin = lessonCount * (20 + (mh % 30));
       const state: "complete" | "active" | "draft" =
         i === 0
@@ -1031,13 +1032,14 @@ export function getAdminCourseDetail(code: string): AdminCourseDetailData {
     .slice(0, 30);
   const roster: AdminCourseRosterRow[] = rosterStudents.map((s) => {
     const sh = strHash(s.id + course.id);
+    const sh2 = strHash(s.id + course.id + "g");
     return {
       id: s.id,
       studentNumber: `STU-${s.id.slice(-5).toUpperCase()}`,
       name: s.fullName,
       standing: STANDINGS[(s.year - 1) % STANDINGS.length],
       grade: avgGrade
-        ? Math.max(52, Math.min(100, Math.round(avgGrade + (sh % 22) - 10)))
+        ? Math.max(45, Math.min(100, Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10)))
         : null,
       attendance: 60 + (sh % 41),
       submitted: 4 + (sh % Math.max(1, assignments.length)),
@@ -1046,19 +1048,22 @@ export function getAdminCourseDetail(code: string): AdminCourseDetailData {
     };
   });
 
-  // grade distribution (bars at 50,55,…,100)
-  const peak = 80 + (h % 10);
+  // grade distribution (bars at 50,55,…,100) — Gaussian scaled to full enrollment
+  const peak = avgGrade != null ? Math.round(avgGrade) : 80 + (h % 10);
+  const effectiveN = Math.max(course.studentIds.length, 40);
   const gradeDistribution = Array.from({ length: 11 }, (_, i) => {
     const g = 50 + i * 5;
-    return Math.max(
-      0,
-      Math.round(
-        ((rosterStudents.length * Math.exp(-0.5 * ((g - peak) / 12) ** 2)) /
-          (12 * Math.sqrt(2 * Math.PI))) *
-          5 +
-          (strHash(course.id + String(i)) % 3),
-      ),
-    );
+    return avgGrade != null
+      ? Math.max(
+          0,
+          Math.round(
+            ((effectiveN * Math.exp(-0.5 * ((g - peak) / 12) ** 2)) /
+              (12 * Math.sqrt(2 * Math.PI))) *
+              5 +
+              (strHash(course.id + String(i)) % 3),
+          ),
+        )
+      : 0;
   });
 
   // grade summary from roster

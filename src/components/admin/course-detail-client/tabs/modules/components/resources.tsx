@@ -43,25 +43,30 @@ export function Resources({ resources }: ResourcesProps) {
   const allResources = [...uploadedRes, ...resources];
 
   return (
-    <div className="m-card">
+    <div className="m-card self-start">
       <div className="m-card__head">
         <span className="m-card__title">Resources</span>
         <span className="m-card__sub">files &amp; attachments</span>
       </div>
       <div className="m-card__body">
         <div className="m-stack m-gap-8">
-          {allResources.map((r, i) => (
-            <div key={`${r.name}-${i}`} className="m-resource-item">
-              <FileIcon size={14} className="m-text-3 m-shrink-0" />
-              <div className="m-resource-item__body">
-                <div className="m-resource-item__name">{r.name}</div>
-                <div className="m-resource-item__meta m-mono">
-                  {r.size} · uploaded {r.uploaded}
+          <div
+            className="overflow-y-auto"
+            style={{ maxHeight: "calc(4 * 52px)" }}
+          >
+            {allResources.map((r, i) => (
+              <div key={`${r.name}-${i}`} className="m-resource-item">
+                <FileIcon size={14} className="m-text-3 m-shrink-0" />
+                <div className="m-resource-item__body">
+                  <div className="m-resource-item__name">{r.name}</div>
+                  <div className="m-resource-item__meta m-mono">
+                    {r.size} · uploaded {r.uploaded}
+                  </div>
                 </div>
+                <DownloadIcon size={14} className="m-text-3 m-shrink-0" />
               </div>
-              <DownloadIcon size={14} className="m-text-3 m-shrink-0" />
-            </div>
-          ))}
+            ))}
+          </div>
 
           <input
             ref={fileRef}

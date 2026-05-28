@@ -25,23 +25,14 @@ export function CourseDetailClient({ data }: CourseDetailClientProps) {
     resources,
     recentSubmissions,
     roster,
+    gradeDistribution,
+    gradeSummary,
     engagement,
   } = data;
 
   const [tab, setTab] = useState<Tab>("overview");
 
-  const firstModuleId = modules[0]?.id ?? "";
-  const firstLessons = moduleLessons[firstModuleId] ?? [];
-
-  const {
-    computedDist,
-    gradeData,
-    gradeFailRate,
-    gradeMean,
-    gradeMedian,
-    gradeStdev,
-    maxDist,
-  } = generateGradesValues(roster);
+  const { gradeData } = generateGradesValues(roster);
 
   const atRiskCount = roster.filter(
     (s) => (s.grade ?? 100) < 70 || s.attendance < 75,
@@ -81,7 +72,7 @@ export function CourseDetailClient({ data }: CourseDetailClientProps) {
         {tab === "modules" && (
           <Modules
             modules={modules}
-            firstLessons={firstLessons}
+            moduleLessons={moduleLessons}
             resources={resources}
           />
         )}
@@ -89,13 +80,9 @@ export function CourseDetailClient({ data }: CourseDetailClientProps) {
         {tab === "grades" && (
           <Grades
             grades={{
-              gradeData,
-              computedDist,
-              maxDist,
-              gradeMean,
-              gradeMedian,
-              gradeStdev,
-              gradeFailRate,
+              gradeDistribution,
+              gradedCount: course.avgGrade != null ? course.enrolled : 0,
+              ...gradeSummary,
             }}
           />
         )}
