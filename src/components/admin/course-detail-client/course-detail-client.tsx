@@ -30,9 +30,6 @@ export function CourseDetailClient({ data }: CourseDetailClientProps) {
 
   const [tab, setTab] = useState<Tab>("overview");
 
-  const firstModuleId = modules[0]?.id ?? "";
-  const firstLessons = moduleLessons[firstModuleId] ?? [];
-
   const {
     computedDist,
     gradeData,
@@ -81,7 +78,7 @@ export function CourseDetailClient({ data }: CourseDetailClientProps) {
         {tab === "modules" && (
           <Modules
             modules={modules}
-            firstLessons={firstLessons}
+            moduleLessons={moduleLessons}
             resources={resources}
           />
         )}
