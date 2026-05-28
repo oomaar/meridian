@@ -12,7 +12,8 @@
 .m-popover {
   background: var(--m-surface);
   color: var(--m-text);
-  border-color: var(--m-line);
+  border: 1px solid var(--m-line);
+  box-shadow: var(--m-shadow-md);
 }
 
 /* ── Sheet / slide-in drawer ────────────────────────────────────────────────
