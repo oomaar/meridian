@@ -1,8 +1,22 @@
 "use client";
 
 import { Dispatch, SetStateAction, useState } from "react";
-import { CheckIcon, Loader2Icon, MegaphoneIcon, XIcon } from "lucide-react";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  Loader2Icon,
+  MegaphoneIcon,
+  XIcon,
+} from "lucide-react";
 import { CHANNELS } from "../data/CHANNELS";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+const POPOVER_CLASSES =
+  "p-1 gap-0 w-(--radix-popover-trigger-width) z-[300] m-popover max-h-52 overflow-y-auto";
 
 type SaveState = "idle" | "posting" | "posted";
 
@@ -28,6 +42,7 @@ export function PostAnnouncementSheetDrawer({
   setOpen,
 }: PostAnnouncementSheetDrawerProps) {
   const [form, setForm] = useState<Form>(intialForm);
+  const [channelOpen, setChannelOpen] = useState(false);
 
   function reset() {
     setForm(intialForm);
@@ -75,20 +90,42 @@ export function PostAnnouncementSheetDrawer({
         </div>
 
         <form onSubmit={handleSubmit} className="m-sheet__body">
-          <label className="m-field">
+          <div className="m-field">
             <span className="m-field__label">Channel</span>
-            <select
-              className="m-field__input m-field__select"
-              value={form.channel}
-              onChange={(e) => setForm({ ...form, channel: e.target.value })}
-            >
-              {CHANNELS.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </label>
+            <Popover open={channelOpen} onOpenChange={setChannelOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="m-field__input m-field__trigger"
+                >
+                  <span>{form.channel}</span>
+                  <ChevronDownIcon size={14} className="m-field__chevron" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                sideOffset={6}
+                className={POPOVER_CLASSES}
+              >
+                {CHANNELS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    className={`m-role-option${form.channel === c ? " m-role-option--active" : ""}`}
+                    onClick={() => {
+                      setForm({ ...form, channel: c });
+                      setChannelOpen(false);
+                    }}
+                  >
+                    <span>{c}</span>
+                    {form.channel === c && (
+                      <CheckIcon size={12} className="m-role-option__check" />
+                    )}
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
+          </div>
 
           <label className="m-field">
             <span className="m-field__label">Title</span>
