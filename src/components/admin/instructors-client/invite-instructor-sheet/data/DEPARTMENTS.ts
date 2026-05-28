@@ -1,0 +1,17 @@
+export const DEPARTMENTS = [
+  { code: "CS", name: "Computer Science" },
+  { code: "MATH", name: "Mathematics" },
+  { code: "PHYS", name: "Physics" },
+  { code: "BIO", name: "Biology" },
+  { code: "CHEM", name: "Chemistry" },
+  { code: "ENG", name: "English" },
+  { code: "LIT", name: "Comparative Literature" },
+  { code: "HIST", name: "History" },
+  { code: "PHIL", name: "Philosophy" },
+  { code: "ECON", name: "Economics" },
+  { code: "SOC", name: "Sociology" },
+  { code: "POLI", name: "Political Science" },
+  { code: "ART", name: "Art History" },
+  { code: "MUS", name: "Music" },
+  { code: "LING", name: "Linguistics" },
+];

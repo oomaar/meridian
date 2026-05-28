@@ -1,0 +1,17 @@
+export const DEPTARTMENT_COLORS: Record<string, string> = {
+  CS: "var(--m-info)",
+  MATH: "#9a7fc4",
+  PHYS: "var(--m-accent)",
+  BIO: "var(--m-success)",
+  CHEM: "var(--m-success)",
+  ENG: "var(--m-accent)",
+  LIT: "var(--m-accent)",
+  HIST: "var(--m-warning)",
+  PHIL: "var(--m-info)",
+  ECON: "var(--m-danger)",
+  SOC: "var(--m-warning)",
+  POLI: "var(--m-danger)",
+  ART: "var(--m-warning)",
+  MUS: "#9a7fc4",
+  LING: "var(--m-info)",
+};

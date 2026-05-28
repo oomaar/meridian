@@ -6,7 +6,9 @@
    ─────────────────────────────────────────────────────── */
 
 /* labelled input — used inside auth, settings, modals */
-.m-field { display: block; }
+.m-field {
+  display: block;
+}
 .m-field__label {
   display: block;
   font-size: 11.5px;
@@ -26,13 +28,71 @@
   font-size: 14px;
   color: var(--m-text);
   outline: none;
-  transition: border 0.12s, background 0.12s;
+  transition:
+    border 0.12s,
+    background 0.12s;
   font-family: inherit;
 }
-.m-field__input::placeholder { color: var(--m-text-4); }
+.m-field__input::placeholder {
+  color: var(--m-text-4);
+}
 .m-field__input:focus {
   border-color: var(--m-line-strong);
   background: var(--m-elevated);
+}
+.m-field__textarea {
+  height: auto;
+  resize: vertical;
+  padding: 10px 12px;
+  line-height: 1.55;
+}
+
+/* custom dropdown trigger — button styled to match m-field__input */
+.m-field__trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+.m-field__trigger:focus {
+  border-color: var(--m-line-strong);
+  background: var(--m-elevated);
+}
+.m-field__chevron {
+  margin-left: auto;
+  color: var(--m-text-3);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+[data-state="open"] .m-field__chevron {
+  transform: rotate(180deg);
+}
+
+/* options list inside the dropdown popover */
+.m-role-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 5px;
+  font-size: 13.5px;
+  color: var(--m-text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+}
+.m-role-option:hover {
+  background: var(--m-surface-2);
+}
+.m-role-option--active {
+  background: var(--m-surface-2);
+}
+.m-role-option__check {
+  margin-left: auto;
+  color: var(--m-accent);
+  flex-shrink: 0;
 }
 
 /* select chevron — overlays the native <select> to match m-field__input */
@@ -55,7 +115,9 @@
   color: var(--m-text-2);
   font-size: 12px;
 }
-.m-check input { accent-color: var(--m-accent); }
+.m-check input {
+  accent-color: var(--m-accent);
+}
 
 /* persona picker on /login — quick-jump rows, instant entry */
 .m-persona-picker {
@@ -82,7 +144,9 @@
   color: var(--m-text);
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
 }
 .m-persona-picker__row:hover {
   background: var(--m-elevated);
@@ -95,11 +159,27 @@
   line-height: 1.2;
   min-width: 0;
 }
-.m-persona-picker__meta b { font-size: 13.5px; font-weight: 500; }
-.m-persona-picker__meta span { font-size: 11.5px; color: var(--m-text-3); }
-.m-persona-picker__arrow { color: var(--m-text-3); flex-shrink: 0; }
+.m-persona-picker__meta b {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.m-persona-picker__meta span {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+}
+.m-persona-picker__arrow {
+  color: var(--m-text-3);
+  flex-shrink: 0;
+}
 .m-persona-picker__row:hover .m-persona-picker__arrow {
   color: var(--m-accent);
+}
+
+/* two-column form row — pair short fields side-by-side */
+.m-fields-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
 
 /* success state (verify page, forgot success) */

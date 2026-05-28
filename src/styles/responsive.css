@@ -5,29 +5,105 @@
    in globals.css so these rules win on source order.
    ─────────────────────────────────────────────────────── */
 
-@media (max-width: 880px) {
-  /* Auth: collapse to single column + center the form inner */
+/* ───────────────────────────────────────────────────────
+   ≤ 1024px — wide tablet / small laptop
+   Stats grid: 4-col → 2×2. Everything else stays put.
+   ─────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .m-grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ───────────────────────────────────────────────────────
+   ≤ 768px — tablet / large phone
+   Sidebar becomes an overlay drawer; major content grids
+   collapse to a single column.
+   ─────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* ── App shell ── */
+  .m-app { grid-template-columns: 1fr; }
+
+  .m-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 248px;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .m-app[data-nav-open] .m-sidebar {
+    transform: translateX(0);
+    box-shadow: var(--m-shadow-lg);
+  }
+
+  .m-nav-toggle { display: flex; }
+
+  /* ── Topbar ── */
+  .m-topbar { padding: 0 16px; gap: 10px; }
+  .m-search  { display: none; }
+
+  /* ── Page chrome ── */
+  .m-page__header {
+    padding: 16px 16px 14px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .m-page__body { padding: 16px 16px 48px; }
+
+  /* ── Content grids ── */
+  .m-grid-2-1,
+  .m-grid-2   { grid-template-columns: 1fr; }
+
+  /* ── Course grid: 3-col → 2-col at tablet ── */
+  .m-course-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* ── Card toolbar: allow wrap, hide some filters ── */
+  .m-card__toolbar { gap: 6px; }
+
+  /* ── Students: hide email sub-line on tablet ── */
+  .m-student-cell__email { display: none; }
+
+  /* ── Semester banner: 3-col → vertical stack ── */
+  .m-sem-banner { grid-template-columns: 1fr; gap: 14px; }
+
+  /* ── Auth + Landing ── */
   .m-auth { grid-template-columns: 1fr; }
   .m-auth__quote-col { display: none; }
   .m-auth__inner { margin: 0 auto; }
 
-  /* Landing: collapse multi-col grids, shrink padding, hide secondary nav.
-     Section splits now use the .m-section-split class instead of inline
-     grid styles, so we can collapse them with simple class-on-class rules
-     (no !important needed). */
-  .m-landing__hero { padding: 60px 20px 40px; }
+  .m-landing__hero    { padding: 60px 20px 40px; }
   .m-landing__section { padding: 40px 20px; }
-  .m-landing__nav { padding: 0 20px; }
+  .m-landing__nav     { padding: 0 20px; }
   .m-landing__nav-links { display: none; }
   .m-section-split,
-  .m-section-split--reverse {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
+  .m-section-split--reverse { grid-template-columns: 1fr; gap: 32px; }
   .m-landing .m-row { flex-wrap: wrap; }
-  .m-landing > footer {
-    flex-wrap: wrap !important;
-    padding: 24px 20px !important;
-  }
+  .m-landing > footer { flex-wrap: wrap; padding: 24px 20px; }
   .m-preview-frame { overflow-x: auto; }
+}
+
+/* ───────────────────────────────────────────────────────
+   ≤ 480px — small phone
+   Single-column everything; strip decorative chrome.
+   ─────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .m-grid-4 { grid-template-columns: 1fr; }
+
+  /* ── Course grid: 2-col → 1-col on small phone ── */
+  .m-course-grid { grid-template-columns: 1fr; }
+
+  /* hide sparklines — they clip at this width */
+  .m-stat__spark { display: none; }
+
+  /* breadcrumbs: show only the current page (last crumb) */
+  .m-crumbs > span    { display: none; }
+  .m-crumbs__sep      { display: none; }
+
+  /* chart foot: wrap stat groups */
+  .m-chart-foot { flex-wrap: wrap; gap: 14px; }
+
+  /* topbar: hide the Landing nav link */
+  .m-topbar-landing { display: none; }
 }

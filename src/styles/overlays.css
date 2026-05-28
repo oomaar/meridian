@@ -6,6 +6,85 @@
    (.m-drawer*) will land here when we build them.
    ─────────────────────────────────────────────────────── */
 
+/* ── Meridian Popover skin ───────────────────────────────────────────────────
+   Plain (non-layered) CSS beats Tailwind's @layer utilities, so this always
+   wins over bg-popover / text-popover-foreground / ring-foreground. */
+.m-popover {
+  background: var(--m-surface);
+  color: var(--m-text);
+  border: 1px solid var(--m-line);
+  box-shadow: var(--m-shadow-md);
+}
+
+/* ── Sheet / slide-in drawer ────────────────────────────────────────────────
+   Usage: render .m-sheet-overlay as click-away backdrop, .m-sheet as the
+   panel. Animates in from the right; close by un-mounting (no exit anim). */
+.m-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--m-overlay);
+  z-index: 150;
+}
+.m-sheet {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 480px;
+  max-width: 100vw;
+  background: var(--m-surface);
+  border-left: 1px solid var(--m-line);
+  box-shadow: var(--m-shadow-lg);
+  z-index: 151;
+  display: flex;
+  flex-direction: column;
+  animation: m-sheet-in 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.m-sheet--wide {
+  width: 560px;
+}
+@keyframes m-sheet-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.m-sheet__head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--m-line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.m-sheet__title {
+  font-family: var(--m-font-serif);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--m-text);
+  flex: 1;
+}
+.m-sheet__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.m-sheet__foot {
+  padding: 14px 20px;
+  border-top: 1px solid var(--m-line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
 /* persona switcher menu (sidebar footer popover) */
 .m-persona-menu {
   position: absolute;
@@ -39,8 +118,12 @@
   text-decoration: none;
   cursor: pointer;
 }
-.m-persona-menu__item:hover { background: var(--m-surface-2); }
-.m-persona-menu__item--active { background: var(--m-accent-bg); }
+.m-persona-menu__item:hover {
+  background: var(--m-surface-2);
+}
+.m-persona-menu__item--active {
+  background: var(--m-accent-bg);
+}
 .m-persona-menu__meta {
   flex: 1;
   min-width: 0;
@@ -48,7 +131,10 @@
   flex-direction: column;
   line-height: 1.2;
 }
-.m-persona-menu__meta b { font-size: 13px; font-weight: 500; }
+.m-persona-menu__meta b {
+  font-size: 13px;
+  font-weight: 500;
+}
 .m-persona-menu__meta span {
   font-size: 11px;
   color: var(--m-text-3);
@@ -56,4 +142,608 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.m-persona-menu__check { color: var(--m-accent); flex-shrink: 0; }
+.m-persona-menu__check {
+  color: var(--m-accent);
+  flex-shrink: 0;
+}
+
+/* ── Import roster drop zone ────────────────────────────────────────────────*/
+.m-dropzone {
+  border: 1.5px dashed var(--m-line);
+  border-radius: 8px;
+  padding: 32px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.m-dropzone:hover,
+.m-dropzone--has-file {
+  border-color: var(--m-accent);
+  background: color-mix(in srgb, var(--m-accent) 5%, transparent);
+}
+.m-dropzone__prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--m-text-3);
+  font-size: 13px;
+}
+.m-dropzone__hint {
+  font-size: 11px;
+  color: var(--m-text-3);
+}
+.m-dropzone__file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--m-text);
+}
+.m-dropzone__size {
+  font-size: 11px;
+  color: var(--m-text-3);
+}
+
+/* import format note */
+.m-import-note {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  line-height: 1.6;
+  margin-top: 12px;
+}
+.m-import-note code {
+  font-family: var(--m-font-mono);
+  font-size: 11px;
+  background: var(--m-bg);
+  border: 1px solid var(--m-line);
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
+/* import progress bar */
+.m-import-progress {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.m-import-progress__bar {
+  height: 5px;
+  border-radius: 99px;
+  background: var(--m-line);
+  overflow: hidden;
+}
+.m-import-progress__fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--m-accent);
+  transition: width 0.1s linear;
+}
+.m-import-progress__label {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  font-family: var(--m-font-mono);
+}
+
+/* import done state */
+.m-import-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 20px;
+  text-align: center;
+}
+.m-import-done__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--m-success) 12%, transparent);
+  color: var(--m-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.m-import-done__title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--m-text);
+}
+.m-import-done__sub {
+  font-size: 12.5px;
+  color: var(--m-text-3);
+  line-height: 1.6;
+}
+
+/* ── Academic calendar sheet ─────────────────────────────────────────────────*/
+
+/* semester tab row */
+.m-cal-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--m-line);
+  flex-wrap: wrap;
+}
+.m-cal-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: var(--m-text-2);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+.m-cal-tab:hover {
+  background: var(--m-surface-2);
+  color: var(--m-text);
+}
+.m-cal-tab--active {
+  background: var(--m-surface-2);
+  color: var(--m-text);
+  font-weight: 500;
+}
+.m-cal-tab--current {
+  color: var(--m-accent);
+}
+.m-cal-tab--current.m-cal-tab--active {
+  color: var(--m-accent);
+}
+
+/* date range + progress header */
+.m-cal-range {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--m-text-2);
+  margin-bottom: 20px;
+}
+
+/* event list */
+.m-cal-events {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.m-cal-event {
+  display: grid;
+  grid-template-columns: 10px 68px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--m-line-soft);
+}
+.m-cal-event:last-child {
+  border-bottom: none;
+}
+.m-cal-event__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.m-cal-event__date {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+}
+.m-cal-event__body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.m-cal-event__label {
+  font-size: 13px;
+  color: var(--m-text);
+}
+.m-cal-event__kind {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* ── DatePicker button ───────────────────────────────────────────────────────*/
+
+.m-datepicker-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.m-datepicker-btn--empty {
+  color: var(--m-text-3);
+}
+.m-datepicker-btn__icon {
+  flex-shrink: 0;
+  color: var(--m-text-3);
+}
+
+/* popover wrapper — uses Radix portal, so must be globally accessible */
+.m-datepicker-popover {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: 10px;
+  box-shadow: var(--m-shadow-lg);
+  padding: 6px;
+  z-index: 300;
+}
+
+/* ── Permissions matrix sheet ───────────────────────────────────────────────*/
+
+.m-perm-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--m-line);
+  border-radius: 8px;
+}
+
+.m-perm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.m-perm-table__cat-head {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+  min-width: 160px;
+}
+
+.m-perm-table__role-head {
+  padding: 10px 12px;
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.m-perm-table__cat {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--m-text-2);
+  border-bottom: 1px solid var(--m-line-soft);
+  white-space: nowrap;
+}
+
+.m-perm-table__cell {
+  padding: 8px 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--m-line-soft);
+}
+
+.m-perm-table tr:last-child td {
+  border-bottom: none;
+}
+
+.m-perm-table tbody tr:hover td {
+  background: var(--m-surface-2);
+}
+
+.m-perm-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--role-color, var(--m-text-2));
+}
+.m-perm-role-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--role-color, var(--m-text-2));
+  flex-shrink: 0;
+}
+
+/* access level cells */
+.m-perm-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.m-perm-cell--full {
+  color: var(--m-success);
+}
+.m-perm-cell--read {
+  color: var(--m-text-3);
+}
+.m-perm-cell--none {
+  color: var(--m-text-4);
+}
+
+/* legend row at bottom of permissions sheet */
+.m-perm-legend {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 12px 0 4px;
+  font-size: 12px;
+  color: var(--m-text-3);
+}
+
+/* ── Activity filters panel ─────────────────────────────────────────────────
+   Floating panel anchored below the Filters button in the page header. */
+.m-activity-filters {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 120;
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: 10px;
+  box-shadow: var(--m-shadow-lg);
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.m-activity-filters__section {
+  padding: 8px 6px 6px;
+}
+.m-activity-filters__label {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  font-weight: 500;
+  padding: 4px 10px 6px;
+}
+.m-activity-filters__opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 7px 10px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.1s;
+}
+.m-activity-filters__opt:hover {
+  background: var(--m-surface-2);
+}
+.m-activity-filters__opt--active {
+  background: var(--m-accent-bg);
+}
+.m-activity-filters__opt-label {
+  flex: 1;
+  font-size: 13px;
+  color: var(--m-text-2);
+}
+.m-activity-filters__opt--active .m-activity-filters__opt-label {
+  color: var(--m-accent);
+  font-weight: 500;
+}
+.m-activity-filters__opt-count {
+  font-family: var(--m-font-mono);
+  font-size: 11.5px;
+  color: var(--m-text-3);
+}
+.m-activity-filters__divider {
+  height: 1px;
+  background: var(--m-line);
+  margin: 2px 0;
+}
+.m-activity-filters__footer {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  padding: 10px 10px 10px;
+  border-top: 1px solid var(--m-line);
+}
+
+/* badge on the Filters button showing active filter count */
+.m-activity-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* empty state when no events match filters */
+.m-activity-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--m-text-3);
+  font-size: 13px;
+  padding: 48px 20px;
+}
+
+/* ── Modal / dialog ─────────────────────────────────────────────────────────
+   Centred overlay modal. Wider than a sheet — used for reports, charts, etc. */
+.m-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--m-overlay);
+  z-index: 200;
+}
+.m-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(680px, 96vw);
+  max-height: min(88vh, 800px);
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: 12px;
+  box-shadow: var(--m-shadow-lg);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  animation: m-modal-in 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes m-modal-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+.m-modal__head {
+  padding: 18px 22px 16px;
+  border-bottom: 1px solid var(--m-line);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.m-modal__title {
+  font-family: var(--m-font-serif);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--m-text);
+  line-height: 1.2;
+}
+.m-modal__sub {
+  font-size: 12px;
+  color: var(--m-text-3);
+  margin-top: 3px;
+}
+.m-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.m-modal__foot {
+  padding: 14px 22px;
+  border-top: 1px solid var(--m-line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* stat grid inside report modal — 2×3 key-number tiles */
+.m-modal-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--m-line);
+  border: 1px solid var(--m-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.m-modal-stat {
+  background: var(--m-surface);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.m-modal-stat__label {
+  font-size: 11px;
+  color: var(--m-text-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.m-modal-stat__value {
+  font-family: var(--m-font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--m-text);
+  line-height: 1.1;
+}
+
+/* breakdown bar row — label + track + percentage */
+.m-modal-breakdown-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 36px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.m-modal-breakdown-row:last-child {
+  margin-bottom: 0;
+}
+.m-modal-breakdown-row__label {
+  font-size: 12.5px;
+  color: var(--m-text-2);
+  white-space: nowrap;
+}
+.m-modal-breakdown-row__track {
+  height: 6px;
+  background: var(--m-line-soft);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.m-modal-breakdown-row__fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+.m-modal-breakdown-row__pct {
+  font-family: var(--m-font-mono);
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  text-align: right;
+}
+
+/* insight bullets */
+.m-modal-insights {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-modal-insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--m-text-2);
+  line-height: 1.55;
+}
+.m-modal-insight__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--m-accent);
+  flex-shrink: 0;
+  margin-top: 6px;
+}

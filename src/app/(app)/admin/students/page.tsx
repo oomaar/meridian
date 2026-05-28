@@ -1,3 +1,8 @@
+import { getAdminStudentsPage } from "@/fake-db/dashboards";
+import { StudentsClient } from "@/components/admin/students-client/students-client";
+
 export default function AdminStudentsPage() {
-  return <h1>Students</h1>;
+  const { rows, total } = getAdminStudentsPage();
+
+  return <StudentsClient rows={rows} total={total} />;
 }

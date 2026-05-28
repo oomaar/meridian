@@ -1,3 +1,8 @@
+import { getAdminSemestersPage } from "@/fake-db/dashboards";
+import { SemestersClient } from "@/components/admin/semesters-client/semesters-client";
+
 export default function AdminSemestersPage() {
-  return <h1>Semesters</h1>;
+  const data = getAdminSemestersPage();
+
+  return <SemestersClient data={data} />;
 }

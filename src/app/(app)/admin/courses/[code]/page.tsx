@@ -1,8 +1,19 @@
+import { notFound } from "next/navigation";
+import { getAdminCourseDetail } from "@/fake-db/dashboards";
+import { CourseDetailClient } from "@/components/admin/course-detail-client/course-detail-client";
+
+type AdminCourseDetailPageParams = {
+  params: Promise<{ code: string }>;
+};
+
 export default async function AdminCourseDetailPage({
   params,
-}: {
-  params: Promise<{ code: string }>;
-}) {
+}: AdminCourseDetailPageParams) {
   const { code } = await params;
-  return <h1>Course: {code}</h1>;
+
+  const data = getAdminCourseDetail(code);
+
+  if (!data) notFound();
+
+  return <CourseDetailClient data={data} />;
 }

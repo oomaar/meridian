@@ -1,3 +1,8 @@
+import { getAdminInstructorsPage } from "@/fake-db/dashboards";
+import { InstructorsClient } from "@/components/admin/instructors-client/instructors-client";
+
 export default function AdminInstructorsPage() {
-  return <h1>Instructors</h1>;
+  const { rows, total } = getAdminInstructorsPage();
+
+  return <InstructorsClient rows={rows} total={total} />;
 }

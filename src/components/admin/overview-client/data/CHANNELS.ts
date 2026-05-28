@@ -1,0 +1,15 @@
+export const CHANNELS = [
+  "All faculty",
+  "All students",
+  "All staff",
+  "CS · Faculty",
+  "CS · Students",
+  "MATH · Faculty",
+  "MATH · Students",
+  "BIO · Faculty",
+  "ECON · Students",
+  "Students · UG",
+  "Students · Grad",
+  "Dean's office",
+  "Office of the Registrar",
+];

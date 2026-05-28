@@ -1,3 +1,5 @@
+import { SettingsClient } from "@/components/admin/settings-client/settings-client";
+
 export default function AdminSettingsPage() {
-  return <h1>Settings</h1>;
+  return <SettingsClient />;
 }

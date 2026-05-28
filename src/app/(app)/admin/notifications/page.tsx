@@ -1,3 +1,8 @@
+import { getAdminNotificationsPage } from "@/fake-db/dashboards";
+import { NotificationsClient } from "@/components/admin/notifications-client/notifications-client";
+
 export default function AdminNotificationsPage() {
-  return <h1>Notifications</h1>;
+  const { notifications } = getAdminNotificationsPage();
+
+  return <NotificationsClient notifications={notifications} />;
 }
