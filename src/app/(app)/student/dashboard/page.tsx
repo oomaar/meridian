@@ -1,3 +1,10 @@
+import { getStudentDashboard } from "@/fake-db/dashboards";
+import { StudentDashboardClient } from "@/components/student/dashboard-client/dashboard-client";
+
 export default function StudentDashboardPage() {
-  return <h1>Today</h1>;
+  const data = getStudentDashboard();
+
+  if (!data) return null;
+
+  return <StudentDashboardClient data={data} />;
 }
