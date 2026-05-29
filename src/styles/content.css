@@ -2186,3 +2186,186 @@
   height: 32px;
   font-size: 12px;
 }
+
+/* ── Student dashboard — announcement rows ───────────────────────────────── */
+.m-ann-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 14px 18px;
+}
+.m-ann-row:not(:last-child) {
+  border-bottom: 1px solid var(--m-line-soft);
+}
+.m-ann-row__title {
+  font-size: 13.5px;
+  margin-bottom: 2px;
+}
+.m-ann-row__meta {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+}
+.m-ann-row__time {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+}
+
+/* ── Student dashboard — course rows ─────────────────────────────────────── */
+.m-course-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 18px;
+}
+.m-course-row:not(:last-child) {
+  border-bottom: 1px solid var(--m-line-soft);
+}
+.m-course-row__chip {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: var(--m-accent-bg);
+  display: grid;
+  place-items: center;
+  font-family: var(--m-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.m-course-row__title {
+  font-size: 14px;
+  font-weight: 500;
+}
+.m-course-row__meta {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+}
+.m-course-row__progress {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.m-course-row__pct {
+  font-size: 11px;
+  color: var(--m-text-3);
+}
+.m-course-row__next {
+  text-align: right;
+}
+.m-course-row__next-label {
+  font-size: 10.5px;
+  color: var(--m-text-3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.m-course-row__next-due {
+  font-size: 12px;
+  color: var(--m-text-2);
+}
+.m-course-row__grade {
+  font-family: var(--m-font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  text-align: center;
+}
+.m-course-row__grade-label {
+  font-size: 10.5px;
+  color: var(--m-text-3);
+  text-align: center;
+}
+
+/* ── Student dashboard — deadline rows ───────────────────────────────────── */
+.m-deadline-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 18px;
+}
+.m-deadline-row:not(:last-child) {
+  border-bottom: 1px solid var(--m-line-soft);
+}
+.m-deadline-row__date {
+  text-align: center;
+  line-height: 1.1;
+}
+.m-deadline-row__day {
+  font-size: 10.5px;
+  color: var(--m-text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.m-deadline-row__time {
+  font-size: 13px;
+  color: var(--m-text-2);
+}
+.m-deadline-row__title {
+  font-size: 13px;
+  font-weight: 500;
+}
+.m-deadline-row__meta {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+}
+
+/* ── Student dashboard — continue learning card ──────────────────────────── */
+.m-lesson-card {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+.m-lesson-card__cover {
+  width: 220px;
+  min-height: 124px;
+  flex-shrink: 0;
+}
+.m-lesson-card__body {
+  flex: 1;
+}
+.m-lesson-card__title {
+  font-family: var(--m-font-serif);
+  font-size: 18px;
+  font-weight: 500;
+  margin: 2px 0 6px;
+}
+.m-lesson-card__desc {
+  margin: 0 0 12px;
+  color: var(--m-text-2);
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 52ch;
+}
+.m-lesson-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.m-lesson-card__meta {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* ── Student dashboard — term overview ───────────────────────────────────── */
+.m-kv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.m-kv-row__label {
+  color: var(--m-text-3);
+}
+.m-kv-row__gpa {
+  font-family: var(--m-font-serif);
+  font-size: 18px;
+}
+.m-term-footer {
+  font-size: 12px;
+  color: var(--m-text-3);
+}
+.m-term-footer b {
+  color: var(--m-text-2);
+}
