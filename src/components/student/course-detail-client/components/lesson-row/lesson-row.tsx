@@ -1,5 +1,5 @@
 import type { StudentCourseDetailLesson } from "@/fake-db/dashboards";
-import { LESSON_ICONS } from "../data/LESSON_ICONS";
+import { LESSON_ICONS } from "./data/LESSON_ICONS";
 
 type LessonRowProps = {
   lesson: StudentCourseDetailLesson;

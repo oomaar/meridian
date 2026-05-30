@@ -2,7 +2,7 @@ import type {
   StudentCourseDetailLesson,
   StudentCourseDetailModule,
 } from "@/fake-db/dashboards";
-import { LessonRow } from "./lesson-row";
+import { LessonRow } from "./lesson-row/lesson-row";
 
 type ModuleRowProps = {
   mod: StudentCourseDetailModule;
