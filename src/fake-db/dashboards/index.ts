@@ -1492,3 +1492,162 @@ export function getAdminCourseDetail(code: string): AdminCourseDetailData {
     })),
   };
 }
+
+// ── Student Courses Page ──────────────────────────────────────────────────────
+
+export type StudentCoursePageCard = {
+  code: string;
+  deptCode: string;
+  deptColor: string;
+  title: string;
+  description: string;
+  instructor: string;
+  credits: number;
+  status: CourseStatus;
+  progress: number;
+  grade: string;
+  gradeNum: number | null;
+  modulesComplete: number;
+  modulesTotal: number;
+  meetingDisplay: string;
+  location: string;
+  nextDue: string;
+};
+
+export type StudentCoursesPageData = {
+  student: { firstName: string; name: string };
+  semesterLabel: string;
+  activeCourses: number;
+  totalCredits: number;
+  gpa: number;
+  courses: StudentCoursePageCard[];
+};
+
+function letterToGpa(grade: string): number {
+  const map: Record<string, number> = {
+    "A+": 4.0,
+    A: 4.0,
+    "A−": 3.7,
+    "B+": 3.3,
+    B: 3.0,
+    "B−": 2.7,
+    "C+": 2.3,
+    C: 2.0,
+    "C−": 1.7,
+    "D+": 1.3,
+    D: 1.0,
+    "D−": 0.7,
+    F: 0.0,
+  };
+  return map[grade] ?? 0;
+}
+
+function fmtMeeting(times: Course["meetingTimes"]): string {
+  if (!times.length) return "—";
+  const days = times.map((t) => t.day).join(" / ");
+  const first = times[0];
+  const fmt = (s: string) => {
+    const [h, m] = s.split(":").map(Number);
+    const ampm = h >= 12 ? "pm" : "am";
+    return `${h % 12 || 12}:${String(m).padStart(2, "0")}${ampm}`;
+  };
+  return `${days} · ${fmt(first.start)}–${fmt(first.end)}`;
+}
+
+export function getStudentCoursesPage(): StudentCoursesPageData | null {
+  const student =
+    db.students.find(
+      (s) => s.status === "active" && s.enrolledCourseIds.length > 0,
+    ) ?? db.students[0];
+  if (!student) return null;
+
+  const enrolledCourses = student.enrolledCourseIds
+    .map((id) => db.courses.find((c) => c.id === id))
+    .filter(Boolean) as Course[];
+
+  const semester =
+    db.semesters.find((s) => s.status === "active") ?? db.semesters[0];
+  const semStart = new Date(semester.startDate).getTime();
+  const weekNum = Math.max(
+    1,
+    Math.floor((NOW.getTime() - semStart) / WEEK_MS) + 1,
+  );
+  const MONTH_NAMES = [
+    "Jan","Feb","Mar","Apr","May","Jun",
+    "Jul","Aug","Sep","Oct","Nov","Dec",
+  ];
+  const semesterLabel = `${semester.name} · Week ${weekNum} · ${MONTH_NAMES[NOW.getMonth()]} ${NOW.getDate()}`;
+
+  const rawDeadlines = generateUpcomingDeadlines(student.id, 10);
+
+  const courses: StudentCoursePageCard[] = enrolledCourses.map((c) => {
+    const sh = strHash(student.id + c.id);
+    const dept = db.departments.find((d) => d.id === c.departmentId);
+    const deptCode = dept?.code ?? c.code.split("-")[0];
+    const deptColor = DEPT_COLORS_MAP[deptCode] ?? "var(--m-accent)";
+    const instructor = db.instructors.find((i) => i.id === c.instructorId);
+    const instructorName = instructor
+      ? `Prof. ${instructor.firstName} ${instructor.lastName}`
+      : "—";
+    const progress = (10 + (sh % 81)) / 100;
+    const ch = strHash(c.id);
+    const avgGrade = ch % 20 === 0 ? null : 68 + (ch % 1500) / 100;
+    const sh2 = strHash(student.id + c.id + "g");
+    const gradeNum = avgGrade
+      ? Math.max(
+          45,
+          Math.min(100, Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10)),
+        )
+      : null;
+    const grade = gradeNum ? numToLetterGrade(gradeNum) : "—";
+    const modulesTotal = 4 + (ch % 3);
+    const modulesComplete = Math.max(
+      0,
+      Math.min(modulesTotal, Math.round(progress * modulesTotal)),
+    );
+    const courseDl = rawDeadlines.find((dl) => dl.courseId === c.id);
+    const nextDue = courseDl
+      ? `${courseDl.title} · ${fmtDueShort(new Date(courseDl.dueDate))}`
+      : "No upcoming deadlines";
+
+    return {
+      code: c.code,
+      deptCode,
+      deptColor,
+      title: c.title,
+      description: c.description,
+      instructor: instructorName,
+      credits: c.credits,
+      status: c.status,
+      progress,
+      grade,
+      gradeNum,
+      modulesComplete,
+      modulesTotal,
+      meetingDisplay: fmtMeeting(c.meetingTimes),
+      location: `${c.location.building} ${c.location.room}`,
+      nextDue,
+    };
+  });
+
+  const gradedCourses = courses.filter((c) => c.gradeNum !== null);
+  const gpa =
+    gradedCourses.length > 0
+      ? Math.round(
+          (gradedCourses.reduce((sum, c) => sum + letterToGpa(c.grade), 0) /
+            gradedCourses.length) *
+            100,
+        ) / 100
+      : 0;
+  const totalCredits = courses.reduce((sum, c) => sum + c.credits, 0);
+  const activeCourses = courses.filter((c) => c.status === "active").length;
+
+  return {
+    student: { firstName: student.firstName, name: `${student.firstName} ${student.lastName}` },
+    semesterLabel,
+    activeCourses,
+    totalCredits,
+    gpa,
+    courses,
+  };
+}
