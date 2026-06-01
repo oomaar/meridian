@@ -8,10 +8,6 @@ import { CourseSyllabusSheet } from "./sheets/course-syllabus-sheet";
 
 type StudentCoursesClientProps = { data: StudentCoursesPageData };
 
-// ── Syllabus sheet ────────────────────────────────────────────────────────────
-
-// ── Page component ────────────────────────────────────────────────────────────
-
 export function StudentCoursesClient({ data }: StudentCoursesClientProps) {
   const { student, semesterLabel, activeCourses, totalCredits, gpa, courses } =
     data;
