@@ -1,7 +1,7 @@
 "use client";
 
 import type {
-  StudentCourseDetail,
+  StudentCourseDetailData,
   StudentCourseDetailLesson,
 } from "@/fake-db/dashboards";
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
@@ -15,9 +15,8 @@ type CourseDetailClientLessonContentProps = {
   lesson: StudentCourseDetailLesson;
   setCompletedLessonIds: Dispatch<SetStateAction<Set<string>>>;
   goToLesson(l: StudentCourseDetailLesson): void;
-  grade: string;
-  course: StudentCourseDetail;
   gradeTone: "" | "accent" | "warning";
+  data: StudentCourseDetailData;
 };
 
 export function CourseDetailClientLessonContent({
@@ -26,10 +25,11 @@ export function CourseDetailClientLessonContent({
   lesson,
   setCompletedLessonIds,
   goToLesson,
-  grade,
-  course,
   gradeTone,
+  data,
 }: CourseDetailClientLessonContentProps) {
+  const { course, grade } = data;
+
   const [courseComplete, setCourseComplete] = useState(false);
 
   const prevLesson = currentIdx > 0 ? allLessons[currentIdx - 1] : null;

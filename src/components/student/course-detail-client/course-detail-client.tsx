@@ -81,9 +81,8 @@ export function StudentCourseDetailClient({
           lesson={lesson}
           setCompletedLessonIds={setCompletedLessonIds}
           goToLesson={goToLesson}
-          grade={grade}
-          course={course}
           gradeTone={gradeTone}
+          data={data}
         />
         <div className="m-stack m-right-col">
           <CourseDetailClientLessonResources resources={resources} />
