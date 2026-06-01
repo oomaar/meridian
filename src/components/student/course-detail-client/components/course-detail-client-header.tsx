@@ -1,31 +1,26 @@
 import type {
-  StudentCourseDetail,
+  StudentCourseDetailData,
   StudentCourseDetailLesson,
-  Syllabus,
 } from "@/fake-db/dashboards";
 import Link from "next/link";
 import { MessageInstructorSheet } from "../sheets/message-instructor-sheet/message-instructor-sheet";
 import { SyllabusSheet } from "../sheets/syllabus-sheet/syllabus-sheet";
 
 type CourseDetailClientHeaderProps = {
-  course: StudentCourseDetail;
   lesson: StudentCourseDetailLesson;
-  modulesTotal: number;
   dynamicProgress: number;
   gradeTone: "" | "accent" | "warning";
-  grade: string;
-  syllabus: Syllabus;
+  data: StudentCourseDetailData;
 };
 
 export function CourseDetailClientHeader({
-  course,
   lesson,
-  modulesTotal,
   dynamicProgress,
   gradeTone,
-  grade,
-  syllabus,
+  data,
 }: CourseDetailClientHeaderProps) {
+  const { course, syllabus, grade, modulesTotal } = data;
+
   return (
     <>
       <div className="m-page__header">

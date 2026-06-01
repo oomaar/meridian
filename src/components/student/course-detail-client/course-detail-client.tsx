@@ -6,8 +6,6 @@ import type {
   StudentCourseDetailLesson,
   StudentCourseDetailModule,
 } from "@/fake-db/dashboards";
-import { AllThreadsSheet } from "./sheets/all-threads-sheet/all-threads-sheet";
-import { ThreadDetailSheet } from "./sheets/thread-detail-sheet/thread-detail-sheet";
 import { CourseDetailClientHeader } from "./components/course-detail-client-header";
 import { CourseDetailClientOutlineCard } from "./components/course-detail-client-outline-card/course-detail-client-outline-card";
 import { CourseDetailClientLessonContent } from "./components/course-detail-client-lesson-content/course-detail-client-lesson-content";
@@ -28,15 +26,12 @@ export function StudentCourseDetailClient({
     activeLessonId: initialLessonId,
     resources,
     threads,
-    syllabus,
   } = data;
 
   const allLessons = modules.flatMap((m) => m.lessons);
 
   const [activeLessonId, setActiveLessonId] = useState(initialLessonId);
   const [openModuleIdx, setOpenModuleIdx] = useState(activeModuleIdx);
-  const [allThreadsOpen, setAllThreadsOpen] = useState(false);
-  const [threadDetailOpen, setThreadDetailOpen] = useState(false);
   const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(
     () =>
       new Set(
@@ -66,31 +61,11 @@ export function StudentCourseDetailClient({
 
   return (
     <>
-      {allThreadsOpen && (
-        <AllThreadsSheet
-          threads={threads}
-          onClose={() => setAllThreadsOpen(false)}
-          onOpenThread={() => {
-            setAllThreadsOpen(false);
-            setThreadDetailOpen(true);
-          }}
-        />
-      )}
-      {threadDetailOpen && (
-        <ThreadDetailSheet
-          thread={threads[0]}
-          instructor={course.instructor}
-          onClose={() => setThreadDetailOpen(false)}
-        />
-      )}
       <CourseDetailClientHeader
-        course={course}
         lesson={lesson}
-        modulesTotal={modulesTotal}
         dynamicProgress={dynamicProgress}
         gradeTone={gradeTone}
-        grade={grade}
-        syllabus={syllabus}
+        data={data}
       />
       <div className="m-page__body m-course-layout">
         <CourseDetailClientOutlineCard
@@ -119,11 +94,7 @@ export function StudentCourseDetailClient({
         />
         <div className="m-stack m-right-col">
           <CourseDetailClientLessonResources resources={resources} />
-          <CourseDetailClientDiscussion
-            threads={threads}
-            setAllThreadsOpen={setAllThreadsOpen}
-            setThreadDetailOpen={setThreadDetailOpen}
-          />
+          <CourseDetailClientDiscussion threads={threads} course={course} />
         </div>
       </div>
     </>
