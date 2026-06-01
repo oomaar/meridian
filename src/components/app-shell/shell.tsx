@@ -10,10 +10,12 @@ export function AppShell({
   children,
   studentCourses,
   studentCourseCount,
+  studentDeadlineCount,
 }: {
   children: ReactNode;
   studentCourses: StudentSidebarCourse[];
   studentCourseCount: number;
+  studentDeadlineCount: number;
 }) {
   const pathname = usePathname();
   const [navOpen, setNavOpen] = useState(false);
@@ -33,7 +35,7 @@ export function AppShell({
       {navOpen && (
         <div className="m-nav-overlay" onClick={close} aria-hidden="true" />
       )}
-      <Sidebar studentCourses={studentCourses} studentCourseCount={studentCourseCount} />
+      <Sidebar studentCourses={studentCourses} studentCourseCount={studentCourseCount} studentDeadlineCount={studentDeadlineCount} />
       <div className="m-main">
         <Topbar onNavToggle={toggle} />
         <div className="m-page">{children}</div>
