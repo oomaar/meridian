@@ -5,7 +5,7 @@ import Link from "next/link";
 type CourseCompleteCardProps = {
   course: StudentCourseDetailData["course"];
   grade: string;
-  gradeTone: string;
+  gradeTone: "" | "accent" | "warning";
   onReview: () => void;
 };
 
