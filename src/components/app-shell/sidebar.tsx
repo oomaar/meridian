@@ -167,9 +167,11 @@ function isActive(pathname: string, href: string): boolean {
 export function Sidebar({
   studentCourses,
   studentCourseCount,
+  studentDeadlineCount,
 }: {
   studentCourses: StudentSidebarCourse[];
   studentCourseCount: number;
+  studentDeadlineCount: number;
 }) {
   const pathname = usePathname();
   const role = roleFromPath(pathname);
@@ -205,7 +207,9 @@ export function Sidebar({
               const badge =
                 role === "student" && it.href === "/student/courses"
                   ? String(studentCourseCount)
-                  : it.badge;
+                  : role === "student" && it.href === "/student/deadlines"
+                    ? String(studentDeadlineCount)
+                    : it.badge;
               return (
                 <Fragment key={it.href}>
                   <Link
