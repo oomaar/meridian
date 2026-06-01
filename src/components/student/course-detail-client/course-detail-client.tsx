@@ -4,7 +4,6 @@ import { useState } from "react";
 import type {
   StudentCourseDetailData,
   StudentCourseDetailLesson,
-  StudentCourseDetailModule,
 } from "@/fake-db/dashboards";
 import { CourseDetailClientHeader } from "./components/course-detail-client-header";
 import { CourseDetailClientOutlineCard } from "./components/course-detail-client-outline-card/course-detail-client-outline-card";
@@ -19,7 +18,6 @@ export function StudentCourseDetailClient({
 }: StudentCourseDetailClientProps) {
   const {
     course,
-    modulesTotal,
     grade,
     modules,
     activeModuleIdx,
@@ -71,16 +69,11 @@ export function StudentCourseDetailClient({
         <CourseDetailClientOutlineCard
           activeLessonId={activeLessonId}
           completedLessonIds={completedLessonIds}
-          modules={modules}
-          modulesTotal={modulesTotal}
           goToLesson={goToLesson}
           dynamicProgress={dynamicProgress}
-          onModuleClick={(mod: StudentCourseDetailModule) => {
-            setOpenModuleIdx(mod.idx === openModuleIdx ? -1 : mod.idx);
-          }}
-          isModuleOpen={(modId: number) => {
-            return modId === openModuleIdx;
-          }}
+          openModuleIdx={openModuleIdx}
+          setOpenModuleIdx={setOpenModuleIdx}
+          data={data}
         />
         <CourseDetailClientLessonContent
           allLessons={allLessons}

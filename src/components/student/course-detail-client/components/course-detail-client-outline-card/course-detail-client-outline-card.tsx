@@ -1,31 +1,39 @@
 import { ProgressBar } from "@/components/progress-bar";
 import type {
+  StudentCourseDetailData,
   StudentCourseDetailLesson,
   StudentCourseDetailModule,
 } from "@/fake-db/dashboards";
 import { ModuleRow } from "./module-row";
+import { Dispatch, SetStateAction } from "react";
 
 type CourseDetailClientOutlineCardProps = {
-  modulesTotal: number;
-  modules: StudentCourseDetailModule[];
-  completedLessonIds: Set<string>;
   activeLessonId: string;
+  completedLessonIds: Set<string>;
   goToLesson(l: StudentCourseDetailLesson): void;
   dynamicProgress: number;
-  onModuleClick: (mod: StudentCourseDetailModule) => void;
-  isModuleOpen: (modId: number) => boolean;
+  openModuleIdx: number;
+  setOpenModuleIdx: Dispatch<SetStateAction<number>>;
+  data: StudentCourseDetailData;
 };
 
 export function CourseDetailClientOutlineCard({
-  modulesTotal,
-  modules,
-  completedLessonIds,
   activeLessonId,
+  completedLessonIds,
   goToLesson,
   dynamicProgress,
-  onModuleClick,
-  isModuleOpen,
+  openModuleIdx,
+  setOpenModuleIdx,
+  data,
 }: CourseDetailClientOutlineCardProps) {
+  const { modules, modulesTotal } = data;
+
+  const isModuleOpen = (modId: number) => modId === openModuleIdx;
+
+  const onModuleClick = (mod: StudentCourseDetailModule) => {
+    setOpenModuleIdx(mod.idx === openModuleIdx ? -1 : mod.idx);
+  };
+
   const dynamicModulesComplete = modules.filter((m) =>
     m.lessons.every((l) => completedLessonIds.has(l.id)),
   ).length;
