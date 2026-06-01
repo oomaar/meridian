@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   Activity,
   Bell,
-  BookMarked,
   BookOpen,
   Calendar,
   CalendarClock,
@@ -21,6 +20,9 @@ import {
 } from "lucide-react";
 import { PERSONAS, roleFromPath, type Role } from "@/lib/personas";
 import { PersonaFooter } from "./persona-footer";
+import type { StudentSidebarCourse } from "@/fake-db/dashboards";
+import { BookMarked } from "lucide-react";
+import { Fragment } from "react/jsx-runtime";
 
 type NavItem = {
   href: string;
@@ -40,16 +42,41 @@ const NAV: Record<Role, NavGroup[]> = {
       heading: "Operations",
       items: [
         { href: "/admin/overview", label: "Overview", icon: LayoutDashboard },
-        { href: "/admin/activity", label: "Activity", icon: Activity, badge: "12" },
-        { href: "/admin/notifications", label: "Notifications", icon: Bell, badge: "4" },
+        {
+          href: "/admin/activity",
+          label: "Activity",
+          icon: Activity,
+          badge: "12",
+        },
+        {
+          href: "/admin/notifications",
+          label: "Notifications",
+          icon: Bell,
+          badge: "4",
+        },
       ],
     },
     {
       heading: "Academics",
       items: [
-        { href: "/admin/courses", label: "Courses", icon: BookOpen, badge: "1,184" },
-        { href: "/admin/students", label: "Students", icon: Users, badge: "14,820" },
-        { href: "/admin/instructors", label: "Instructors", icon: GraduationCap, badge: "612" },
+        {
+          href: "/admin/courses",
+          label: "Courses",
+          icon: BookOpen,
+          badge: "1,184",
+        },
+        {
+          href: "/admin/students",
+          label: "Students",
+          icon: Users,
+          badge: "14,820",
+        },
+        {
+          href: "/admin/instructors",
+          label: "Instructors",
+          icon: GraduationCap,
+          badge: "612",
+        },
         { href: "/admin/semesters", label: "Semesters", icon: Calendar },
       ],
     },
@@ -66,13 +93,18 @@ const NAV: Record<Role, NavGroup[]> = {
       heading: "Learning",
       items: [
         { href: "/student/dashboard", label: "Today", icon: LayoutDashboard },
-        { href: "/student/courses", label: "My Courses", icon: BookOpen, badge: "4" },
         {
-          href: "/student/courses/CS-240",
-          label: "CS-240 · Distributed Systems",
-          icon: BookMarked,
+          href: "/student/courses",
+          label: "My Courses",
+          icon: BookOpen,
+          badge: "4",
         },
-        { href: "/student/deadlines", label: "Deadlines", icon: CalendarClock, badge: "5" },
+        {
+          href: "/student/deadlines",
+          label: "Deadlines",
+          icon: CalendarClock,
+          badge: "5",
+        },
       ],
     },
     {
@@ -87,16 +119,34 @@ const NAV: Record<Role, NavGroup[]> = {
     {
       heading: "Teaching",
       items: [
-        { href: "/instructor/dashboard", label: "Overview", icon: LayoutDashboard },
-        { href: "/instructor/grading", label: "Grading queue", icon: PenLine, badge: "23" },
-        { href: "/instructor/courses", label: "My Courses", icon: BookOpen, badge: "3" },
+        {
+          href: "/instructor/dashboard",
+          label: "Overview",
+          icon: LayoutDashboard,
+        },
+        {
+          href: "/instructor/grading",
+          label: "Grading queue",
+          icon: PenLine,
+          badge: "23",
+        },
+        {
+          href: "/instructor/courses",
+          label: "My Courses",
+          icon: BookOpen,
+          badge: "3",
+        },
         { href: "/instructor/roster", label: "Roster", icon: Users },
       ],
     },
     {
       heading: "Account",
       items: [
-        { href: "/instructor/announcements", label: "Announcements", icon: Inbox },
+        {
+          href: "/instructor/announcements",
+          label: "Announcements",
+          icon: Inbox,
+        },
         { href: "/instructor/settings", label: "Settings", icon: Settings },
       ],
     },
@@ -114,7 +164,13 @@ function isActive(pathname: string, href: string): boolean {
   return pathname.startsWith(href + "/");
 }
 
-export function Sidebar() {
+export function Sidebar({
+  studentCourses,
+  studentCourseCount,
+}: {
+  studentCourses: StudentSidebarCourse[];
+  studentCourseCount: number;
+}) {
   const pathname = usePathname();
   const role = roleFromPath(pathname);
   const persona = PERSONAS[role];
@@ -146,16 +202,39 @@ export function Sidebar() {
             {g.items.map((it) => {
               const active = isActive(pathname, it.href);
               const Icon = it.icon;
+              const badge =
+                role === "student" && it.href === "/student/courses"
+                  ? String(studentCourseCount)
+                  : it.badge;
               return (
-                <Link
-                  key={it.href}
-                  href={it.href}
-                  className={`m-nav__item${active ? " m-nav__item--active" : ""}`}
-                >
-                  <Icon className="m-nav__icon" />
-                  <span>{it.label}</span>
-                  {it.badge && <span className="m-nav__badge">{it.badge}</span>}
-                </Link>
+                <Fragment key={it.href}>
+                  <Link
+                    href={it.href}
+                    className={`m-nav__item${active ? " m-nav__item--active" : ""}`}
+                  >
+                    <Icon className="m-nav__icon" />
+                    <span>{it.label}</span>
+                    {badge && <span className="m-nav__badge">{badge}</span>}
+                  </Link>
+                  {role === "student" &&
+                    it.href === "/student/courses" &&
+                    studentCourses.map((c) => {
+                      const href = `/student/courses/${encodeURIComponent(c.code)}`;
+                      const subActive = isActive(pathname, href);
+                      return (
+                        <Link
+                          key={c.code}
+                          href={href}
+                          className={`m-nav__item m-nav__item--sub${subActive ? " m-nav__item--active" : ""}`}
+                        >
+                          <BookMarked className="m-nav__icon" />
+                          <span className="m-mono" style={{ fontSize: 11.5 }}>
+                            {c.code}
+                          </span>
+                        </Link>
+                      );
+                    })}
+                </Fragment>
               );
             })}
           </div>
