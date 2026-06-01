@@ -1,3 +1,8 @@
+import { getStudentDeadlines } from "@/fake-db/dashboards";
+import { DeadlinesClient } from "@/components/student/deadlines-client/deadlines-client";
+
 export default function StudentDeadlinesPage() {
-  return <h1>Deadlines</h1>;
+  const deadlines = getStudentDeadlines();
+
+  return <DeadlinesClient deadlines={deadlines} />;
 }
