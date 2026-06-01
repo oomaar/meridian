@@ -2471,7 +2471,9 @@
   border-bottom: 1px solid var(--m-line-soft);
   cursor: pointer;
 }
-.m-outline-mod--active { background: var(--m-surface-2); }
+.m-outline-mod--active {
+  background: var(--m-surface-2);
+}
 .m-outline-mod__num {
   width: 22px;
   height: 22px;
@@ -2485,10 +2487,25 @@
   background: var(--m-surface-2);
   color: var(--m-text-3);
 }
-.m-outline-mod__num--complete { background: var(--m-success-bg); color: var(--m-success); }
-.m-outline-mod__num--active   { background: var(--m-accent-bg);  color: var(--m-accent);  }
-.m-outline-mod__title { font-size: 12.5px; font-weight: 500; flex: 1; min-width: 0; }
-.m-outline-mod__meta  { font-family: var(--m-font-mono); font-size: 10.5px; color: var(--m-text-3); }
+.m-outline-mod__num--complete {
+  background: var(--m-success-bg);
+  color: var(--m-success);
+}
+.m-outline-mod__num--active {
+  background: var(--m-accent-bg);
+  color: var(--m-accent);
+}
+.m-outline-mod__title {
+  font-size: 12.5px;
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+}
+.m-outline-mod__meta {
+  font-family: var(--m-font-mono);
+  font-size: 10.5px;
+  color: var(--m-text-3);
+}
 .m-outline-lesson {
   display: flex;
   align-items: center;
@@ -2499,15 +2516,30 @@
   cursor: pointer;
   border-left: 2px solid transparent;
 }
-.m-outline-lesson:hover { background: var(--m-surface-2); }
+.m-outline-lesson:hover {
+  background: var(--m-surface-2);
+}
 .m-outline-lesson--active {
   background: var(--m-accent-bg);
   color: var(--m-text);
   border-left-color: var(--m-accent);
 }
-.m-outline-lesson--complete { color: var(--m-text-3); }
-.m-outline-lesson__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.m-outline-lesson__dur  { font-size: 10px; color: var(--m-text-3); font-family: var(--m-font-mono); flex-shrink: 0; }
+.m-outline-lesson--complete {
+  color: var(--m-text-3);
+}
+.m-outline-lesson__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.m-outline-lesson__dur {
+  font-size: 10px;
+  color: var(--m-text-3);
+  font-family: var(--m-font-mono);
+  flex-shrink: 0;
+}
 
 /* ── Student course detail — video player ─────────────────────────────────── */
 .m-video-player {
@@ -2659,7 +2691,9 @@
   cursor: pointer;
   font-size: 13px;
   color: var(--m-text-2);
-  transition: background 0.1s, border-color 0.1s;
+  transition:
+    background 0.1s,
+    border-color 0.1s;
   user-select: none;
 }
 .m-quiz-option:hover:not(.m-quiz-option--correct):not(.m-quiz-option--wrong) {
@@ -2688,7 +2722,9 @@
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  transition: border-color 0.1s, background 0.1s;
+  transition:
+    border-color 0.1s,
+    background 0.1s;
 }
 .m-quiz-option--selected .m-quiz-radio {
   border-color: var(--m-accent);
@@ -3089,9 +3125,20 @@
 .m-thread-row:hover {
   background: var(--m-surface-2);
 }
-.m-thread-item__who   { font-size: 12.5px; font-weight: 500; }
-.m-thread-item__when  { font-size: 12.5px; color: var(--m-text-3); }
-.m-thread-item__body  { font-size: 12.5px; color: var(--m-text-2); margin-top: 2px; line-height: 1.6; }
+.m-thread-item__who {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.m-thread-item__when {
+  font-size: 12.5px;
+  color: var(--m-text-3);
+}
+.m-thread-item__body {
+  font-size: 12.5px;
+  color: var(--m-text-2);
+  margin-top: 2px;
+  line-height: 1.6;
+}
 
 /* ── Thread detail sheet ─────────────────────────────────────────────────── */
 .m-thread-op {
@@ -3133,4 +3180,36 @@
 .m-thread-composer__footer {
   display: flex;
   justify-content: flex-end;
+}
+
+/* ── Deadlines page ──────────────────────────────────────────────────────── */
+.m-deadlines-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.m-deadlines-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.m-deadline-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.m-deadline-group__heading {
+  padding: 12px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+}
+.m-deadlines-empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--m-text-3);
 }
