@@ -247,11 +247,28 @@ const ANN_TEMPLATES = [
   (code: string) => `Grades released for last week's ${code} quiz`,
 ];
 
+// Returns the active student with the most enrolled courses — used by all student-facing functions
+// so every screen shows consistent data for the same persona.
+function getDefaultStudent() {
+  const active = db.students.filter(
+    (s) => s.status === "active" && s.enrolledCourseIds.length >= 4,
+  );
+  if (active.length === 0) {
+    // fallback: just pick the most-enrolled active student
+    return (
+      [...db.students]
+        .filter((s) => s.status === "active")
+        .sort(
+          (a, b) => b.enrolledCourseIds.length - a.enrolledCourseIds.length,
+        )[0] ?? db.students[0]
+    );
+  }
+  // Use a stable pick so the same student is always returned
+  return active[strHash(active[0].id) % active.length];
+}
+
 export function getStudentDashboard(): StudentDashboardData | null {
-  const student =
-    db.students.find(
-      (s) => s.status === "active" && s.enrolledCourseIds.length > 0,
-    ) ?? db.students[0];
+  const student = getDefaultStudent();
   if (!student) return null;
 
   const enrolledCourses = student.enrolledCourseIds
@@ -1554,11 +1571,19 @@ function fmtMeeting(times: Course["meetingTimes"]): string {
   return `${days} · ${fmt(first.start)}–${fmt(first.end)}`;
 }
 
+export type StudentSidebarCourse = { code: string; title: string };
+
+export function getStudentSidebarCourses(): StudentSidebarCourse[] {
+  const student = getDefaultStudent();
+  if (!student) return [];
+  return student.enrolledCourseIds
+    .map((id) => db.courses.find((c) => c.id === id))
+    .filter(Boolean)
+    .map((c) => ({ code: c!.code, title: c!.title })) as StudentSidebarCourse[];
+}
+
 export function getStudentCoursesPage(): StudentCoursesPageData | null {
-  const student =
-    db.students.find(
-      (s) => s.status === "active" && s.enrolledCourseIds.length > 0,
-    ) ?? db.students[0];
+  const student = getDefaultStudent();
   if (!student) return null;
 
   const enrolledCourses = student.enrolledCourseIds
@@ -1573,8 +1598,18 @@ export function getStudentCoursesPage(): StudentCoursesPageData | null {
     Math.floor((NOW.getTime() - semStart) / WEEK_MS) + 1,
   );
   const MONTH_NAMES = [
-    "Jan","Feb","Mar","Apr","May","Jun",
-    "Jul","Aug","Sep","Oct","Nov","Dec",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
   const semesterLabel = `${semester.name} · Week ${weekNum} · ${MONTH_NAMES[NOW.getMonth()]} ${NOW.getDate()}`;
 
@@ -1596,7 +1631,10 @@ export function getStudentCoursesPage(): StudentCoursesPageData | null {
     const gradeNum = avgGrade
       ? Math.max(
           45,
-          Math.min(100, Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10)),
+          Math.min(
+            100,
+            Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10),
+          ),
         )
       : null;
     const grade = gradeNum ? numToLetterGrade(gradeNum) : "—";
@@ -1643,11 +1681,438 @@ export function getStudentCoursesPage(): StudentCoursesPageData | null {
   const activeCourses = courses.filter((c) => c.status === "active").length;
 
   return {
-    student: { firstName: student.firstName, name: `${student.firstName} ${student.lastName}` },
+    student: {
+      firstName: student.firstName,
+      name: `${student.firstName} ${student.lastName}`,
+    },
     semesterLabel,
     activeCourses,
     totalCredits,
     gpa,
     courses,
+  };
+}
+
+// ── Student Course Detail Page ────────────────────────────────────────────────
+
+export type StudentCourseDetailLesson = {
+  id: string;
+  title: string;
+  kind: "video" | "reading" | "quiz" | "assignment";
+  duration: string;
+  state: "complete" | "in-progress" | "upcoming";
+  description: string;
+  objectives: string[];
+  scrubProgress: number;
+  moduleIdx: number;
+  moduleTitle: string;
+  lessonIdx: number;
+  lessonOf: number;
+  quizQuestions?: { stem: string; options: string[]; correctIdx: number }[];
+};
+
+export type StudentCourseDetailModule = {
+  id: string;
+  idx: number;
+  title: string;
+  lessonCount: number;
+  completedCount: number;
+  totalMin: number;
+  state: "complete" | "in-progress" | "upcoming";
+  lessons: StudentCourseDetailLesson[];
+};
+
+export type Thread = { who: string; time: string; body: string };
+
+export type Syllabus = {
+  officeHours: string;
+  email: string;
+  grading: { label: string; pct: number; color: string }[];
+  policies: { title: string; body: string }[];
+};
+
+export type StudentCourseDetail = {
+  code: string;
+  title: string;
+  instructor: string;
+  deptCode: string;
+  deptColor: string;
+  credits: number;
+  meetingDisplay: string;
+};
+
+export type Resource = { name: string; meta: string };
+
+export type StudentCourseDetailData = {
+  course: StudentCourseDetail;
+  progress: number;
+  modulesComplete: number;
+  modulesTotal: number;
+  grade: string;
+  modules: StudentCourseDetailModule[];
+  activeModuleIdx: number;
+  activeLessonId: string;
+  resources: Resource[];
+  threads: Thread[];
+  syllabus: Syllabus;
+};
+
+const LESSON_DESCRIPTIONS = [
+  "In this session we build on the foundations from the previous module, walking through the core implementation step by step. By the end you should be comfortable applying the technique to novel problems.",
+  "This lecture covers the theoretical underpinnings of the topic, introducing the key concepts and formalisms used throughout the course. We'll work through several worked examples together.",
+  "A hands-on workshop where you'll implement the algorithms covered in the readings. Come prepared with your development environment set up — we'll be live-coding from the start.",
+  "We revisit the most commonly misunderstood concepts from earlier modules and clarify them with new examples. A good session to consolidate your understanding before the assignment.",
+];
+
+const LESSON_OBJECTIVES = [
+  [
+    "Understand the core invariants required for correctness",
+    "Implement the primary algorithm from scratch",
+    "Identify common failure modes and how to avoid them",
+    "Apply the technique to the provided test cases",
+  ],
+  [
+    "Define the key terms introduced in lecture",
+    "Derive the main result from first principles",
+    "Contrast this approach with the alternative from Module 1",
+    "Complete the checkpoint quiz with confidence",
+  ],
+  [
+    "Set up the development environment for today's exercises",
+    "Trace execution through the reference implementation",
+    "Extend the starter code with two additional features",
+    "Run the provided test harness and interpret the output",
+  ],
+];
+
+const THREAD_BODIES = [
+  "Has anyone found a clean way to handle the edge case where the initial state is empty? The naive approach hits a null pointer on line 42.",
+  "Got this working by checking the return value before promoting — the key insight is that the term in the response has to match the current term.",
+  "The reading for this week is dense but section 4 finally clicked for me after re-reading it twice. The diagram on page 12 is the one to focus on.",
+  "Office hours tomorrow are moved to 3pm — Prof confirmed in the course chat.",
+];
+
+const THREAD_NAMES = [
+  "Saoirse Walsh",
+  "Olivér Hartmann",
+  "Priya Nair",
+  "Marcus Webb",
+  "Yuki Tanaka",
+];
+
+const QUIZ_BANKS: { stem: string; options: string[]; correctIdx: number }[][] =
+  [
+    [
+      {
+        stem: "Which property guarantees a committed entry is never overwritten?",
+        options: [
+          "Log Matching",
+          "Leader Completeness",
+          "State Machine Safety",
+          "Election Safety",
+        ],
+        correctIdx: 1,
+      },
+      {
+        stem: "A quorum in a 5-node cluster requires how many acknowledgements?",
+        options: ["2", "3", "4", "5"],
+        correctIdx: 1,
+      },
+      {
+        stem: "What is the role of a term number in the consensus protocol?",
+        options: [
+          "It tracks committed entries",
+          "It acts as a logical clock to detect stale messages",
+          "It measures wall-clock time",
+          "It identifies leader uptime",
+        ],
+        correctIdx: 1,
+      },
+      {
+        stem: "When must a candidate step down to follower?",
+        options: [
+          "After winning an election",
+          "On receiving a vote denial",
+          "On seeing a higher term in any RPC",
+          "After a heartbeat timeout",
+        ],
+        correctIdx: 2,
+      },
+    ],
+    [
+      {
+        stem: "Which data structure provides O(1) amortised push and pop?",
+        options: ["Linked list", "Dynamic array", "Binary heap", "Hash map"],
+        correctIdx: 1,
+      },
+      {
+        stem: "A hash table resize is triggered when:",
+        options: [
+          "After every insertion",
+          "The load factor exceeds a threshold",
+          "A collision is detected",
+          "Every N operations",
+        ],
+        correctIdx: 1,
+      },
+      {
+        stem: "The worst-case time complexity of quicksort is:",
+        options: ["O(n)", "O(n log n)", "O(n²)", "O(log n)"],
+        correctIdx: 2,
+      },
+      {
+        stem: "Which traversal visits a node before its children?",
+        options: ["In-order", "Post-order", "Pre-order", "Level-order"],
+        correctIdx: 2,
+      },
+    ],
+    [
+      {
+        stem: "Which HTTP status code indicates a resource was created?",
+        options: ["200 OK", "201 Created", "204 No Content", "301 Moved"],
+        correctIdx: 1,
+      },
+      {
+        stem: "REST constraints include all of the following EXCEPT:",
+        options: [
+          "Statelessness",
+          "Uniform interface",
+          "Shared session state",
+          "Layered system",
+        ],
+        correctIdx: 2,
+      },
+      {
+        stem: "In OAuth 2.0, the access token is issued by the:",
+        options: [
+          "Resource server",
+          "Client",
+          "Authorization server",
+          "User agent",
+        ],
+        correctIdx: 2,
+      },
+      {
+        stem: "Which HTTP method is idempotent but not safe?",
+        options: ["GET", "POST", "PUT", "PATCH"],
+        correctIdx: 2,
+      },
+    ],
+  ];
+
+const OFFICE_HOURS = [
+  "Mon / Wed  2:00–3:00 pm · Aldridge Hall 214",
+  "Tue / Thu  10:00–11:00 am · Faculty Suite B",
+  "Mon / Wed / Fri  1:00–2:00 pm · Engineering Annex 302",
+  "Thu  3:00–5:00 pm · Virtual (Zoom link in Canvas)",
+];
+
+const GRADING_SCHEMAS: { label: string; pct: number; color: string }[][] = [
+  [
+    { label: "Assignments", pct: 30, color: "var(--m-info)" },
+    { label: "Midterm", pct: 25, color: "var(--m-accent)" },
+    { label: "Final exam", pct: 35, color: "var(--m-warning)" },
+    { label: "Participation", pct: 10, color: "var(--m-success)" },
+  ],
+  [
+    { label: "Homework", pct: 40, color: "var(--m-info)" },
+    { label: "Quizzes", pct: 20, color: "var(--m-accent)" },
+    { label: "Midterm", pct: 20, color: "var(--m-warning)" },
+    { label: "Final exam", pct: 20, color: "var(--m-success)" },
+  ],
+  [
+    { label: "Labs", pct: 30, color: "var(--m-info)" },
+    { label: "Project", pct: 35, color: "var(--m-accent)" },
+    { label: "Written responses", pct: 15, color: "var(--m-warning)" },
+    { label: "Participation", pct: 20, color: "var(--m-success)" },
+  ],
+];
+
+const SYLLABUS_POLICIES = [
+  {
+    title: "Attendance",
+    body: "Regular attendance is expected. More than three unexcused absences will result in a grade penalty. Lecture recordings are available but are not a substitute for in-person participation.",
+  },
+  {
+    title: "Late work",
+    body: "Assignments submitted within 24 hours of the deadline are accepted with a 10% deduction. Work submitted more than 24 hours late will not be accepted without prior written approval from the instructor.",
+  },
+  {
+    title: "Academic integrity",
+    body: "Collaboration is encouraged for understanding concepts, but all submitted work must be your own. Use of AI-generated content without attribution is prohibited. Violations will be referred to the Office of Academic Integrity.",
+  },
+];
+
+export function getStudentCourseDetail(
+  code: string,
+): StudentCourseDetailData | null {
+  const course = db.courses.find((c) => c.code === code);
+  if (!course) return null;
+
+  const h = strHash(course.id);
+  const dept = db.departments.find((d) => d.id === course.departmentId);
+  const deptCode = dept?.code ?? code.split("-")[0];
+  const deptColor = DEPT_COLORS_MAP[deptCode] ?? "var(--m-accent)";
+  const instructor = db.instructors.find((i) => i.id === course.instructorId);
+  const instructorName = instructor
+    ? `Prof. ${instructor.firstName} ${instructor.lastName}`
+    : "—";
+
+  // Use the same default student as all other student-facing functions
+  const student = getDefaultStudent();
+
+  const sh = strHash((student?.id ?? "s0") + course.id);
+  const progress = (10 + (sh % 81)) / 100;
+  const ch = strHash(course.id);
+  const avgGrade = ch % 20 === 0 ? null : 68 + (ch % 1500) / 100;
+  const sh2 = strHash((student?.id ?? "s0") + course.id + "g");
+  const gradeNum = avgGrade
+    ? Math.max(
+        45,
+        Math.min(100, Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10)),
+      )
+    : null;
+  const grade = gradeNum ? numToLetterGrade(gradeNum) : "—";
+
+  // Modules
+  const numModules = 4 + (ch % 3);
+  const activeModuleIdx = Math.min(1, numModules - 1);
+
+  const modules: StudentCourseDetailModule[] = Array.from(
+    { length: numModules },
+    (_, i) => {
+      const mh = strHash(course.id + `mod${i}`);
+      const shape = MODULE_LESSON_SHAPES[i % MODULE_LESSON_SHAPES.length];
+      const totalMin = shape.length * (20 + (mh % 30));
+      const modState: StudentCourseDetailModule["state"] =
+        i < activeModuleIdx
+          ? "complete"
+          : i === activeModuleIdx
+            ? "in-progress"
+            : "upcoming";
+
+      const completedCount =
+        modState === "complete"
+          ? shape.length
+          : modState === "in-progress"
+            ? Math.max(1, Math.floor(shape.length * 0.4))
+            : 0;
+
+      const moduleTitle = MODULE_TITLES[i % MODULE_TITLES.length];
+
+      const lessons: StudentCourseDetailLesson[] = shape.map((kind, li) => {
+        const lh = strHash(course.id + `mod${i}` + String(li));
+        const opts = LESSON_TITLES[kind];
+        const title = opts[lh % opts.length];
+        const dMin =
+          kind === "video"
+            ? 15 + (lh % 30)
+            : kind === "reading"
+              ? 10 + (lh % 20)
+              : 20 + (lh % 15);
+        const lessonState: StudentCourseDetailLesson["state"] =
+          modState === "complete"
+            ? "complete"
+            : modState === "upcoming"
+              ? "upcoming"
+              : li < completedCount
+                ? "complete"
+                : li === completedCount
+                  ? "in-progress"
+                  : "upcoming";
+        return {
+          id: `M-0${i + 1}-L${String(li + 1).padStart(2, "0")}`,
+          title,
+          kind,
+          duration: kind === "reading" ? `${dMin} min read` : `${dMin} min`,
+          state: lessonState,
+          description: LESSON_DESCRIPTIONS[lh % LESSON_DESCRIPTIONS.length],
+          objectives: LESSON_OBJECTIVES[lh % LESSON_OBJECTIVES.length],
+          scrubProgress:
+            lessonState === "in-progress"
+              ? (lh % 80) / 100 + 0.05
+              : lessonState === "complete"
+                ? 1
+                : 0,
+          moduleIdx: i,
+          moduleTitle,
+          lessonIdx: li,
+          lessonOf: shape.length,
+          quizQuestions:
+            kind === "quiz"
+              ? QUIZ_BANKS[lh % QUIZ_BANKS.length].slice(0, 3 + (lh % 2))
+              : undefined,
+        };
+      });
+
+      return {
+        id: `M-0${i + 1}`,
+        idx: i,
+        title: moduleTitle,
+        lessonCount: shape.length,
+        completedCount,
+        totalMin,
+        state: modState,
+        lessons,
+      };
+    },
+  );
+
+  const modulesComplete = modules.filter((m) => m.state === "complete").length;
+  const modulesTotal = numModules;
+
+  // Active lesson — first in-progress lesson in the active module
+  const activeMod = modules[activeModuleIdx];
+  const activeLessonIdx = activeMod.completedCount;
+  const activeL =
+    activeMod.lessons[Math.min(activeLessonIdx, activeMod.lessons.length - 1)];
+
+  // Resources
+  const numRes = 3 + (h % 2);
+  const resources = RESOURCE_NAMES.slice(0, numRes).map((name) => {
+    const rh = strHash(course.id + name);
+    const sizeKb = 60 + (rh % 800);
+    const ext = name.split(".").pop()?.toUpperCase() ?? "FILE";
+    return { name, meta: `${ext} · ${sizeKb}KB` };
+  });
+
+  // Threads
+  const numThreads = 2 + (h % 2);
+  const threads = Array.from({ length: numThreads }, (_, i) => {
+    const th = strHash(course.id + `thread${i}`);
+    return {
+      who: THREAD_NAMES[th % THREAD_NAMES.length],
+      time: i === 0 ? "12m ago" : i === 1 ? "1h ago" : "3h ago",
+      body: THREAD_BODIES[th % THREAD_BODIES.length],
+    };
+  });
+
+  return {
+    course: {
+      code: course.code,
+      title: course.title,
+      instructor: instructorName,
+      deptCode,
+      deptColor,
+      credits: course.credits,
+      meetingDisplay: fmtMeeting(course.meetingTimes),
+    },
+    progress,
+    modulesComplete,
+    modulesTotal,
+    grade,
+    modules,
+    activeModuleIdx,
+    activeLessonId: activeL.id,
+    resources,
+    threads,
+    syllabus: {
+      officeHours: OFFICE_HOURS[h % OFFICE_HOURS.length],
+      email: instructor
+        ? `${instructor.firstName.toLowerCase()}.${instructor.lastName.toLowerCase()}@aldridge.edu`
+        : "instructor@aldridge.edu",
+      grading: GRADING_SCHEMAS[h % GRADING_SCHEMAS.length],
+      policies: SYLLABUS_POLICIES,
+    },
   };
 }
