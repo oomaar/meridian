@@ -2461,3 +2461,676 @@
   color: var(--m-text-2);
   font-weight: 500;
 }
+
+/* ── Student course detail — module outline ───────────────────────────────── */
+.m-outline-mod {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--m-line-soft);
+  cursor: pointer;
+}
+.m-outline-mod--active { background: var(--m-surface-2); }
+.m-outline-mod__num {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  font-family: var(--m-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+  background: var(--m-surface-2);
+  color: var(--m-text-3);
+}
+.m-outline-mod__num--complete { background: var(--m-success-bg); color: var(--m-success); }
+.m-outline-mod__num--active   { background: var(--m-accent-bg);  color: var(--m-accent);  }
+.m-outline-mod__title { font-size: 12.5px; font-weight: 500; flex: 1; min-width: 0; }
+.m-outline-mod__meta  { font-family: var(--m-font-mono); font-size: 10.5px; color: var(--m-text-3); }
+.m-outline-lesson {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 8px 44px;
+  font-size: 12.5px;
+  color: var(--m-text-2);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+}
+.m-outline-lesson:hover { background: var(--m-surface-2); }
+.m-outline-lesson--active {
+  background: var(--m-accent-bg);
+  color: var(--m-text);
+  border-left-color: var(--m-accent);
+}
+.m-outline-lesson--complete { color: var(--m-text-3); }
+.m-outline-lesson__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-outline-lesson__dur  { font-size: 10px; color: var(--m-text-3); font-family: var(--m-font-mono); flex-shrink: 0; }
+
+/* ── Student course detail — video player ─────────────────────────────────── */
+.m-video-player {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #1a1410, #2b2117);
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.m-video-player__play {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--m-accent);
+  color: var(--m-on-accent);
+  border: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+}
+.m-video-player__badge {
+  position: absolute;
+  right: 16px;
+  top: 12px;
+}
+.m-video-player__meta {
+  position: absolute;
+  left: 16px;
+  bottom: 44px;
+  color: rgba(237, 229, 215, 0.85);
+  font-size: 12px;
+  font-family: var(--m-font-mono);
+}
+.m-video-player__scrubber {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 28px;
+  height: 3px;
+  background: rgba(237, 229, 215, 0.2);
+  border-radius: 2px;
+}
+.m-video-player__fill {
+  height: 100%;
+  background: var(--m-accent);
+  border-radius: 2px;
+}
+
+/* ── Reading stage ────────────────────────────────────────────────────────── */
+.m-reading-stage {
+  display: flex;
+  flex-direction: column;
+}
+.m-reading-stage__topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--m-line);
+  background: var(--m-surface-2);
+  font-size: 12px;
+  color: var(--m-text-3);
+}
+.m-reading-stage__progress-track {
+  height: 3px;
+  background: var(--m-line);
+  position: relative;
+}
+.m-reading-stage__progress-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--m-accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.m-reading-stage__doc {
+  padding: 28px 32px 24px;
+  max-height: 340px;
+  overflow-y: auto;
+  background: var(--m-elevated);
+  line-height: 1.75;
+}
+.m-reading-stage__doc-title {
+  font-family: var(--m-font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 16px;
+  color: var(--m-text);
+}
+.m-reading-stage__doc p {
+  font-size: 14px;
+  color: var(--m-text-2);
+  margin: 0 0 14px;
+}
+.m-reading-stage__section-head {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  margin: 20px 0 8px;
+}
+
+/* ── Quiz stage ───────────────────────────────────────────────────────────── */
+.m-quiz-stage {
+  display: flex;
+  flex-direction: column;
+}
+.m-quiz-stage__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--m-line);
+  background: var(--m-surface-2);
+}
+.m-quiz-stage__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--m-text-2);
+}
+.m-quiz-stage__body {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+.m-quiz-question__stem {
+  font-size: 13.5px;
+  font-weight: 500;
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+.m-quiz-question__options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.m-quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border: 1px solid var(--m-line);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--m-text-2);
+  transition: background 0.1s, border-color 0.1s;
+  user-select: none;
+}
+.m-quiz-option:hover:not(.m-quiz-option--correct):not(.m-quiz-option--wrong) {
+  background: var(--m-surface-2);
+}
+.m-quiz-option--selected {
+  border-color: var(--m-accent);
+  background: var(--m-accent-bg);
+  color: var(--m-text);
+}
+.m-quiz-option--correct {
+  border-color: var(--m-success);
+  background: var(--m-success-bg);
+  color: var(--m-text);
+}
+.m-quiz-option--wrong {
+  border-color: var(--m-danger, #e05252);
+  background: color-mix(in srgb, var(--m-danger, #e05252) 8%, transparent);
+  color: var(--m-text);
+}
+.m-quiz-radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--m-line-strong);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  transition: border-color 0.1s, background 0.1s;
+}
+.m-quiz-option--selected .m-quiz-radio {
+  border-color: var(--m-accent);
+  background: var(--m-accent);
+}
+.m-quiz-option--correct .m-quiz-radio {
+  border-color: var(--m-success);
+  background: var(--m-success);
+}
+.m-quiz-option--wrong .m-quiz-radio {
+  border-color: var(--m-danger, #e05252);
+  background: var(--m-danger, #e05252);
+}
+.m-quiz-radio__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: white;
+}
+.m-quiz-stage__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 22px;
+  border-top: 1px solid var(--m-line);
+  background: var(--m-surface-2);
+}
+.m-quiz-score {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ── Assignment stage ─────────────────────────────────────────────────────── */
+/* ── Course complete card ─────────────────────────────────────────────────── */
+.m-complete-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 32px;
+  gap: 16px;
+  text-align: center;
+}
+.m-complete-card__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--m-success-bg);
+  border: 1px solid var(--m-success);
+  display: grid;
+  place-items: center;
+  color: var(--m-success);
+  flex-shrink: 0;
+}
+.m-complete-card__title {
+  font-family: var(--m-font-serif);
+  font-size: 28px;
+  font-weight: 400;
+  margin: 0 0 6px;
+}
+.m-complete-card__sub {
+  font-size: 14px;
+  color: var(--m-text-3);
+  margin: 0;
+}
+.m-complete-card__actions {
+  margin-top: 8px;
+}
+
+/* ── Message instructor sheet ────────────────────────────────────────────── */
+.m-msg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.m-msg-field__label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  font-weight: 500;
+}
+.m-msg-field__readonly {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--m-text);
+  padding: 9px 12px;
+  background: var(--m-surface-2);
+  border-radius: 6px;
+  border: 1px solid var(--m-line);
+}
+.m-msg-input {
+  font-size: 13.5px;
+  padding: 9px 12px;
+  background: var(--m-bg);
+  border: 1px solid var(--m-line);
+  border-radius: 6px;
+  color: var(--m-text);
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.12s;
+}
+.m-msg-input:focus {
+  border-color: var(--m-accent);
+}
+.m-msg-textarea {
+  min-height: 160px;
+}
+
+/* ── Course detail page layout ───────────────────────────────────────────── */
+.m-course-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr 320px;
+  gap: 24px;
+  align-items: start;
+  padding-top: 4px;
+}
+.m-outline-card {
+  position: sticky;
+  top: 16px;
+}
+.m-outline-scroll {
+  max-height: 560px;
+  overflow-y: auto;
+}
+.m-outline-progress-pct {
+  font-size: 11px;
+  color: var(--m-text-3);
+  flex-shrink: 0;
+}
+.m-right-col {
+  position: sticky;
+  top: 16px;
+}
+.m-resource-icon {
+  color: var(--m-text-3);
+  flex-shrink: 0;
+}
+.m-breadcrumb-link {
+  color: var(--m-text-3);
+}
+.m-page__meta-row {
+  font-size: 13px;
+  color: var(--m-text-2);
+}
+.m-card__title--sm {
+  font-size: 14px;
+}
+.m-ml-auto {
+  margin-left: auto;
+}
+
+/* ── Courses page syllabus sheet ─────────────────────────────────────────── */
+.m-cal-tab-mono {
+  font-family: var(--m-font-mono);
+  font-size: 11.5px;
+}
+.m-course-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--m-text);
+  margin-bottom: 2px;
+}
+.m-course-meta {
+  font-size: 12.5px;
+  color: var(--m-text-3);
+}
+.m-courses-stats-mb {
+  margin-bottom: 20px;
+}
+.m-section-flex {
+  display: flex;
+  flex-direction: column;
+}
+.m-section-flex--gap-6 {
+  gap: 6px;
+}
+.m-section-flex--gap-7 {
+  gap: 7px;
+}
+.m-section-flex--gap-10 {
+  gap: 10px;
+}
+.m-section-flex--gap-16 {
+  gap: 16px;
+}
+
+/* ── Syllabus sheet ──────────────────────────────────────────────────────── */
+.m-syllabus-section {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.m-syllabus-section__label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+.m-syllabus-instructor__name {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--m-text);
+}
+.m-syllabus-instructor__meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--m-text-2);
+}
+.m-syllabus-instructor__meta svg {
+  color: var(--m-text-3);
+  flex-shrink: 0;
+}
+.m-syllabus-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.m-syllabus-schedule__row {
+  font-size: 13px;
+  color: var(--m-text-2);
+}
+.m-syllabus-schedule__row strong {
+  color: var(--m-text);
+  font-weight: 500;
+}
+.m-syllabus-grading {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-syllabus-policies {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.m-syllabus-policy__title {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--m-text);
+  margin-bottom: 5px;
+}
+.m-syllabus-policy__body {
+  font-size: 13px;
+  color: var(--m-text-2);
+  line-height: 1.65;
+  margin: 0;
+}
+.m-sheet__title--mono {
+  font-size: 13px;
+}
+
+/* ── Lesson card detail body (video / reading) ───────────────────────────── */
+.m-lesson-detail {
+  padding: 22px;
+}
+.m-lesson-detail__title {
+  font-family: var(--m-font-serif);
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin: 0 0 6px;
+}
+.m-lesson-detail__meta {
+  font-size: 12.5px;
+  color: var(--m-text-3);
+}
+.m-lesson-detail__desc {
+  color: var(--m-text-2);
+  line-height: 1.65;
+  font-size: 14.5px;
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+.m-lesson-detail__objectives-head {
+  font-family: var(--m-font-serif);
+  font-size: 18px;
+  font-weight: 500;
+  margin: 22px 0 8px;
+}
+.m-lesson-detail__objectives {
+  color: var(--m-text-2);
+  line-height: 1.7;
+  font-size: 14px;
+  padding-left: 18px;
+  margin: 0;
+}
+
+.m-assignment-stage {
+  display: flex;
+  flex-direction: column;
+}
+.m-assignment-brief {
+  padding: 22px 22px 18px;
+  border-bottom: 1px solid var(--m-line);
+}
+.m-assignment-brief__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  margin-bottom: 10px;
+}
+.m-assignment-brief__desc {
+  font-size: 13.5px;
+  color: var(--m-text-2);
+  line-height: 1.65;
+  margin: 0 0 14px;
+}
+.m-assignment-reqs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.m-assignment-req {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--m-text-2);
+}
+.m-assignment-req__bullet {
+  color: var(--m-accent);
+  font-size: 11px;
+  flex-shrink: 0;
+  font-family: var(--m-font-mono);
+}
+.m-assignment-submit {
+  padding: 18px 22px;
+}
+.m-assignment-submit__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--m-text-3);
+  margin-bottom: 8px;
+}
+.m-assignment-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px 12px;
+  background: var(--m-surface-2);
+  border: 1px solid var(--m-line);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: var(--m-font-mono);
+  color: var(--m-text);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.12s;
+  box-sizing: border-box;
+}
+.m-assignment-textarea:focus {
+  border-color: var(--m-accent);
+  background: var(--m-elevated);
+}
+.m-assignment-submit__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.m-assignment-submit__hint {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+}
+.m-assignment-submitted {
+  padding: 12px 14px;
+  background: var(--m-success-bg);
+  border: 1px solid var(--m-success);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--m-text-2);
+}
+.m-assignment-submitted svg {
+  margin-right: 6px;
+  color: var(--m-success);
+  vertical-align: -2px;
+}
+
+/* ── Student course detail — thread item ──────────────────────────────────── */
+.m-thread-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+}
+.m-thread-row {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--m-line-soft);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.m-thread-row:hover {
+  background: var(--m-surface-2);
+}
+.m-thread-item__who   { font-size: 12.5px; font-weight: 500; }
+.m-thread-item__when  { font-size: 12.5px; color: var(--m-text-3); }
+.m-thread-item__body  { font-size: 12.5px; color: var(--m-text-2); margin-top: 2px; line-height: 1.6; }
+
+/* ── Thread detail sheet ─────────────────────────────────────────────────── */
+.m-thread-op {
+  padding: 14px 16px;
+  background: var(--m-surface-2);
+  border-radius: 8px;
+  border: 1px solid var(--m-line);
+}
+.m-thread-op .m-thread-item__body {
+  margin-top: 6px;
+  line-height: 1.65;
+}
+.m-thread-replies {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.m-thread-replies__count {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  font-weight: 500;
+}
+.m-thread-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+.m-thread-composer__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--m-text-2);
+}
+.m-thread-composer__textarea {
+  min-height: 80px;
+}
+.m-thread-composer__footer {
+  display: flex;
+  justify-content: flex-end;
+}
