@@ -2116,3 +2116,50 @@ export function getStudentCourseDetail(
     },
   };
 }
+
+export function getStudentDeadlines(): StudentDeadlineItem[] {
+  const student = getDefaultStudent();
+  if (!student) return [];
+
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const rawDeadlines = generateUpcomingDeadlines(student.id, 50);
+
+  return rawDeadlines.map((d) => {
+    const due = new Date(d.dueDate);
+    const dayLabel = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
+      due.getDay()
+    ];
+    const h = due.getUTCHours();
+    const m = due.getUTCMinutes();
+    const ampm = h >= 12 ? "PM" : "AM";
+    const h12 = h % 12 || 12;
+    const timeLabel = `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
+    const diffDays = Math.ceil((due.getTime() - NOW.getTime()) / DAY_MS);
+    const inLabel =
+      diffDays < 0
+        ? "overdue"
+        : diffDays === 0
+          ? "today"
+          : diffDays === 1
+            ? "tomorrow"
+            : `in ${diffDays} days`;
+    const asgn = db.assignments.find((a) => a.id === d.assignmentId);
+    const typeMap: Record<string, StudentDeadlineItem["type"]> = {
+      essay: "paper",
+      exam: "assignment",
+      quiz: "assignment",
+      lab: "assignment",
+      project: "milestone",
+      presentation: "discussion",
+    };
+    return {
+      id: d.assignmentId,
+      course: d.courseCode,
+      title: d.title,
+      dayLabel,
+      timeLabel,
+      inLabel,
+      type: asgn ? (typeMap[asgn.type] ?? "assignment") : "assignment",
+    };
+  });
+}
