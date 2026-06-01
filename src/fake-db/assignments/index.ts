@@ -13,12 +13,7 @@ const TITLE_TEMPLATES: Record<AssignmentType, string[]> = {
     "Reflection on {topic}",
     "Critical Response: {topic}",
   ],
-  exam: [
-    "Midterm Exam",
-    "Final Exam",
-    "Take-home Exam",
-    "Comprehensive Exam",
-  ],
+  exam: ["Midterm Exam", "Final Exam", "Take-home Exam", "Comprehensive Exam"],
   project: [
     "Project {n}: {topic}",
     "Capstone: {topic}",
@@ -94,12 +89,7 @@ export function buildAssignments(opts: {
     // (otherwise everything is "graded" by NOW and the demo feels stale).
     const effectiveEnd =
       sem.status === "active"
-        ? new Date(
-            Math.max(
-              endDate.getTime(),
-              NOW.getTime() + 14 * 86_400_000
-            )
-          )
+        ? new Date(Math.max(endDate.getTime(), NOW.getTime() + 14 * 86_400_000))
         : endDate;
     const semDuration =
       (effectiveEnd.getTime() - startDate.getTime()) / 86_400_000;
@@ -107,11 +97,11 @@ export function buildAssignments(opts: {
     for (let i = 0; i < assignmentCount; i++) {
       const type = faker.helpers.weightedArrayElement<AssignmentType>([
         { value: "essay", weight: 18 },
-        { value: "exam", weight: 12 },
+        { value: "exam", weight: 10 },
         { value: "project", weight: 14 },
-        { value: "quiz", weight: 30 },
-        { value: "lab", weight: 14 },
-        { value: "presentation", weight: 12 },
+        { value: "quiz", weight: 28 },
+        { value: "lab", weight: 12 },
+        { value: "presentation", weight: 18 },
       ]);
       const dayOffset =
         Math.floor((semDuration * (i + 0.5)) / assignmentCount) +
@@ -123,15 +113,15 @@ export function buildAssignments(opts: {
         type === "exam"
           ? 100
           : type === "project"
-          ? faker.helpers.arrayElement([50, 100, 200])
-          : faker.helpers.arrayElement([10, 20, 25, 50]);
+            ? faker.helpers.arrayElement([50, 100, 200])
+            : faker.helpers.arrayElement([10, 20, 25, 50]);
       const enrolledCount = course.studentIds.length;
       const submissionRate =
         status === "open"
           ? faker.number.float({ min: 0.0, max: 0.4, fractionDigits: 2 })
           : status === "grading"
-          ? faker.number.float({ min: 0.7, max: 1.0, fractionDigits: 2 })
-          : faker.number.float({ min: 0.85, max: 1.0, fractionDigits: 2 });
+            ? faker.number.float({ min: 0.7, max: 1.0, fractionDigits: 2 })
+            : faker.number.float({ min: 0.85, max: 1.0, fractionDigits: 2 });
       const submissionCount = Math.floor(enrolledCount * submissionRate);
 
       results.push({
