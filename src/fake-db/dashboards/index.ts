@@ -2117,6 +2117,121 @@ export function getStudentCourseDetail(
   };
 }
 
+export type StudentGradeCard = {
+  code: string;
+  deptCode: string;
+  deptColor: string;
+  title: string;
+  instructor: string;
+  grade: string;
+  gradeNum: number | null;
+  progress: number;
+};
+
+export type SemesterGrades = {
+  semesterId: string;
+  semesterCode: string;
+  semesterName: string;
+  status: "past" | "active" | "upcoming" | "planning";
+  gpa: number;
+  courses: StudentGradeCard[];
+};
+
+export function getStudentGradesWithHistory(): SemesterGrades[] {
+  const student = getDefaultStudent();
+  if (!student) return [];
+
+  const semesters = db.semesters
+    .filter((s) => s.status === "active" || s.status === "past")
+    .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+  return semesters.map((semester) => {
+    let semesterCourses = student.enrolledCourseIds
+      .map((id) => db.courses.find((c) => c.id === id && c.semesterId === semester.id))
+      .filter(Boolean) as Course[];
+
+    // For past semesters, add historical courses for realism
+    if (semester.status === "past") {
+      const semesterAllCourses = db.courses.filter(
+        (c) => c.semesterId === semester.id
+      );
+      const sh = strHash(student.id + semester.id);
+      const courseCountToAdd = 3 + (sh % 3); // Add 3-5 past courses
+
+      for (let i = 0; i < courseCountToAdd && i < semesterAllCourses.length; i++) {
+        const idx = (sh + i * 17) % semesterAllCourses.length;
+        const course = semesterAllCourses[idx];
+        if (!semesterCourses.find((c) => c.id === course.id)) {
+          semesterCourses.push(course);
+        }
+      }
+    }
+
+    const courses = semesterCourses.map((c) => {
+      const sh = strHash(student.id + c.id);
+      const dept = db.departments.find((d) => d.id === c.departmentId);
+      const deptCode = dept?.code ?? c.code.split("-")[0];
+      const deptColor = DEPT_COLORS_MAP[deptCode] ?? "var(--m-accent)";
+      const instructor = db.instructors.find((i) => i.id === c.instructorId);
+      const instructorName = instructor
+        ? `Prof. ${instructor.firstName} ${instructor.lastName}`
+        : "—";
+      const progress = semester.status === "past" ? 1.0 : (10 + (sh % 81)) / 100;
+      const ch = strHash(c.id);
+      const avgGrade = ch % 20 === 0 ? null : 68 + (ch % 1500) / 100;
+      const sh2 = strHash(student.id + c.id + "g");
+      const gradeNum = avgGrade
+        ? Math.max(
+            45,
+            Math.min(
+              100,
+              Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10),
+            ),
+          )
+        : null;
+      const grade = gradeNum ? numToLetterGrade(gradeNum) : "—";
+
+      return {
+        code: c.code,
+        deptCode,
+        deptColor,
+        title: c.title,
+        instructor: instructorName,
+        grade,
+        gradeNum,
+        progress,
+      };
+    });
+
+    const gpa =
+      courses.length > 0
+        ? courses.reduce((sum, g) => {
+            const map: Record<string, number> = {
+              A: 4.0,
+              "A-": 3.7,
+              "B+": 3.3,
+              B: 3.0,
+              "B-": 2.7,
+              "C+": 2.3,
+              C: 2.0,
+              "—": 0,
+            };
+            return sum + (map[g.grade] ?? 0);
+          }, 0) / courses.length
+        : 0;
+
+    return {
+      semesterId: semester.id,
+      semesterCode: semester.code,
+      semesterName: semester.name,
+      status: semester.status,
+      gpa,
+      courses,
+    };
+  });
+}
+
+
 export function getStudentDeadlines(): StudentDeadlineItem[] {
   const student = getDefaultStudent();
   if (!student) return [];
@@ -2163,3 +2278,4 @@ export function getStudentDeadlines(): StudentDeadlineItem[] {
     };
   });
 }
+
