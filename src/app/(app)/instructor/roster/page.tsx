@@ -1,3 +1,8 @@
+import { getInstructorRosterData } from "@/fake-db/dashboards";
+import { RosterClient } from "@/components/instructor/roster-client/roster-client";
+
 export default function InstructorRosterPage() {
-  return <h1>Roster</h1>;
+  const data = getInstructorRosterData();
+  if (!data) return <p>No roster data.</p>;
+  return <RosterClient data={data} />;
 }
