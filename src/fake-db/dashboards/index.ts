@@ -546,6 +546,76 @@ export function getAdminNotificationsPage(): AdminNotificationsData {
   return { notifications: db.notifications };
 }
 
+export function getStudentNotifications(): Notification[] {
+  const student = getDefaultStudent();
+  if (!student) return [];
+
+  const enrolledCourses = student.enrolledCourseIds
+    .map((id) => db.courses.find((c) => c.id === id))
+    .filter(Boolean) as Course[];
+
+  const items: Notification[] = [];
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
+  const bodies: Array<{ kind: Notification["kind"]; body: string; minsAgo: number; read: boolean }> = [
+    { kind: "system", body: `Grade released for ${enrolledCourses[0]?.code ?? "CS-101"}: Quiz 3 — you scored 91/100.`, minsAgo: 18, read: false },
+    { kind: "mention", body: `Prof. ${db.instructors[0]?.lastName ?? "Smith"} posted an announcement in ${enrolledCourses[1]?.code ?? "MATH-201"}: "No class this Friday."`, minsAgo: 55, read: false },
+    { kind: "system", body: `Assignment due in 24h: ${enrolledCourses[0]?.code ?? "CS-101"} — Lab 4: Recursion. Submit before midnight.`, minsAgo: 90, read: false },
+    { kind: "system", body: `Grade released for ${enrolledCourses[1]?.code ?? "MATH-201"}: Midterm Exam — you scored 78/100.`, minsAgo: 60 * 5, read: true },
+    { kind: "approval", body: `Your enrollment in ${enrolledCourses[2]?.code ?? "PHYS-301"} has been confirmed for the upcoming semester.`, minsAgo: 60 * 12, read: true },
+    { kind: "mention", body: `Prof. ${db.instructors[1]?.lastName ?? "Johnson"} mentioned you in ${enrolledCourses[0]?.code ?? "CS-101"}: "Great work on the last project, Ines!"`, minsAgo: 60 * 24, read: true },
+    { kind: "system", body: `Deadline reminder: ${enrolledCourses[2]?.code ?? "PHYS-301"} — Final Project due in 3 days.`, minsAgo: 60 * 36, read: true },
+    { kind: "system", body: `Grade released for ${enrolledCourses[0]?.code ?? "CS-101"}: Essay 1 — you scored 85/100.`, minsAgo: 60 * 48, read: true },
+  ];
+
+  bodies.forEach((b, i) => {
+    const ts = new Date(NOW.getTime() - b.minsAgo * 60_000);
+    items.push({
+      id: `student-notif-${i + 1}`,
+      kind: b.kind,
+      recipientUserId: student.id,
+      body: b.body,
+      timestamp: ts.toISOString(),
+      read: b.read,
+    });
+  });
+
+  return items;
+}
+
+export function getInstructorNotifications(): Notification[] {
+  const instructor = db.instructors[0];
+  if (!instructor) return [];
+
+  const courses = db.courses.filter((c) => c.instructorId === instructor.id).slice(0, 3);
+
+  const items: Notification[] = [];
+
+  const bodies: Array<{ kind: Notification["kind"]; body: string; minsAgo: number; read: boolean }> = [
+    { kind: "system", body: `${courses[0]?.code ?? "CS-101"} — 4 new submissions received for Lab 4. Grading window opens now.`, minsAgo: 10, read: false },
+    { kind: "approval", body: `Grading SLA alert: ${courses[1]?.code ?? "MATH-201"} Midterm Exam has 12 ungraded submissions past the 72h window.`, minsAgo: 45, read: false },
+    { kind: "mention", body: `Student in ${courses[0]?.code ?? "CS-101"} posted a question on Lab 4: "Is tail recursion required for problem 3?"`, minsAgo: 80, read: false },
+    { kind: "system", body: `Roster sync complete for ${courses[0]?.code ?? "CS-101"}: 2 students added, 1 dropped.`, minsAgo: 60 * 4, read: true },
+    { kind: "approval", body: `Grade passback to Canvas LMS completed for ${courses[1]?.code ?? "MATH-201"} — all records updated.`, minsAgo: 60 * 8, read: true },
+    { kind: "mention", body: `Department chair mentioned you in an announcement: "Please submit your final grade reports by Friday."`, minsAgo: 60 * 20, read: true },
+    { kind: "system", body: `${courses[2]?.code ?? "PHYS-301"} — Office hours reminder sent to all enrolled students.`, minsAgo: 60 * 30, read: true },
+  ];
+
+  bodies.forEach((b, i) => {
+    const ts = new Date(NOW.getTime() - b.minsAgo * 60_000);
+    items.push({
+      id: `instructor-notif-${i + 1}`,
+      kind: b.kind,
+      recipientUserId: instructor.id,
+      body: b.body,
+      timestamp: ts.toISOString(),
+      read: b.read,
+    });
+  });
+
+  return items;
+}
+
 const DEPT_COLORS_MAP: Record<string, string> = {
   CS: "var(--m-info)",
   MATH: "#9a7fc4",
