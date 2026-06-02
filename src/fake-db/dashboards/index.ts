@@ -2352,11 +2352,16 @@ export function getStudentDeadlines(): StudentDeadlineItem[] {
 // ─── Instructor Overview ───────────────────────────────────────────────────
 
 function getDefaultInstructor(): Instructor | undefined {
-  const active = db.instructors.filter(
-    (i) => i.status === "active" && i.courseIds.length >= 2,
+  const activeCourseIds = new Set(
+    db.courses.filter((c) => c.status === "active").map((c) => c.id),
   );
-  if (active.length === 0) return db.instructors[0];
-  return active[strHash(active[0].id) % active.length];
+  const eligible = db.instructors.filter(
+    (i) =>
+      i.status === "active" &&
+      i.courseIds.some((cid) => activeCourseIds.has(cid)),
+  );
+  if (eligible.length === 0) return db.instructors[0];
+  return eligible[strHash(eligible[0].id) % eligible.length];
 }
 
 const MODALITY_LIST = ["In-person", "In-person", "In-person", "Hybrid", "Hybrid", "Online"] as const;
@@ -2566,5 +2571,103 @@ export function getInstructorOverview(): InstructorOverviewData | null {
     schedule: scheduleItems,
     gradingQueue: queue,
   };
+}
+
+// ─── Instructor Grading Queue ──────────────────────────────────────────────
+
+export type InstructorGradingQueueItem = {
+  id: string;
+  studentName: string;
+  studentInitials: string;
+  courseCode: string;
+  assignmentTitle: string;
+  assignmentType: string;
+  pointsAvailable: number;
+  submittedLabel: string;
+  attempt: number;
+  status: "pending" | "in-review" | "flagged";
+  late: boolean;
+  submissionId: string;
+  dueLabel: string;
+};
+
+export type InstructorGradingData = {
+  instructor: Instructor;
+  semesterName: string;
+  totalInQueue: number;
+  gradedCount: number;
+  queue: InstructorGradingQueueItem[];
+};
+
+export function getInstructorGradingData(): InstructorGradingData | null {
+  const semester = db.semesters.find((s) => s.status === "active") ?? db.semesters[0];
+
+  const SUB_LABELS = [
+    "1h ago", "2h ago", "3h ago", "5h ago", "8h ago",
+    "12h ago", "1 day ago", "1 day ago", "2 days ago",
+    "2 days ago", "3 days ago", "4 days ago",
+  ];
+  const STATUS_LIST = ["pending", "pending", "pending", "pending", "flagged", "in-review"] as const;
+  const DUE_LABELS = ["Due today", "Due tomorrow", "Due Nov 14", "Due Nov 16", "Due Nov 20"];
+
+  for (const instructor of db.instructors) {
+    if (instructor.status !== "active") continue;
+
+    const activeCourses = getCoursesForInstructor(instructor.id)
+      .filter((c) => c.status === "active")
+      .slice(0, 4);
+    if (!activeCourses.length) continue;
+
+    const queue: InstructorGradingQueueItem[] = [];
+    let submissionSeq = 9800;
+
+    for (const c of activeCourses) {
+      const assignments = db.assignments
+        .filter((a) => a.courseId === c.id)
+        .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime())
+        .slice(0, 3);
+
+      for (const asgn of assignments) {
+        const studentSample = c.studentIds.slice(0, 8);
+        for (const sid of studentSample) {
+          if (queue.length >= 23) break;
+          const student = db.students.find((s) => s.id === sid);
+          if (!student) continue;
+          const h = strHash(sid + asgn.id + "grading");
+          const initials = `${student.firstName[0]}${student.lastName[0]}`.toUpperCase();
+          queue.push({
+            id: `grading-${asgn.id}-${sid}`,
+            studentName: `${student.firstName} ${student.lastName}`,
+            studentInitials: initials,
+            courseCode: c.code,
+            assignmentTitle: asgn.title,
+            assignmentType: asgn.type,
+            pointsAvailable: asgn.pointsAvailable,
+            submittedLabel: SUB_LABELS[h % SUB_LABELS.length],
+            attempt: (h % 4) === 0 ? 2 : 1,
+            status: STATUS_LIST[h % STATUS_LIST.length],
+            late: (h % 6) === 0,
+            submissionId: `S-${submissionSeq++}`,
+            dueLabel: DUE_LABELS[h % DUE_LABELS.length],
+          });
+        }
+        if (queue.length >= 23) break;
+      }
+      if (queue.length >= 23) break;
+    }
+
+    if (!queue.length) continue;
+
+    const gradedCount = Math.max(1, Math.floor(queue.length * 0.2));
+    return {
+      instructor,
+      semesterName: semester.name,
+      totalInQueue: queue.length,
+      gradedCount,
+      queue,
+    };
+  }
+
+  return null;
 }
 
