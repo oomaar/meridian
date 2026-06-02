@@ -23,6 +23,7 @@ import { PersonaFooter } from "./persona-footer";
 import type { StudentSidebarCourse } from "@/fake-db/dashboards";
 import { BookMarked } from "lucide-react";
 import { Fragment } from "react/jsx-runtime";
+import { useGradingCount } from "@/lib/grading-count-context";
 
 type NavItem = {
   href: string;
@@ -129,7 +130,6 @@ const NAV: Record<Role, NavGroup[]> = {
           href: "/instructor/grading",
           label: "Grading queue",
           icon: PenLine,
-          badge: "23",
         },
         {
           href: "/instructor/courses",
@@ -180,6 +180,7 @@ export function Sidebar({
   const role = roleFromPath(pathname);
   const persona = PERSONAS[role];
   const groups = NAV[role];
+  const { count: instructorGradingCount } = useGradingCount();
 
   return (
     <aside className="m-sidebar">
@@ -214,7 +215,9 @@ export function Sidebar({
                     ? String(studentDeadlineCount)
                     : role === "student" && it.href === "/student/notifications"
                       ? studentNotifCount > 0 ? String(studentNotifCount) : undefined
-                      : it.badge;
+                      : role === "instructor" && it.href === "/instructor/grading"
+                        ? instructorGradingCount > 0 ? String(instructorGradingCount) : undefined
+                        : it.badge;
               return (
                 <Fragment key={it.href}>
                   <Link
