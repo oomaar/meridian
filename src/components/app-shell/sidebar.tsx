@@ -93,6 +93,7 @@ const NAV: Record<Role, NavGroup[]> = {
       heading: "Learning",
       items: [
         { href: "/student/dashboard", label: "Today", icon: LayoutDashboard },
+        { href: "/student/notifications", label: "Notifications", icon: Bell },
         {
           href: "/student/courses",
           label: "My Courses",
@@ -168,10 +169,12 @@ export function Sidebar({
   studentCourses,
   studentCourseCount,
   studentDeadlineCount,
+  studentNotifCount,
 }: {
   studentCourses: StudentSidebarCourse[];
   studentCourseCount: number;
   studentDeadlineCount: number;
+  studentNotifCount: number;
 }) {
   const pathname = usePathname();
   const role = roleFromPath(pathname);
@@ -209,7 +212,9 @@ export function Sidebar({
                   ? String(studentCourseCount)
                   : role === "student" && it.href === "/student/deadlines"
                     ? String(studentDeadlineCount)
-                    : it.badge;
+                    : role === "student" && it.href === "/student/notifications"
+                      ? studentNotifCount > 0 ? String(studentNotifCount) : undefined
+                      : it.badge;
               return (
                 <Fragment key={it.href}>
                   <Link
