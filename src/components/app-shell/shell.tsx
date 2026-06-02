@@ -14,6 +14,7 @@ export function AppShell({
   studentDeadlineCount,
   studentNotifCount,
   instructorGradingCount,
+  instructorCourseCount,
 }: {
   children: ReactNode;
   studentCourses: StudentSidebarCourse[];
@@ -21,6 +22,7 @@ export function AppShell({
   studentDeadlineCount: number;
   studentNotifCount: number;
   instructorGradingCount: number;
+  instructorCourseCount: number;
 }) {
   const pathname = usePathname();
   const [navOpen, setNavOpen] = useState(false);
@@ -45,6 +47,7 @@ export function AppShell({
           studentCourseCount={studentCourseCount}
           studentDeadlineCount={studentDeadlineCount}
           studentNotifCount={studentNotifCount}
+          instructorCourseCount={instructorCourseCount}
         />
         <div className="m-main">
           <Topbar onNavToggle={toggle} />

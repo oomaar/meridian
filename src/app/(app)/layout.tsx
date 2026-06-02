@@ -5,6 +5,7 @@ import {
   getStudentDeadlines,
   getStudentNotifications,
   getInstructorGradingData,
+  getInstructorCoursesPageData,
 } from "@/fake-db/dashboards";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -14,6 +15,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const studentNotifCount = notifications.filter((n) => !n.read).length;
   const gradingData = getInstructorGradingData();
   const instructorGradingCount = gradingData?.totalInQueue ?? 0;
+  const coursesData = getInstructorCoursesPageData();
+  const instructorCourseCount = coursesData?.activeCount ?? 0;
   return (
     <AppShell
       studentCourses={studentCourses}
@@ -21,6 +24,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       studentDeadlineCount={deadlines.length}
       studentNotifCount={studentNotifCount}
       instructorGradingCount={instructorGradingCount}
+      instructorCourseCount={instructorCourseCount}
     >
       {children}
     </AppShell>

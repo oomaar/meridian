@@ -135,7 +135,6 @@ const NAV: Record<Role, NavGroup[]> = {
           href: "/instructor/courses",
           label: "My Courses",
           icon: BookOpen,
-          badge: "3",
         },
         { href: "/instructor/roster", label: "Roster", icon: Users },
       ],
@@ -170,11 +169,13 @@ export function Sidebar({
   studentCourseCount,
   studentDeadlineCount,
   studentNotifCount,
+  instructorCourseCount,
 }: {
   studentCourses: StudentSidebarCourse[];
   studentCourseCount: number;
   studentDeadlineCount: number;
   studentNotifCount: number;
+  instructorCourseCount: number;
 }) {
   const pathname = usePathname();
   const role = roleFromPath(pathname);
@@ -217,7 +218,9 @@ export function Sidebar({
                       ? studentNotifCount > 0 ? String(studentNotifCount) : undefined
                       : role === "instructor" && it.href === "/instructor/grading"
                         ? instructorGradingCount > 0 ? String(instructorGradingCount) : undefined
-                        : it.badge;
+                        : role === "instructor" && it.href === "/instructor/courses"
+                          ? instructorCourseCount > 0 ? String(instructorCourseCount) : undefined
+                          : it.badge;
               return (
                 <Fragment key={it.href}>
                   <Link
