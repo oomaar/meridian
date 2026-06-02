@@ -1,0 +1,5 @@
+export const TEXT_SNIPPETS = [
+  `The concept of cognitive load theory, first proposed by Sweller (1988), suggests that working memory has a limited capacity that directly affects learning. When instructional material exceeds this capacity, learning suffers. This essay examines how modern educational design principles align with—and sometimes contradict—these cognitive constraints...`,
+  `In comparing the governance structures of parliamentary and presidential systems, a fundamental tension emerges between executive accountability and legislative independence. The Westminster model consolidates power while enabling swift policy execution; the separation-of-powers model, by contrast, distributes authority at the cost of legislative efficiency...`,
+  `The Industrial Revolution's ecological consequences were not uniformly distributed across class lines. Factory workers in mill towns bore disproportionate exposure to air and water pollution, while landowners in rural areas saw their estates insulated from immediate industrial harm. This spatial inequality in environmental burden prefigures contemporary debates on environmental justice...`,
+];
