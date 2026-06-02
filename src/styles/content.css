@@ -4333,3 +4333,100 @@
   color: var(--m-text-3);
   font-weight: 400;
 }
+
+/* ── Instructor courses page ───────────────────────────── */
+.m-course-card {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--m-line-soft);
+}
+.m-course-card:last-child {
+  border-bottom: none;
+}
+.m-course-card__row {
+  display: grid;
+  grid-template-columns: 36px 1fr auto auto auto auto;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Grade distribution bar */
+.m-grade-dist {
+  margin-top: 10px;
+  padding-left: 52px;
+}
+.m-grade-dist__bar {
+  height: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  gap: 2px;
+  background: var(--m-surface-2);
+}
+.m-grade-dist__segment {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.m-grade-dist__segment--success { background: var(--m-success); }
+.m-grade-dist__segment--info    { background: var(--m-info); }
+.m-grade-dist__segment--default { background: var(--m-text-4); }
+.m-grade-dist__segment--warning { background: var(--m-warning); }
+.m-grade-dist__segment--danger  { background: var(--m-danger); }
+
+.m-grade-dist__legend {
+  display: flex;
+  gap: 14px;
+  margin-top: 6px;
+}
+.m-grade-dist__item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--m-text-3);
+}
+.m-grade-dist__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.m-grade-dist__dot--success { background: var(--m-success); }
+.m-grade-dist__dot--info    { background: var(--m-info); }
+.m-grade-dist__dot--default { background: var(--m-text-4); }
+.m-grade-dist__dot--warning { background: var(--m-warning); }
+.m-grade-dist__dot--danger  { background: var(--m-danger); }
+
+/* Past semesters */
+.m-past-semester {
+  border-bottom: 1px solid var(--m-line-soft);
+}
+.m-past-semester:last-child {
+  border-bottom: none;
+}
+.m-past-semester__heading {
+  padding: 10px 18px 6px;
+  font-size: 10.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--m-text-4);
+  font-weight: 500;
+}
+.m-past-course-row {
+  display: grid;
+  grid-template-columns: 36px 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 10px 18px;
+}
+.m-past-course-row--bordered {
+  border-bottom: 1px solid var(--m-line-soft);
+}
+.m-past-course-row__title {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--m-text-2);
+}
+.m-inst-dept-badge--muted {
+  opacity: 0.5;
+}
