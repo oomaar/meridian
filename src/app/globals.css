@@ -318,3 +318,104 @@
     @apply font-sans;
   }
 }
+
+/* schedule grid */
+.m-schedule {
+  display: grid;
+  grid-template-columns: 56px repeat(5, 1fr);
+  border: 1px solid var(--m-line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--m-surface);
+}
+.m-schedule__head {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--m-line);
+  border-right: 1px solid var(--m-line);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--m-text-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--m-surface-2);
+}
+.m-schedule__head:last-child {
+  border-right: none;
+}
+.m-schedule__cell {
+  border-right: 1px solid var(--m-line-soft);
+  border-bottom: 1px solid var(--m-line-soft);
+  min-height: 56px;
+  position: relative;
+  padding: 4px;
+}
+.m-schedule__cell:nth-child(6n + 6) {
+  border-right: none;
+}
+.m-schedule__hour {
+  padding: 4px 10px;
+  font-family: var(--m-font-mono);
+  font-size: 10.5px;
+  color: var(--m-text-3);
+  border-right: 1px solid var(--m-line);
+  border-bottom: 1px solid var(--m-line-soft);
+  text-align: right;
+  background: var(--m-surface-2);
+}
+.m-schedule__event {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  background: var(--m-accent-bg);
+  border-left: 2px solid var(--m-accent);
+  border-radius: 3px;
+  padding: 4px 6px;
+  font-size: 11px;
+  color: var(--m-text);
+  line-height: 1.3;
+  cursor: pointer;
+  overflow: hidden;
+}
+.m-schedule__event b {
+  font-weight: 500;
+  display: block;
+}
+.m-schedule__event span {
+  color: var(--m-text-3);
+  font-family: var(--m-font-mono);
+  font-size: 10px;
+}
+.m-schedule__event--info {
+  background: var(--m-info-bg);
+  border-color: var(--m-info);
+}
+.m-schedule__event--warning {
+  background: var(--m-warning-bg);
+  border-color: var(--m-warning);
+}
+.m-schedule__event--success {
+  background: var(--m-success-bg);
+  border-color: var(--m-success);
+}
+
+/* placeholder thumbnail */
+.m-ph {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      var(--m-line-soft) 0,
+      var(--m-line-soft) 8px,
+      transparent 8px,
+      transparent 16px
+    ),
+    var(--m-surface-2);
+  border: 1px dashed var(--m-line-strong);
+  border-radius: 8px;
+  color: var(--m-text-3);
+  font-family: var(--m-font-mono);
+  font-size: 11px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 18px;
+}

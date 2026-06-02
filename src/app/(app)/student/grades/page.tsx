@@ -1,3 +1,8 @@
+import { getStudentGradesWithHistory } from "@/fake-db/dashboards";
+import { GradesClient } from "@/components/student/grades-client/grades-client";
+
 export default function StudentGradesPage() {
-  return <h1>Grades</h1>;
+  const semesterGrades = getStudentGradesWithHistory();
+
+  return <GradesClient semesterGrades={semesterGrades} />;
 }

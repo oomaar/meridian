@@ -4,8 +4,21 @@ import { useState, useCallback, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
+import type { StudentSidebarCourse } from "@/fake-db/dashboards";
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({
+  children,
+  studentCourses,
+  studentCourseCount,
+  studentDeadlineCount,
+  studentNotifCount,
+}: {
+  children: ReactNode;
+  studentCourses: StudentSidebarCourse[];
+  studentCourseCount: number;
+  studentDeadlineCount: number;
+  studentNotifCount: number;
+}) {
   const pathname = usePathname();
   const [navOpen, setNavOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -24,7 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {navOpen && (
         <div className="m-nav-overlay" onClick={close} aria-hidden="true" />
       )}
-      <Sidebar />
+      <Sidebar studentCourses={studentCourses} studentCourseCount={studentCourseCount} studentDeadlineCount={studentDeadlineCount} studentNotifCount={studentNotifCount} />
       <div className="m-main">
         <Topbar onNavToggle={toggle} />
         <div className="m-page">{children}</div>

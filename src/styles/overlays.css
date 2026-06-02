@@ -75,6 +75,10 @@
   flex-direction: column;
   gap: 16px;
 }
+.m-sheet__body--flush {
+  padding: 0;
+  gap: 0;
+}
 .m-sheet__foot {
   padding: 14px 20px;
   border-top: 1px solid var(--m-line);

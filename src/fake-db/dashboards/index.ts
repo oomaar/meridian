@@ -9,7 +9,6 @@ import {
 import {
   generateRecentActivity,
   generateRecentActivityForInstructor,
-  generateRecentActivityForStudent,
   generateSubmissionThroughput,
   generateSubmissionsLast7d,
   generateUpcomingDeadlines,
@@ -18,9 +17,7 @@ import {
 import {
   getActiveSemester,
   getCoursesForInstructor,
-  getCoursesForStudent,
   getInstructor,
-  getStudent,
 } from "../relationships";
 import { NOW } from "../seed";
 import type {
@@ -34,7 +31,6 @@ import type {
   Notification,
   Semester,
   SemesterStatus,
-  Student,
   StudentStatus,
   UserStatus,
 } from "../types";
@@ -118,23 +114,394 @@ export function getAdminOverview(): AdminOverviewData {
   };
 }
 
-export type StudentDashboardData = {
-  student: Student;
-  enrolledCourses: Course[];
-  upcomingDeadlines: ReturnType<typeof generateUpcomingDeadlines>;
-  recentActivity: Activity[];
+export type StudentCourseCard = {
+  code: string;
+  deptCode: string;
+  deptColor: string;
+  title: string;
+  instructor: string;
+  progress: number;
+  grade: string;
+  nextDue: string;
 };
 
-export function getStudentDashboard(
-  studentId: string,
-): StudentDashboardData | null {
-  const student = getStudent(studentId);
+export type StudentDeadlineItem = {
+  id: string;
+  course: string;
+  title: string;
+  dayLabel: string;
+  timeLabel: string;
+  inLabel: string;
+  type: "assignment" | "paper" | "discussion" | "milestone";
+};
+
+export type StudentAnnouncementItem = {
+  who: string;
+  course: string;
+  title: string;
+  time: string;
+};
+
+export type StudentScheduleEvent = {
+  row: number;
+  col: number;
+  course: string;
+  displayTime: string;
+  location: string;
+  tone: "" | "info" | "warning" | "success";
+};
+
+export type ContinueLearning = {
+  courseCode: string;
+  courseTitle: string;
+  moduleSub: string;
+  lessonTitle: string;
+  lessonDesc: string;
+  lessonMeta: string;
+  progress: number;
+  minutesLeft: number;
+} | null;
+
+export type TermOverview = {
+  creditsThisTerm: number;
+  totalTermCredits: number;
+  gpa: number;
+  degreeProgress: number;
+  program: string;
+  classYear: number;
+  advisorName: string;
+};
+
+export type StudentDashboardData = {
+  student: { firstName: string; name: string };
+  eyebrow: string;
+  semesterLabel: string;
+  subText: string;
+  continueLearning: ContinueLearning;
+  courses: StudentCourseCard[];
+  announcements: StudentAnnouncementItem[];
+  deadlines: StudentDeadlineItem[];
+  scheduleEvents: StudentScheduleEvent[];
+  termOverview: TermOverview;
+};
+
+function numToLetterGrade(n: number): string {
+  if (n >= 97) return "A+";
+  if (n >= 93) return "A";
+  if (n >= 90) return "A−";
+  if (n >= 87) return "B+";
+  if (n >= 83) return "B";
+  if (n >= 80) return "B−";
+  if (n >= 77) return "C+";
+  if (n >= 73) return "C";
+  if (n >= 70) return "C−";
+  if (n >= 67) return "D+";
+  if (n >= 63) return "D";
+  if (n >= 60) return "D−";
+  return "F";
+}
+
+function fmtDueShort(d: Date): string {
+  const diffDays = Math.ceil((d.getTime() - NOW.getTime()) / DAY_MS);
+  if (diffDays <= 0) return "Today";
+  if (diffDays === 1) return "Tomorrow";
+  if (diffDays <= 6)
+    return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()];
+  return `${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getMonth()]} ${d.getDate()}`;
+}
+
+function fmtMeetingTime(t: string): string {
+  const [hStr, mStr] = t.split(":");
+  const h = parseInt(hStr, 10);
+  const h12 = h > 12 ? h - 12 : h;
+  return `${h12}:${mStr}`;
+}
+
+const DEPT_TONE: Record<string, StudentScheduleEvent["tone"]> = {
+  CS: "info",
+  PHIL: "info",
+  LING: "info",
+  MATH: "warning",
+  HIST: "warning",
+  ART: "warning",
+  MUS: "warning",
+  BIO: "success",
+  CHEM: "success",
+  ENG: "success",
+};
+
+const ADVISOR_POOL = [
+  "Prof. Mateusz Carvalho",
+  "Prof. Vihaan Krishnan",
+  "Prof. Saoirse Walsh",
+  "Prof. Linnea Ahmadi",
+  "Prof. Adaeze Okafor",
+  "Prof. Henrik Lindqvist",
+];
+
+const ANN_TEMPLATES = [
+  (code: string) => `Office hours rescheduled — check ${code} announcements`,
+  (code: string) => `Midterm results posted for ${code}`,
+  (code: string) => `Workshop session moved — see updated room in ${code}`,
+  (code: string) => `Supplementary readings added to ${code} module`,
+  (code: string) => `Grades released for last week's ${code} quiz`,
+];
+
+// Returns the active student with the most enrolled courses — used by all student-facing functions
+// so every screen shows consistent data for the same persona.
+function getDefaultStudent() {
+  const active = db.students.filter(
+    (s) => s.status === "active" && s.enrolledCourseIds.length >= 4,
+  );
+  if (active.length === 0) {
+    // fallback: just pick the most-enrolled active student
+    return (
+      [...db.students]
+        .filter((s) => s.status === "active")
+        .sort(
+          (a, b) => b.enrolledCourseIds.length - a.enrolledCourseIds.length,
+        )[0] ?? db.students[0]
+    );
+  }
+  // Use a stable pick so the same student is always returned
+  return active[strHash(active[0].id) % active.length];
+}
+
+export function getStudentDashboard(): StudentDashboardData | null {
+  const student = getDefaultStudent();
   if (!student) return null;
+
+  const enrolledCourses = student.enrolledCourseIds
+    .map((id) => db.courses.find((c) => c.id === id))
+    .filter(Boolean) as Course[];
+
+  const semester =
+    db.semesters.find((s) => s.status === "active") ?? db.semesters[0];
+  const semStart = new Date(semester.startDate).getTime();
+  const weekNum = Math.max(
+    1,
+    Math.floor((NOW.getTime() - semStart) / WEEK_MS) + 1,
+  );
+  const MONTH_NAMES = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const dayName = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ][NOW.getDay()];
+  const eyebrow = `${semester.name} · Week ${weekNum} · ${dayName} ${MONTH_NAMES[NOW.getMonth()]} ${NOW.getDate()}`;
+
+  // ── deadlines ────────────────────────────────────────────────────────────
+  const rawDeadlines = generateUpcomingDeadlines(student.id, 6);
+  const deadlines: StudentDeadlineItem[] = rawDeadlines.slice(0, 5).map((d) => {
+    const due = new Date(d.dueDate);
+    const diffDays = Math.ceil((due.getTime() - NOW.getTime()) / DAY_MS);
+    const dayLabel = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
+      due.getDay()
+    ];
+    const h = due.getUTCHours();
+    const m = due.getUTCMinutes();
+    const ampm = h >= 12 ? "PM" : "AM";
+    const h12 = h % 12 || 12;
+    const timeLabel = `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
+    const inLabel =
+      diffDays <= 0
+        ? "today"
+        : diffDays === 1
+          ? "tomorrow"
+          : `in ${diffDays} days`;
+    const asgn = db.assignments.find((a) => a.id === d.assignmentId);
+    const typeMap: Record<string, StudentDeadlineItem["type"]> = {
+      essay: "paper",
+      exam: "assignment",
+      quiz: "assignment",
+      lab: "assignment",
+      project: "milestone",
+      presentation: "discussion",
+    };
+    return {
+      id: d.assignmentId,
+      course: d.courseCode,
+      title: d.title,
+      dayLabel,
+      timeLabel,
+      inLabel,
+      type: asgn ? (typeMap[asgn.type] ?? "assignment") : "assignment",
+    };
+  });
+
+  // ── courses ──────────────────────────────────────────────────────────────
+  const courses: StudentCourseCard[] = enrolledCourses.slice(0, 5).map((c) => {
+    const sh = strHash(student.id + c.id);
+    const dept = db.departments.find((d) => d.id === c.departmentId);
+    const deptCode = dept?.code ?? c.code.split("-")[0];
+    const deptColor = DEPT_COLORS_MAP[deptCode] ?? "var(--m-accent)";
+    const instructor = db.instructors.find((i) => i.id === c.instructorId);
+    const instructorName = instructor
+      ? `Prof. ${instructor.firstName} ${instructor.lastName}`
+      : "—";
+    const progress = (10 + (sh % 81)) / 100;
+    const ch = strHash(c.id);
+    const avgGrade = ch % 20 === 0 ? null : 68 + (ch % 1500) / 100;
+    const sh2 = strHash(student.id + c.id + "g");
+    const gradeNum = avgGrade
+      ? Math.max(
+          45,
+          Math.min(
+            100,
+            Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10),
+          ),
+        )
+      : null;
+    const grade = gradeNum ? numToLetterGrade(gradeNum) : "—";
+    const courseDl = rawDeadlines.find((dl) => dl.courseId === c.id);
+    const nextDue = courseDl
+      ? `${courseDl.title} · ${fmtDueShort(new Date(courseDl.dueDate))}`
+      : "No upcoming";
+    return {
+      code: c.code,
+      deptCode,
+      deptColor,
+      title: c.title,
+      instructor: instructorName,
+      progress,
+      grade,
+      nextDue,
+    };
+  });
+
+  // ── announcements ─────────────────────────────────────────────────────────
+  const announcements: StudentAnnouncementItem[] = [];
+  for (let i = 0; i < Math.min(2, enrolledCourses.length); i++) {
+    const c = enrolledCourses[i];
+    const sh = strHash(student.id + c.id + "ann");
+    const instructor = db.instructors.find((ins) => ins.id === c.instructorId);
+    const who = instructor
+      ? `Prof. ${instructor.firstName} ${instructor.lastName}`
+      : "Instructor";
+    announcements.push({
+      who,
+      course: c.code,
+      title: ANN_TEMPLATES[sh % ANN_TEMPLATES.length](c.code),
+      time: i === 0 ? "1h ago" : "Yesterday",
+    });
+  }
+  announcements.push({
+    who: "Academic Advising",
+    course: "Advising",
+    title: `${semester.name.includes("Spring") ? "Summer" : "Spring"} registration opens soon — check your portal`,
+    time: "2 days ago",
+  });
+
+  // ── schedule ──────────────────────────────────────────────────────────────
+  const DAY_TO_COL: Record<string, number> = {
+    Mon: 0,
+    Tue: 1,
+    Wed: 2,
+    Thu: 3,
+    Fri: 4,
+  };
+  const scheduleEvents: StudentScheduleEvent[] = [];
+  for (const c of enrolledCourses) {
+    const dept = db.departments.find((d) => d.id === c.departmentId);
+    const deptCode = dept?.code ?? c.code.split("-")[0];
+    const tone = DEPT_TONE[deptCode] ?? "";
+    for (const mt of c.meetingTimes) {
+      const col = DAY_TO_COL[mt.day];
+      if (col === undefined) continue;
+      const hour = parseInt(mt.start.split(":")[0], 10);
+      const row = hour - 9;
+      if (row < 0 || row > 6) continue;
+      scheduleEvents.push({
+        row,
+        col,
+        course: c.code,
+        displayTime: fmtMeetingTime(mt.start),
+        location: `${c.location.building} ${c.location.room}`,
+        tone,
+      });
+    }
+  }
+
+  // ── continue learning ────────────────────────────────────────────────────
+  let continueLearning: StudentDashboardData["continueLearning"] = null;
+  if (enrolledCourses.length > 0) {
+    const c = enrolledCourses[0];
+    const sh = strHash(student.id + c.id);
+    const modIdx = (sh % 4) + 1;
+    const lesIdx = (sh % 6) + 1;
+    const lessonId = `L${modIdx}.${lesIdx}`;
+    const progress = (20 + (sh % 60)) / 100;
+    const minutesLeft = 10 + (sh % 40);
+    continueLearning = {
+      courseCode: c.code,
+      courseTitle: c.title,
+      moduleSub: `${c.code} · Module ${modIdx} · Lesson ${lesIdx}`,
+      lessonTitle: `Workshop — ${c.title} pt. ${(sh % 2) + 1}`,
+      lessonDesc: `Continue the practical implementation from the previous session. Complete the remaining exercises and submit your work to the autograder by the deadline.`,
+      lessonMeta: `${lessonId} · workshop · 60 min`,
+      progress,
+      minutesLeft,
+    };
+  }
+
+  // ── term overview ─────────────────────────────────────────────────────────
+  const program = db.programs.find((p) => p.id === student.programId);
+  const programName = program
+    ? `${program.degreeType}. ${program.name}`
+    : "B.S. Computer Science";
+  const classYear = 2025 + Math.max(1, 5 - student.year);
+  const degreeProgress = Math.round((student.year - 1) * 25 + 12);
+  const creditsThisTerm = enrolledCourses.reduce((s, c) => s + c.credits, 0);
+  const sh = strHash(student.id);
+  const advisorName = ADVISOR_POOL[sh % ADVISOR_POOL.length];
+
+  const dueSoon = deadlines.filter(
+    (d) =>
+      ["today", "tomorrow"].includes(d.inLabel) ||
+      d.inLabel.startsWith("in 2") ||
+      d.inLabel.startsWith("in 3"),
+  ).length;
+  const subText =
+    dueSoon > 0
+      ? `You have ${dueSoon === 1 ? "one assignment" : `${dueSoon} assignments`} due this week. Check your upcoming deadlines.`
+      : "You're all caught up this week. Keep up the good work!";
+
   return {
-    student,
-    enrolledCourses: getCoursesForStudent(studentId),
-    upcomingDeadlines: generateUpcomingDeadlines(studentId, 8),
-    recentActivity: generateRecentActivityForStudent(studentId, 10),
+    student: { firstName: student.firstName, name: student.fullName },
+    eyebrow,
+    semesterLabel: semester.name,
+    subText,
+    continueLearning,
+    courses,
+    announcements,
+    deadlines,
+    scheduleEvents,
+    termOverview: {
+      creditsThisTerm,
+      totalTermCredits: 18,
+      gpa: student.gpa,
+      degreeProgress,
+      program: programName,
+      classYear,
+      advisorName,
+    },
   };
 }
 
@@ -177,6 +544,76 @@ export type AdminNotificationsData = {
 
 export function getAdminNotificationsPage(): AdminNotificationsData {
   return { notifications: db.notifications };
+}
+
+export function getStudentNotifications(): Notification[] {
+  const student = getDefaultStudent();
+  if (!student) return [];
+
+  const enrolledCourses = student.enrolledCourseIds
+    .map((id) => db.courses.find((c) => c.id === id))
+    .filter(Boolean) as Course[];
+
+  const items: Notification[] = [];
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
+  const bodies: Array<{ kind: Notification["kind"]; body: string; minsAgo: number; read: boolean }> = [
+    { kind: "system", body: `Grade released for ${enrolledCourses[0]?.code ?? "CS-101"}: Quiz 3 — you scored 91/100.`, minsAgo: 18, read: false },
+    { kind: "mention", body: `Prof. ${db.instructors[0]?.lastName ?? "Smith"} posted an announcement in ${enrolledCourses[1]?.code ?? "MATH-201"}: "No class this Friday."`, minsAgo: 55, read: false },
+    { kind: "system", body: `Assignment due in 24h: ${enrolledCourses[0]?.code ?? "CS-101"} — Lab 4: Recursion. Submit before midnight.`, minsAgo: 90, read: false },
+    { kind: "system", body: `Grade released for ${enrolledCourses[1]?.code ?? "MATH-201"}: Midterm Exam — you scored 78/100.`, minsAgo: 60 * 5, read: true },
+    { kind: "approval", body: `Your enrollment in ${enrolledCourses[2]?.code ?? "PHYS-301"} has been confirmed for the upcoming semester.`, minsAgo: 60 * 12, read: true },
+    { kind: "mention", body: `Prof. ${db.instructors[1]?.lastName ?? "Johnson"} mentioned you in ${enrolledCourses[0]?.code ?? "CS-101"}: "Great work on the last project, Ines!"`, minsAgo: 60 * 24, read: true },
+    { kind: "system", body: `Deadline reminder: ${enrolledCourses[2]?.code ?? "PHYS-301"} — Final Project due in 3 days.`, minsAgo: 60 * 36, read: true },
+    { kind: "system", body: `Grade released for ${enrolledCourses[0]?.code ?? "CS-101"}: Essay 1 — you scored 85/100.`, minsAgo: 60 * 48, read: true },
+  ];
+
+  bodies.forEach((b, i) => {
+    const ts = new Date(NOW.getTime() - b.minsAgo * 60_000);
+    items.push({
+      id: `student-notif-${i + 1}`,
+      kind: b.kind,
+      recipientUserId: student.id,
+      body: b.body,
+      timestamp: ts.toISOString(),
+      read: b.read,
+    });
+  });
+
+  return items;
+}
+
+export function getInstructorNotifications(): Notification[] {
+  const instructor = db.instructors[0];
+  if (!instructor) return [];
+
+  const courses = db.courses.filter((c) => c.instructorId === instructor.id).slice(0, 3);
+
+  const items: Notification[] = [];
+
+  const bodies: Array<{ kind: Notification["kind"]; body: string; minsAgo: number; read: boolean }> = [
+    { kind: "system", body: `${courses[0]?.code ?? "CS-101"} — 4 new submissions received for Lab 4. Grading window opens now.`, minsAgo: 10, read: false },
+    { kind: "approval", body: `Grading SLA alert: ${courses[1]?.code ?? "MATH-201"} Midterm Exam has 12 ungraded submissions past the 72h window.`, minsAgo: 45, read: false },
+    { kind: "mention", body: `Student in ${courses[0]?.code ?? "CS-101"} posted a question on Lab 4: "Is tail recursion required for problem 3?"`, minsAgo: 80, read: false },
+    { kind: "system", body: `Roster sync complete for ${courses[0]?.code ?? "CS-101"}: 2 students added, 1 dropped.`, minsAgo: 60 * 4, read: true },
+    { kind: "approval", body: `Grade passback to Canvas LMS completed for ${courses[1]?.code ?? "MATH-201"} — all records updated.`, minsAgo: 60 * 8, read: true },
+    { kind: "mention", body: `Department chair mentioned you in an announcement: "Please submit your final grade reports by Friday."`, minsAgo: 60 * 20, read: true },
+    { kind: "system", body: `${courses[2]?.code ?? "PHYS-301"} — Office hours reminder sent to all enrolled students.`, minsAgo: 60 * 30, read: true },
+  ];
+
+  bodies.forEach((b, i) => {
+    const ts = new Date(NOW.getTime() - b.minsAgo * 60_000);
+    items.push({
+      id: `instructor-notif-${i + 1}`,
+      kind: b.kind,
+      recipientUserId: instructor.id,
+      body: b.body,
+      timestamp: ts.toISOString(),
+      read: b.read,
+    });
+  });
+
+  return items;
 }
 
 const DEPT_COLORS_MAP: Record<string, string> = {
@@ -1039,7 +1476,13 @@ export function getAdminCourseDetail(code: string): AdminCourseDetailData {
       name: s.fullName,
       standing: STANDINGS[(s.year - 1) % STANDINGS.length],
       grade: avgGrade
-        ? Math.max(45, Math.min(100, Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10)))
+        ? Math.max(
+            45,
+            Math.min(
+              100,
+              Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10),
+            ),
+          )
         : null,
       attendance: 60 + (sh % 41),
       submitted: 4 + (sh % Math.max(1, assignments.length)),
@@ -1136,3 +1579,773 @@ export function getAdminCourseDetail(code: string): AdminCourseDetailData {
     })),
   };
 }
+
+// ── Student Courses Page ──────────────────────────────────────────────────────
+
+export type StudentCoursePageCard = {
+  code: string;
+  deptCode: string;
+  deptColor: string;
+  title: string;
+  description: string;
+  instructor: string;
+  credits: number;
+  status: CourseStatus;
+  progress: number;
+  grade: string;
+  gradeNum: number | null;
+  modulesComplete: number;
+  modulesTotal: number;
+  meetingDisplay: string;
+  location: string;
+  nextDue: string;
+};
+
+export type StudentCoursesPageData = {
+  student: { firstName: string; name: string };
+  semesterLabel: string;
+  activeCourses: number;
+  totalCredits: number;
+  gpa: number;
+  courses: StudentCoursePageCard[];
+};
+
+function letterToGpa(grade: string): number {
+  const map: Record<string, number> = {
+    "A+": 4.0,
+    A: 4.0,
+    "A−": 3.7,
+    "B+": 3.3,
+    B: 3.0,
+    "B−": 2.7,
+    "C+": 2.3,
+    C: 2.0,
+    "C−": 1.7,
+    "D+": 1.3,
+    D: 1.0,
+    "D−": 0.7,
+    F: 0.0,
+  };
+  return map[grade] ?? 0;
+}
+
+function fmtMeeting(times: Course["meetingTimes"]): string {
+  if (!times.length) return "—";
+  const days = times.map((t) => t.day).join(" / ");
+  const first = times[0];
+  const fmt = (s: string) => {
+    const [h, m] = s.split(":").map(Number);
+    const ampm = h >= 12 ? "pm" : "am";
+    return `${h % 12 || 12}:${String(m).padStart(2, "0")}${ampm}`;
+  };
+  return `${days} · ${fmt(first.start)}–${fmt(first.end)}`;
+}
+
+export type StudentSidebarCourse = { code: string; title: string };
+
+export function getStudentSidebarCourses(): StudentSidebarCourse[] {
+  const student = getDefaultStudent();
+  if (!student) return [];
+  return student.enrolledCourseIds
+    .map((id) => db.courses.find((c) => c.id === id))
+    .filter(Boolean)
+    .map((c) => ({ code: c!.code, title: c!.title })) as StudentSidebarCourse[];
+}
+
+export function getStudentCoursesPage(): StudentCoursesPageData | null {
+  const student = getDefaultStudent();
+  if (!student) return null;
+
+  const enrolledCourses = student.enrolledCourseIds
+    .map((id) => db.courses.find((c) => c.id === id))
+    .filter(Boolean) as Course[];
+
+  const semester =
+    db.semesters.find((s) => s.status === "active") ?? db.semesters[0];
+  const semStart = new Date(semester.startDate).getTime();
+  const weekNum = Math.max(
+    1,
+    Math.floor((NOW.getTime() - semStart) / WEEK_MS) + 1,
+  );
+  const MONTH_NAMES = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const semesterLabel = `${semester.name} · Week ${weekNum} · ${MONTH_NAMES[NOW.getMonth()]} ${NOW.getDate()}`;
+
+  const rawDeadlines = generateUpcomingDeadlines(student.id, 10);
+
+  const courses: StudentCoursePageCard[] = enrolledCourses.map((c) => {
+    const sh = strHash(student.id + c.id);
+    const dept = db.departments.find((d) => d.id === c.departmentId);
+    const deptCode = dept?.code ?? c.code.split("-")[0];
+    const deptColor = DEPT_COLORS_MAP[deptCode] ?? "var(--m-accent)";
+    const instructor = db.instructors.find((i) => i.id === c.instructorId);
+    const instructorName = instructor
+      ? `Prof. ${instructor.firstName} ${instructor.lastName}`
+      : "—";
+    const progress = (10 + (sh % 81)) / 100;
+    const ch = strHash(c.id);
+    const avgGrade = ch % 20 === 0 ? null : 68 + (ch % 1500) / 100;
+    const sh2 = strHash(student.id + c.id + "g");
+    const gradeNum = avgGrade
+      ? Math.max(
+          45,
+          Math.min(
+            100,
+            Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10),
+          ),
+        )
+      : null;
+    const grade = gradeNum ? numToLetterGrade(gradeNum) : "—";
+    const modulesTotal = 4 + (ch % 3);
+    const modulesComplete = Math.max(
+      0,
+      Math.min(modulesTotal, Math.round(progress * modulesTotal)),
+    );
+    const courseDl = rawDeadlines.find((dl) => dl.courseId === c.id);
+    const nextDue = courseDl
+      ? `${courseDl.title} · ${fmtDueShort(new Date(courseDl.dueDate))}`
+      : "No upcoming deadlines";
+
+    return {
+      code: c.code,
+      deptCode,
+      deptColor,
+      title: c.title,
+      description: c.description,
+      instructor: instructorName,
+      credits: c.credits,
+      status: c.status,
+      progress,
+      grade,
+      gradeNum,
+      modulesComplete,
+      modulesTotal,
+      meetingDisplay: fmtMeeting(c.meetingTimes),
+      location: `${c.location.building} ${c.location.room}`,
+      nextDue,
+    };
+  });
+
+  const gradedCourses = courses.filter((c) => c.gradeNum !== null);
+  const gpa =
+    gradedCourses.length > 0
+      ? Math.round(
+          (gradedCourses.reduce((sum, c) => sum + letterToGpa(c.grade), 0) /
+            gradedCourses.length) *
+            100,
+        ) / 100
+      : 0;
+  const totalCredits = courses.reduce((sum, c) => sum + c.credits, 0);
+  const activeCourses = courses.filter((c) => c.status === "active").length;
+
+  return {
+    student: {
+      firstName: student.firstName,
+      name: `${student.firstName} ${student.lastName}`,
+    },
+    semesterLabel,
+    activeCourses,
+    totalCredits,
+    gpa,
+    courses,
+  };
+}
+
+// ── Student Course Detail Page ────────────────────────────────────────────────
+
+export type StudentCourseDetailLesson = {
+  id: string;
+  title: string;
+  kind: "video" | "reading" | "quiz" | "assignment";
+  duration: string;
+  state: "complete" | "in-progress" | "upcoming";
+  description: string;
+  objectives: string[];
+  scrubProgress: number;
+  moduleIdx: number;
+  moduleTitle: string;
+  lessonIdx: number;
+  lessonOf: number;
+  quizQuestions?: { stem: string; options: string[]; correctIdx: number }[];
+};
+
+export type StudentCourseDetailModule = {
+  id: string;
+  idx: number;
+  title: string;
+  lessonCount: number;
+  completedCount: number;
+  totalMin: number;
+  state: "complete" | "in-progress" | "upcoming";
+  lessons: StudentCourseDetailLesson[];
+};
+
+export type Thread = { who: string; time: string; body: string };
+
+export type Syllabus = {
+  officeHours: string;
+  email: string;
+  grading: { label: string; pct: number; color: string }[];
+  policies: { title: string; body: string }[];
+};
+
+export type StudentCourseDetail = {
+  code: string;
+  title: string;
+  instructor: string;
+  deptCode: string;
+  deptColor: string;
+  credits: number;
+  meetingDisplay: string;
+};
+
+export type Resource = { name: string; meta: string };
+
+export type StudentCourseDetailData = {
+  course: StudentCourseDetail;
+  progress: number;
+  modulesComplete: number;
+  modulesTotal: number;
+  grade: string;
+  modules: StudentCourseDetailModule[];
+  activeModuleIdx: number;
+  activeLessonId: string;
+  resources: Resource[];
+  threads: Thread[];
+  syllabus: Syllabus;
+};
+
+const LESSON_DESCRIPTIONS = [
+  "In this session we build on the foundations from the previous module, walking through the core implementation step by step. By the end you should be comfortable applying the technique to novel problems.",
+  "This lecture covers the theoretical underpinnings of the topic, introducing the key concepts and formalisms used throughout the course. We'll work through several worked examples together.",
+  "A hands-on workshop where you'll implement the algorithms covered in the readings. Come prepared with your development environment set up — we'll be live-coding from the start.",
+  "We revisit the most commonly misunderstood concepts from earlier modules and clarify them with new examples. A good session to consolidate your understanding before the assignment.",
+];
+
+const LESSON_OBJECTIVES = [
+  [
+    "Understand the core invariants required for correctness",
+    "Implement the primary algorithm from scratch",
+    "Identify common failure modes and how to avoid them",
+    "Apply the technique to the provided test cases",
+  ],
+  [
+    "Define the key terms introduced in lecture",
+    "Derive the main result from first principles",
+    "Contrast this approach with the alternative from Module 1",
+    "Complete the checkpoint quiz with confidence",
+  ],
+  [
+    "Set up the development environment for today's exercises",
+    "Trace execution through the reference implementation",
+    "Extend the starter code with two additional features",
+    "Run the provided test harness and interpret the output",
+  ],
+];
+
+const THREAD_BODIES = [
+  "Has anyone found a clean way to handle the edge case where the initial state is empty? The naive approach hits a null pointer on line 42.",
+  "Got this working by checking the return value before promoting — the key insight is that the term in the response has to match the current term.",
+  "The reading for this week is dense but section 4 finally clicked for me after re-reading it twice. The diagram on page 12 is the one to focus on.",
+  "Office hours tomorrow are moved to 3pm — Prof confirmed in the course chat.",
+];
+
+const THREAD_NAMES = [
+  "Saoirse Walsh",
+  "Olivér Hartmann",
+  "Priya Nair",
+  "Marcus Webb",
+  "Yuki Tanaka",
+];
+
+const QUIZ_BANKS: { stem: string; options: string[]; correctIdx: number }[][] =
+  [
+    [
+      {
+        stem: "Which property guarantees a committed entry is never overwritten?",
+        options: [
+          "Log Matching",
+          "Leader Completeness",
+          "State Machine Safety",
+          "Election Safety",
+        ],
+        correctIdx: 1,
+      },
+      {
+        stem: "A quorum in a 5-node cluster requires how many acknowledgements?",
+        options: ["2", "3", "4", "5"],
+        correctIdx: 1,
+      },
+      {
+        stem: "What is the role of a term number in the consensus protocol?",
+        options: [
+          "It tracks committed entries",
+          "It acts as a logical clock to detect stale messages",
+          "It measures wall-clock time",
+          "It identifies leader uptime",
+        ],
+        correctIdx: 1,
+      },
+      {
+        stem: "When must a candidate step down to follower?",
+        options: [
+          "After winning an election",
+          "On receiving a vote denial",
+          "On seeing a higher term in any RPC",
+          "After a heartbeat timeout",
+        ],
+        correctIdx: 2,
+      },
+    ],
+    [
+      {
+        stem: "Which data structure provides O(1) amortised push and pop?",
+        options: ["Linked list", "Dynamic array", "Binary heap", "Hash map"],
+        correctIdx: 1,
+      },
+      {
+        stem: "A hash table resize is triggered when:",
+        options: [
+          "After every insertion",
+          "The load factor exceeds a threshold",
+          "A collision is detected",
+          "Every N operations",
+        ],
+        correctIdx: 1,
+      },
+      {
+        stem: "The worst-case time complexity of quicksort is:",
+        options: ["O(n)", "O(n log n)", "O(n²)", "O(log n)"],
+        correctIdx: 2,
+      },
+      {
+        stem: "Which traversal visits a node before its children?",
+        options: ["In-order", "Post-order", "Pre-order", "Level-order"],
+        correctIdx: 2,
+      },
+    ],
+    [
+      {
+        stem: "Which HTTP status code indicates a resource was created?",
+        options: ["200 OK", "201 Created", "204 No Content", "301 Moved"],
+        correctIdx: 1,
+      },
+      {
+        stem: "REST constraints include all of the following EXCEPT:",
+        options: [
+          "Statelessness",
+          "Uniform interface",
+          "Shared session state",
+          "Layered system",
+        ],
+        correctIdx: 2,
+      },
+      {
+        stem: "In OAuth 2.0, the access token is issued by the:",
+        options: [
+          "Resource server",
+          "Client",
+          "Authorization server",
+          "User agent",
+        ],
+        correctIdx: 2,
+      },
+      {
+        stem: "Which HTTP method is idempotent but not safe?",
+        options: ["GET", "POST", "PUT", "PATCH"],
+        correctIdx: 2,
+      },
+    ],
+  ];
+
+const OFFICE_HOURS = [
+  "Mon / Wed  2:00–3:00 pm · Aldridge Hall 214",
+  "Tue / Thu  10:00–11:00 am · Faculty Suite B",
+  "Mon / Wed / Fri  1:00–2:00 pm · Engineering Annex 302",
+  "Thu  3:00–5:00 pm · Virtual (Zoom link in Canvas)",
+];
+
+const GRADING_SCHEMAS: { label: string; pct: number; color: string }[][] = [
+  [
+    { label: "Assignments", pct: 30, color: "var(--m-info)" },
+    { label: "Midterm", pct: 25, color: "var(--m-accent)" },
+    { label: "Final exam", pct: 35, color: "var(--m-warning)" },
+    { label: "Participation", pct: 10, color: "var(--m-success)" },
+  ],
+  [
+    { label: "Homework", pct: 40, color: "var(--m-info)" },
+    { label: "Quizzes", pct: 20, color: "var(--m-accent)" },
+    { label: "Midterm", pct: 20, color: "var(--m-warning)" },
+    { label: "Final exam", pct: 20, color: "var(--m-success)" },
+  ],
+  [
+    { label: "Labs", pct: 30, color: "var(--m-info)" },
+    { label: "Project", pct: 35, color: "var(--m-accent)" },
+    { label: "Written responses", pct: 15, color: "var(--m-warning)" },
+    { label: "Participation", pct: 20, color: "var(--m-success)" },
+  ],
+];
+
+const SYLLABUS_POLICIES = [
+  {
+    title: "Attendance",
+    body: "Regular attendance is expected. More than three unexcused absences will result in a grade penalty. Lecture recordings are available but are not a substitute for in-person participation.",
+  },
+  {
+    title: "Late work",
+    body: "Assignments submitted within 24 hours of the deadline are accepted with a 10% deduction. Work submitted more than 24 hours late will not be accepted without prior written approval from the instructor.",
+  },
+  {
+    title: "Academic integrity",
+    body: "Collaboration is encouraged for understanding concepts, but all submitted work must be your own. Use of AI-generated content without attribution is prohibited. Violations will be referred to the Office of Academic Integrity.",
+  },
+];
+
+export function getStudentCourseDetail(
+  code: string,
+): StudentCourseDetailData | null {
+  const course = db.courses.find((c) => c.code === code);
+  if (!course) return null;
+
+  const h = strHash(course.id);
+  const dept = db.departments.find((d) => d.id === course.departmentId);
+  const deptCode = dept?.code ?? code.split("-")[0];
+  const deptColor = DEPT_COLORS_MAP[deptCode] ?? "var(--m-accent)";
+  const instructor = db.instructors.find((i) => i.id === course.instructorId);
+  const instructorName = instructor
+    ? `Prof. ${instructor.firstName} ${instructor.lastName}`
+    : "—";
+
+  // Use the same default student as all other student-facing functions
+  const student = getDefaultStudent();
+
+  const sh = strHash((student?.id ?? "s0") + course.id);
+  const progress = (10 + (sh % 81)) / 100;
+  const ch = strHash(course.id);
+  const avgGrade = ch % 20 === 0 ? null : 68 + (ch % 1500) / 100;
+  const sh2 = strHash((student?.id ?? "s0") + course.id + "g");
+  const gradeNum = avgGrade
+    ? Math.max(
+        45,
+        Math.min(100, Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10)),
+      )
+    : null;
+  const grade = gradeNum ? numToLetterGrade(gradeNum) : "—";
+
+  // Modules
+  const numModules = 4 + (ch % 3);
+  const activeModuleIdx = Math.min(1, numModules - 1);
+
+  const modules: StudentCourseDetailModule[] = Array.from(
+    { length: numModules },
+    (_, i) => {
+      const mh = strHash(course.id + `mod${i}`);
+      const shape = MODULE_LESSON_SHAPES[i % MODULE_LESSON_SHAPES.length];
+      const totalMin = shape.length * (20 + (mh % 30));
+      const modState: StudentCourseDetailModule["state"] =
+        i < activeModuleIdx
+          ? "complete"
+          : i === activeModuleIdx
+            ? "in-progress"
+            : "upcoming";
+
+      const completedCount =
+        modState === "complete"
+          ? shape.length
+          : modState === "in-progress"
+            ? Math.max(1, Math.floor(shape.length * 0.4))
+            : 0;
+
+      const moduleTitle = MODULE_TITLES[i % MODULE_TITLES.length];
+
+      const lessons: StudentCourseDetailLesson[] = shape.map((kind, li) => {
+        const lh = strHash(course.id + `mod${i}` + String(li));
+        const opts = LESSON_TITLES[kind];
+        const title = opts[lh % opts.length];
+        const dMin =
+          kind === "video"
+            ? 15 + (lh % 30)
+            : kind === "reading"
+              ? 10 + (lh % 20)
+              : 20 + (lh % 15);
+        const lessonState: StudentCourseDetailLesson["state"] =
+          modState === "complete"
+            ? "complete"
+            : modState === "upcoming"
+              ? "upcoming"
+              : li < completedCount
+                ? "complete"
+                : li === completedCount
+                  ? "in-progress"
+                  : "upcoming";
+        return {
+          id: `M-0${i + 1}-L${String(li + 1).padStart(2, "0")}`,
+          title,
+          kind,
+          duration: kind === "reading" ? `${dMin} min read` : `${dMin} min`,
+          state: lessonState,
+          description: LESSON_DESCRIPTIONS[lh % LESSON_DESCRIPTIONS.length],
+          objectives: LESSON_OBJECTIVES[lh % LESSON_OBJECTIVES.length],
+          scrubProgress:
+            lessonState === "in-progress"
+              ? (lh % 80) / 100 + 0.05
+              : lessonState === "complete"
+                ? 1
+                : 0,
+          moduleIdx: i,
+          moduleTitle,
+          lessonIdx: li,
+          lessonOf: shape.length,
+          quizQuestions:
+            kind === "quiz"
+              ? QUIZ_BANKS[lh % QUIZ_BANKS.length].slice(0, 3 + (lh % 2))
+              : undefined,
+        };
+      });
+
+      return {
+        id: `M-0${i + 1}`,
+        idx: i,
+        title: moduleTitle,
+        lessonCount: shape.length,
+        completedCount,
+        totalMin,
+        state: modState,
+        lessons,
+      };
+    },
+  );
+
+  const modulesComplete = modules.filter((m) => m.state === "complete").length;
+  const modulesTotal = numModules;
+
+  // Active lesson — first in-progress lesson in the active module
+  const activeMod = modules[activeModuleIdx];
+  const activeLessonIdx = activeMod.completedCount;
+  const activeL =
+    activeMod.lessons[Math.min(activeLessonIdx, activeMod.lessons.length - 1)];
+
+  // Resources
+  const numRes = 3 + (h % 2);
+  const resources = RESOURCE_NAMES.slice(0, numRes).map((name) => {
+    const rh = strHash(course.id + name);
+    const sizeKb = 60 + (rh % 800);
+    const ext = name.split(".").pop()?.toUpperCase() ?? "FILE";
+    return { name, meta: `${ext} · ${sizeKb}KB` };
+  });
+
+  // Threads
+  const numThreads = 2 + (h % 2);
+  const threads = Array.from({ length: numThreads }, (_, i) => {
+    const th = strHash(course.id + `thread${i}`);
+    return {
+      who: THREAD_NAMES[th % THREAD_NAMES.length],
+      time: i === 0 ? "12m ago" : i === 1 ? "1h ago" : "3h ago",
+      body: THREAD_BODIES[th % THREAD_BODIES.length],
+    };
+  });
+
+  return {
+    course: {
+      code: course.code,
+      title: course.title,
+      instructor: instructorName,
+      deptCode,
+      deptColor,
+      credits: course.credits,
+      meetingDisplay: fmtMeeting(course.meetingTimes),
+    },
+    progress,
+    modulesComplete,
+    modulesTotal,
+    grade,
+    modules,
+    activeModuleIdx,
+    activeLessonId: activeL.id,
+    resources,
+    threads,
+    syllabus: {
+      officeHours: OFFICE_HOURS[h % OFFICE_HOURS.length],
+      email: instructor
+        ? `${instructor.firstName.toLowerCase()}.${instructor.lastName.toLowerCase()}@aldridge.edu`
+        : "instructor@aldridge.edu",
+      grading: GRADING_SCHEMAS[h % GRADING_SCHEMAS.length],
+      policies: SYLLABUS_POLICIES,
+    },
+  };
+}
+
+export type StudentGradeCard = {
+  code: string;
+  deptCode: string;
+  deptColor: string;
+  title: string;
+  instructor: string;
+  grade: string;
+  gradeNum: number | null;
+  progress: number;
+};
+
+export type SemesterGrades = {
+  semesterId: string;
+  semesterCode: string;
+  semesterName: string;
+  status: "past" | "active" | "upcoming" | "planning";
+  gpa: number;
+  courses: StudentGradeCard[];
+};
+
+export function getStudentGradesWithHistory(): SemesterGrades[] {
+  const student = getDefaultStudent();
+  if (!student) return [];
+
+  const semesters = db.semesters
+    .filter((s) => s.status === "active" || s.status === "past")
+    .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+  return semesters.map((semester) => {
+    let semesterCourses = student.enrolledCourseIds
+      .map((id) => db.courses.find((c) => c.id === id && c.semesterId === semester.id))
+      .filter(Boolean) as Course[];
+
+    // For past semesters, add historical courses for realism
+    if (semester.status === "past") {
+      const semesterAllCourses = db.courses.filter(
+        (c) => c.semesterId === semester.id
+      );
+      const sh = strHash(student.id + semester.id);
+      const courseCountToAdd = 3 + (sh % 3); // Add 3-5 past courses
+
+      for (let i = 0; i < courseCountToAdd && i < semesterAllCourses.length; i++) {
+        const idx = (sh + i * 17) % semesterAllCourses.length;
+        const course = semesterAllCourses[idx];
+        if (!semesterCourses.find((c) => c.id === course.id)) {
+          semesterCourses.push(course);
+        }
+      }
+    }
+
+    const courses = semesterCourses.map((c) => {
+      const sh = strHash(student.id + c.id);
+      const dept = db.departments.find((d) => d.id === c.departmentId);
+      const deptCode = dept?.code ?? c.code.split("-")[0];
+      const deptColor = DEPT_COLORS_MAP[deptCode] ?? "var(--m-accent)";
+      const instructor = db.instructors.find((i) => i.id === c.instructorId);
+      const instructorName = instructor
+        ? `Prof. ${instructor.firstName} ${instructor.lastName}`
+        : "—";
+      const progress = semester.status === "past" ? 1.0 : (10 + (sh % 81)) / 100;
+      const ch = strHash(c.id);
+      const avgGrade = ch % 20 === 0 ? null : 68 + (ch % 1500) / 100;
+      const sh2 = strHash(student.id + c.id + "g");
+      const gradeNum = avgGrade
+        ? Math.max(
+            45,
+            Math.min(
+              100,
+              Math.round(avgGrade + (sh % 21) - 10 + (sh2 % 21) - 10),
+            ),
+          )
+        : null;
+      const grade = gradeNum ? numToLetterGrade(gradeNum) : "—";
+
+      return {
+        code: c.code,
+        deptCode,
+        deptColor,
+        title: c.title,
+        instructor: instructorName,
+        grade,
+        gradeNum,
+        progress,
+      };
+    });
+
+    const gpa =
+      courses.length > 0
+        ? courses.reduce((sum, g) => {
+            const map: Record<string, number> = {
+              A: 4.0,
+              "A-": 3.7,
+              "B+": 3.3,
+              B: 3.0,
+              "B-": 2.7,
+              "C+": 2.3,
+              C: 2.0,
+              "—": 0,
+            };
+            return sum + (map[g.grade] ?? 0);
+          }, 0) / courses.length
+        : 0;
+
+    return {
+      semesterId: semester.id,
+      semesterCode: semester.code,
+      semesterName: semester.name,
+      status: semester.status,
+      gpa,
+      courses,
+    };
+  });
+}
+
+
+export function getStudentDeadlines(): StudentDeadlineItem[] {
+  const student = getDefaultStudent();
+  if (!student) return [];
+
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const rawDeadlines = generateUpcomingDeadlines(student.id, 50);
+
+  return rawDeadlines.map((d) => {
+    const due = new Date(d.dueDate);
+    const dayLabel = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
+      due.getDay()
+    ];
+    const h = due.getUTCHours();
+    const m = due.getUTCMinutes();
+    const ampm = h >= 12 ? "PM" : "AM";
+    const h12 = h % 12 || 12;
+    const timeLabel = `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
+    const diffDays = Math.ceil((due.getTime() - NOW.getTime()) / DAY_MS);
+    const inLabel =
+      diffDays < 0
+        ? "overdue"
+        : diffDays === 0
+          ? "today"
+          : diffDays === 1
+            ? "tomorrow"
+            : `in ${diffDays} days`;
+    const asgn = db.assignments.find((a) => a.id === d.assignmentId);
+    const typeMap: Record<string, StudentDeadlineItem["type"]> = {
+      essay: "paper",
+      exam: "assignment",
+      quiz: "assignment",
+      lab: "assignment",
+      project: "milestone",
+      presentation: "discussion",
+    };
+    return {
+      id: d.assignmentId,
+      course: d.courseCode,
+      title: d.title,
+      dayLabel,
+      timeLabel,
+      inLabel,
+      type: asgn ? (typeMap[asgn.type] ?? "assignment") : "assignment",
+    };
+  });
+}
+
