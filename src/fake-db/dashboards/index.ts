@@ -2349,3 +2349,222 @@ export function getStudentDeadlines(): StudentDeadlineItem[] {
   });
 }
 
+// ─── Instructor Overview ───────────────────────────────────────────────────
+
+function getDefaultInstructor(): Instructor | undefined {
+  const active = db.instructors.filter(
+    (i) => i.status === "active" && i.courseIds.length >= 2,
+  );
+  if (active.length === 0) return db.instructors[0];
+  return active[strHash(active[0].id) % active.length];
+}
+
+const MODALITY_LIST = ["In-person", "In-person", "In-person", "Hybrid", "Hybrid", "Online"] as const;
+type CourseModality = (typeof MODALITY_LIST)[number];
+
+function courseModality(courseId: string): CourseModality {
+  return MODALITY_LIST[strHash(courseId) % MODALITY_LIST.length];
+}
+
+function courseAvgGrade(courseId: string): number {
+  return 74 + (strHash(courseId + "avg") % 21);
+}
+
+export type InstructorCourseRow = {
+  code: string;
+  title: string;
+  deptAbbr: string;
+  enrolled: number;
+  cap: number;
+  modality: CourseModality;
+  ungraded: number;
+  avgGrade: number;
+};
+
+export type InstructorScheduleItem = {
+  time: string;
+  until: string;
+  label: string;
+  location: string;
+  tone: "accent" | "success" | "info" | "default";
+};
+
+export type InstructorQueueItem = {
+  id: string;
+  studentName: string;
+  courseCode: string;
+  assignmentTitle: string;
+  submittedLabel: string;
+  attempt: number;
+  status: "pending" | "in-review" | "flagged";
+  late: boolean;
+};
+
+export type InstructorOfficeHoursSlot = {
+  day: string;
+  start: string;
+  end: string;
+  type: "drop-in" | "by-appointment";
+};
+
+export type InstructorOverviewData = {
+  instructor: Instructor;
+  semesterName: string;
+  weekNum: number;
+  scheduleDay: string;
+  courseCount: number;
+  ungradedTotal: number;
+  oldestHours: number;
+  avgTurnaroundHours: number;
+  courseHealth: string;
+  officeLocation: string;
+  officeHours: InstructorOfficeHoursSlot[];
+  courses: InstructorCourseRow[];
+  schedule: InstructorScheduleItem[];
+  gradingQueue: InstructorQueueItem[];
+};
+
+const OH_PATTERNS: Array<{ days: string[]; start: string; end: string; type: "drop-in" | "by-appointment" }> = [
+  { days: ["Monday", "Wednesday"], start: "14:00", end: "16:00", type: "drop-in" },
+  { days: ["Tuesday", "Thursday"], start: "10:00", end: "11:30", type: "drop-in" },
+  { days: ["Monday", "Wednesday", "Friday"], start: "09:00", end: "10:00", type: "drop-in" },
+  { days: ["Tuesday"], start: "13:00", end: "15:00", type: "drop-in" },
+  { days: ["Thursday"], start: "15:00", end: "17:00", type: "by-appointment" },
+];
+
+const OFFICE_BUILDINGS = ["Tucker Hall", "Carver Building", "Henley Hall", "Maxwell Hall", "Webb House"];
+
+export function getInstructorOverview(): InstructorOverviewData | null {
+  const instructor = getDefaultInstructor();
+  if (!instructor) return null;
+
+  const semester = db.semesters.find((s) => s.status === "active") ?? db.semesters[0];
+  const semStart = new Date(semester.startDate).getTime();
+  const weekNum = Math.max(1, Math.ceil((NOW.getTime() - semStart) / WEEK_MS));
+
+  const courses = getCoursesForInstructor(instructor.id);
+  const activeCourses = courses.filter((c) => c.status === "active").slice(0, 4);
+
+  // Per-course stats: use recent past-due assignments for ungraded count
+  const courseRows: InstructorCourseRow[] = activeCourses.map((c) => {
+    const recentAssignments = db.assignments
+      .filter((a) => a.courseId === c.id && new Date(a.dueDate).getTime() <= NOW.getTime())
+      .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime())
+      .slice(0, 2);
+    const ungraded = recentAssignments.reduce((sum, a) => {
+      const h = strHash(c.id + a.id + "ungraded");
+      return sum + 3 + (h % 14);
+    }, 0);
+    return {
+      code: c.code,
+      title: c.title,
+      deptAbbr: c.code.split("-")[0],
+      enrolled: c.studentIds.length,
+      cap: c.enrollmentCap,
+      modality: courseModality(c.id),
+      ungraded,
+      avgGrade: courseAvgGrade(c.id),
+    };
+  });
+
+  const ungradedTotal = courseRows.reduce((s, r) => s + r.ungraded, 0);
+  const overallAvg = courseRows.length
+    ? courseRows.reduce((s, r) => s + r.avgGrade, 0) / courseRows.length
+    : 85;
+  const courseHealth = overallAvg >= 90 ? "A" : overallAvg >= 85 ? "A−" : overallAvg >= 80 ? "B+" : "B";
+
+  // Schedule: pick a weekday based on course meeting days
+  const PREFER_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"] as const;
+  const prefDay = activeCourses[0]?.meetingTimes[0]?.day ?? "Mon";
+  const todayDow = NOW.getDay();
+  const dayMap: Record<string, number> = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5 };
+  const targetDow = dayMap[prefDay] ?? 1;
+  const daysAhead = ((targetDow - todayDow + 7) % 7) || 7;
+  const scheduleDate = new Date(NOW.getTime() + daysAhead * DAY_MS);
+  const scheduleDay = scheduleDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+
+  const TONE_LIST = ["accent", "default", "success", "info"] as const;
+  const scheduleItems: InstructorScheduleItem[] = [];
+
+  activeCourses.forEach((c, idx) => {
+    const mt = c.meetingTimes.find((m) => m.day === prefDay) ?? c.meetingTimes[0];
+    if (!mt) return;
+    const label = idx === 0 ? `${c.code} · Lecture` : `${c.code} · Lab`;
+    scheduleItems.push({
+      time: mt.start,
+      until: mt.end,
+      label,
+      location: `${c.location.building} ${c.location.room}`,
+      tone: TONE_LIST[idx % TONE_LIST.length],
+    });
+  });
+  scheduleItems.push({ time: "12:00", until: "13:00", label: "Office hours", location: "Faculty office · drop-in", tone: "success" });
+  scheduleItems.sort((a, b) => a.time.localeCompare(b.time));
+
+  // Grading queue: use the 3 most recently past-due assignments, with real students
+  const STATUS_LIST = ["pending", "pending", "pending", "flagged", "in-review"] as const;
+  const SUB_LABELS = ["2h ago", "5h ago", "1 day ago", "1 day ago", "2 days ago", "3 days ago", "4 days ago"];
+  const queue: InstructorQueueItem[] = [];
+
+  const recentByAssignment = activeCourses.flatMap((c) => {
+    return db.assignments
+      .filter((a) => a.courseId === c.id && new Date(a.dueDate).getTime() <= NOW.getTime())
+      .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime())
+      .slice(0, 2)
+      .map((a) => ({ asgn: a, course: c }));
+  });
+
+  for (const { asgn, course } of recentByAssignment) {
+    if (queue.length >= 10) break;
+    const studentSample = course.studentIds.slice(0, 4);
+    for (const sid of studentSample) {
+      if (queue.length >= 10) break;
+      const student = db.students.find((s) => s.id === sid);
+      if (!student) continue;
+      const h = strHash(sid + asgn.id);
+      queue.push({
+        id: `${asgn.id}-${sid}`,
+        studentName: `${student.firstName} ${student.lastName}`,
+        courseCode: course.code,
+        assignmentTitle: asgn.title,
+        submittedLabel: SUB_LABELS[h % SUB_LABELS.length],
+        attempt: (h % 3) === 0 ? 2 : 1,
+        status: STATUS_LIST[h % STATUS_LIST.length],
+        late: (h % 7) === 0,
+      });
+    }
+  }
+
+  // Office hours
+  const ohPattern = OH_PATTERNS[strHash(instructor.id) % OH_PATTERNS.length];
+  const officeHours: InstructorOfficeHoursSlot[] = ohPattern.days.map((day) => ({
+    day,
+    start: ohPattern.start,
+    end: ohPattern.end,
+    type: ohPattern.type,
+  }));
+  // Add a by-appointment slot on a different day
+  const extraDay = ["Friday", "Wednesday", "Thursday"][strHash(instructor.id + "extra") % 3];
+  officeHours.push({ day: extraDay, start: "11:00", end: "12:00", type: "by-appointment" });
+
+  const officeBuilding = OFFICE_BUILDINGS[strHash(instructor.id + "bldg") % OFFICE_BUILDINGS.length];
+  const officeRoom = 100 + (strHash(instructor.id + "room") % 300);
+
+  return {
+    instructor,
+    semesterName: semester.name,
+    weekNum,
+    scheduleDay,
+    courseCount: activeCourses.length,
+    ungradedTotal,
+    oldestHours: 52,
+    avgTurnaroundHours: 36,
+    courseHealth,
+    officeLocation: `${officeBuilding} · Room ${officeRoom}`,
+    officeHours,
+    courses: courseRows,
+    schedule: scheduleItems,
+    gradingQueue: queue,
+  };
+}
+
