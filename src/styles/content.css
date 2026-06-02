@@ -3606,3 +3606,119 @@
   accent-color: var(--m-accent);
   cursor: pointer;
 }
+
+.m-notif-solo {
+  max-width: 720px;
+}
+
+/* ── Notifications full-screen layout ── */
+.m-notif-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .m-notif-layout {
+    grid-template-columns: 1fr;
+  }
+}
+.m-notif-main {
+  min-width: 0;
+}
+.m-notif-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Summary card rows */
+.m-notif-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.m-notif-summary__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.m-notif-summary__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.m-notif-summary__dot--unread  { background: var(--m-accent); }
+.m-notif-summary__dot--read    { background: var(--m-text-3); }
+.m-notif-summary__dot--accent  { background: var(--m-accent); }
+.m-notif-summary__dot--warning { background: var(--m-warning, #f59e0b); }
+.m-notif-summary__dot--info    { background: var(--m-info, #3b82f6); }
+.m-notif-summary__label {
+  flex: 1;
+  color: var(--m-text-2);
+}
+.m-notif-summary__val {
+  font-weight: 500;
+  color: var(--m-text);
+  font-variant-numeric: tabular-nums;
+}
+.m-notif-summary__divider {
+  height: 1px;
+  background: var(--m-line);
+  margin: 4px 0;
+}
+
+/* Delivery channels */
+.m-notif-channels {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.m-notif-channel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.m-notif-channel__icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--m-surface-2, var(--m-line));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--m-text-2);
+}
+.m-notif-channel__label {
+  flex: 1;
+  color: var(--m-text-2);
+}
+.m-notif-channel__link {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--m-accent);
+  text-decoration: none;
+}
+.m-notif-channel__link:hover {
+  text-decoration: underline;
+}
+
+/* Do not disturb */
+.m-notif-dnd-icon {
+  color: var(--m-text-3);
+}
+.m-notif-dnd-desc {
+  font-size: 13px;
+  color: var(--m-text-2);
+  margin: 0 0 12px;
+}
+.m-notif-dnd-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
