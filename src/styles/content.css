@@ -3417,19 +3417,13 @@
   align-items: center;
   gap: 14px;
 }
-.m-avatar {
+.m-settings-avatar .m-avatar {
   width: 80px;
   height: 80px;
-  border-radius: 50%;
-  background: var(--m-accent-bg);
-  color: var(--m-accent);
-  display: grid;
-  place-items: center;
   font-size: 28px;
   font-family: var(--m-font-serif);
-  border: 1px solid var(--m-line);
 }
-.m-avatar--lg {
+.m-settings-avatar .m-avatar--lg {
   width: 96px;
   height: 96px;
   font-size: 36px;
