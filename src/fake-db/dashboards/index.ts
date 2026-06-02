@@ -2386,6 +2386,135 @@ export type InstructorCourseRow = {
   avgGrade: number;
 };
 
+export type InstructorGradeBar = {
+  letter: string;
+  pct: number;
+  tone: string;
+};
+
+export type InstructorCoursePageItem = InstructorCourseRow & {
+  gradeBars: InstructorGradeBar[];
+  passRate: number;
+  location: string;
+};
+
+export type InstructorPastCourse = {
+  code: string;
+  title: string;
+  deptAbbr: string;
+  enrolled: number;
+  avgGrade: number;
+  passRate: number;
+};
+
+export type InstructorPastSemester = {
+  name: string;
+  courses: InstructorPastCourse[];
+};
+
+export type InstructorCoursesPageData = {
+  instructor: Instructor;
+  semesterName: string;
+  activeCount: number;
+  totalStudents: number;
+  ungradedTotal: number;
+  courses: InstructorCoursePageItem[];
+  history: InstructorPastSemester[];
+};
+
+function buildGradeBars(courseId: string, avg: number): InstructorGradeBar[] {
+  const h1 = strHash(courseId + "gA");
+  const h2 = strHash(courseId + "gB");
+  const h3 = strHash(courseId + "gC");
+  const h4 = strHash(courseId + "gD");
+  // Tune around the avg: higher avg → more A/B, lower → more C/D
+  const shift = Math.round((avg - 80) / 4);
+  const a = Math.max(5,  Math.min(40, 12 + shift * 3 + (h1 % 10)));
+  const b = Math.max(15, Math.min(45, 32 + shift     + (h2 % 10)));
+  const c = Math.max(10, Math.min(35, 28 - shift     + (h3 % 8)));
+  const d = Math.max(3,  Math.min(20, 14 - shift * 2 + (h4 % 6)));
+  const f = Math.max(1, 100 - a - b - c - d);
+  return [
+    { letter: "A", pct: a, tone: "success" },
+    { letter: "B", pct: b, tone: "info" },
+    { letter: "C", pct: c, tone: "default" },
+    { letter: "D", pct: d, tone: "warning" },
+    { letter: "F", pct: f, tone: "danger" },
+  ];
+}
+
+export function getInstructorCoursesPageData(): InstructorCoursesPageData | null {
+  const instructor = getDefaultInstructor();
+  if (!instructor) return null;
+
+  const allSemesters = db.semesters;
+  const activeSemester = allSemesters.find((s) => s.status === "active") ?? allSemesters[0];
+  const pastSemesters = allSemesters
+    .filter((s) => s.status === "past")
+    .sort((a, b) => b.startDate.localeCompare(a.startDate))
+    .slice(0, 3);
+
+  const allCourses = getCoursesForInstructor(instructor.id);
+  const activeCourses = allCourses.filter((c) => c.status === "active");
+
+  const BUILDINGS = ["Tucker Hall", "Henley Hall", "Carver Building", "Maxwell Hall", "Penn Hall"];
+
+  const courses: InstructorCoursePageItem[] = activeCourses.map((c) => {
+    const recentAssignments = db.assignments
+      .filter((a) => a.courseId === c.id && new Date(a.dueDate).getTime() <= NOW.getTime())
+      .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime())
+      .slice(0, 2);
+    const ungraded = recentAssignments.reduce((sum, a) => {
+      return sum + 3 + (strHash(c.id + a.id + "ungraded") % 14);
+    }, 0);
+    const avg = courseAvgGrade(c.id);
+    const hLoc = strHash(c.id + "loc");
+    return {
+      code: c.code,
+      title: c.title,
+      deptAbbr: c.code.split("-")[0],
+      enrolled: c.studentIds.length,
+      cap: c.enrollmentCap,
+      modality: courseModality(c.id),
+      ungraded,
+      avgGrade: avg,
+      gradeBars: buildGradeBars(c.id, avg),
+      passRate: 75 + (strHash(c.id + "pass") % 21),
+      location: `${BUILDINGS[hLoc % BUILDINGS.length]} ${100 + (hLoc % 120)}`,
+    };
+  });
+
+  const history: InstructorPastSemester[] = pastSemesters.map((sem) => {
+    const semCourses = allCourses
+      .filter((c) => c.semesterId === sem.id)
+      .map((c) => {
+        const avg = courseAvgGrade(c.id + sem.id);
+        return {
+          code: c.code,
+          title: c.title,
+          deptAbbr: c.code.split("-")[0],
+          enrolled: c.studentIds.length,
+          avgGrade: avg,
+          passRate: 75 + (strHash(c.id + sem.id + "pass") % 21),
+        };
+      });
+    return { name: sem.name, courses: semCourses };
+  }).filter((s) => s.courses.length > 0);
+
+  const totalStudents = courses.reduce((s, c) => s + c.enrolled, 0);
+  const ungradedTotal = courses.reduce((s, c) => s + c.ungraded, 0);
+
+  return {
+    instructor,
+    semesterName: activeSemester.name,
+    activeCount: courses.length,
+    totalStudents,
+    ungradedTotal,
+    courses,
+    history,
+  };
+}
+
 export type InstructorScheduleItem = {
   time: string;
   until: string;
