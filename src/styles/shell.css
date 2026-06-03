@@ -285,6 +285,14 @@
 .m-crumbs__sep {
   opacity: 0.5;
 }
+.m-crumbs__link {
+  color: var(--m-text-3);
+  text-decoration: none;
+  transition: color 0.1s;
+}
+.m-crumbs__link:hover {
+  color: var(--m-text);
+}
 
 .m-search {
   flex: 1;
