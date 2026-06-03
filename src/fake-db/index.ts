@@ -34,9 +34,12 @@ export {
   getAdminOverview,
   getInstructorDashboard,
   getStudentDashboard,
+  getCmdPaletteIndex,
   type AdminOverviewData,
   type InstructorDashboardData,
   type StudentDashboardData,
+  type CmdIndexItem,
+  type CmdIconName,
 } from "./dashboards";
 
 export {
