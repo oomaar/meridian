@@ -1,3 +1,5 @@
+import { SettingsClient } from "@/components/instructor/settings-client/settings-client";
+
 export default function InstructorSettingsPage() {
-  return <h1>Settings</h1>;
+  return <SettingsClient />;
 }
