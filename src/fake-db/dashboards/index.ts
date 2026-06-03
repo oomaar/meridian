@@ -555,7 +555,6 @@ export function getStudentNotifications(): Notification[] {
     .filter(Boolean) as Course[];
 
   const items: Notification[] = [];
-  const DAY_MS = 24 * 60 * 60 * 1000;
 
   const bodies: Array<{
     kind: Notification["kind"];
@@ -2948,7 +2947,6 @@ export function getInstructorOverview(): InstructorOverviewData | null {
           : "B";
 
   // Schedule: pick a weekday based on course meeting days
-  const PREFER_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"] as const;
   const prefDay = activeCourses[0]?.meetingTimes[0]?.day ?? "Mon";
   const todayDow = NOW.getDay();
   const dayMap: Record<string, number> = {
