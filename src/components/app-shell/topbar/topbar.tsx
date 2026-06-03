@@ -41,7 +41,13 @@ export function Topbar({ onNavToggle, onSearchOpen }: TopbarProps) {
           {crumbs.map((c, i) => (
             <Fragment key={i}>
               {i > 0 && <ChevronRight size={12} className="m-crumbs__sep" />}
-              {i === crumbs.length - 1 ? <b>{c}</b> : <span>{c}</span>}
+              {c.href ? (
+                <Link href={c.href} className="m-crumbs__link">
+                  {c.label}
+                </Link>
+              ) : (
+                <b>{c.label}</b>
+              )}
             </Fragment>
           ))}
         </div>
