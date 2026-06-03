@@ -1,0 +1,17 @@
+export const SEGMENT_LABEL: Record<string, string> = {
+  overview: "Overview",
+  activity: "Activity",
+  notifications: "Notifications",
+  courses: "Courses",
+  students: "Students",
+  instructors: "Instructors",
+  semesters: "Semesters",
+  users: "Users & Roles",
+  settings: "Settings",
+  dashboard: "Today",
+  grading: "Grading queue",
+  deadlines: "Deadlines",
+  grades: "Grades",
+  announcements: "Announcements",
+  roster: "Roster",
+};
