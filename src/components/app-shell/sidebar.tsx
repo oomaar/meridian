@@ -143,6 +143,11 @@ const NAV: Record<Role, NavGroup[]> = {
       heading: "Account",
       items: [
         {
+          href: "/instructor/notifications",
+          label: "Notifications",
+          icon: Bell,
+        },
+        {
           href: "/instructor/announcements",
           label: "Announcements",
           icon: Inbox,
