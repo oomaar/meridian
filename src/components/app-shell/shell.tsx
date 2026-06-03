@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar";
-import { Topbar } from "./topbar";
+import { Topbar } from "./topbar/topbar";
 import { CommandPalette } from "./command-palette";
 import type { StudentSidebarCourse } from "@/fake-db/dashboards";
 import type { CmdIndexItem } from "@/fake-db/dashboards";
