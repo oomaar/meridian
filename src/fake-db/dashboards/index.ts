@@ -2632,6 +2632,108 @@ export function getInstructorCoursesPageData(): InstructorCoursesPageData | null
   };
 }
 
+const ANN_TITLES = [
+  "Lab feedback posted — please review before next session",
+  "Office hours moved this week",
+  "Midterm grades released — check your portal",
+  "Week reading list updated",
+  "Assignment deadline extended",
+  "Updated syllabus — important changes",
+  "Project proposal reminder",
+  "Welcome to the second half of the semester",
+  "Exam room change — please note",
+  "Supplementary resources added to course page",
+];
+
+const ANN_BODIES = [
+  "Please take a few minutes to read through the feedback. We'll discuss common mistakes in class.",
+  "Due to a scheduling conflict, office hours will be held on Friday instead. Same time, Room 204.",
+  "Grades have been released. If you have questions, please visit office hours or post in the forum.",
+  "I've added three new readings to the course page. These are optional but strongly recommended.",
+  "The deadline has been moved to next Friday at 11:59 PM. No further extensions will be granted.",
+  "I've updated the syllabus to reflect the schedule change for weeks 10–12. Please review it.",
+  "A reminder that project proposals are due this Sunday. Please submit via the course portal.",
+  "We're halfway through the semester — great progress so far. The remaining modules cover advanced topics.",
+  "The final exam has been moved to Room 302 in Henley Hall. All other details remain the same.",
+  "New practice problems and a sample solution set have been uploaded. Great for exam prep.",
+];
+
+const ANN_AGO = [
+  "Just now", "12m ago", "1h ago", "3h ago", "Yesterday",
+  "2 days ago", "3 days ago", "5 days ago", "1 week ago", "2 weeks ago",
+];
+
+export type InstructorAnnouncementItem = {
+  id: string;
+  courseCode: string;
+  courseId: string;
+  title: string;
+  body: string;
+  recipientCount: number;
+  postedLabel: string;
+  status: "published" | "draft";
+};
+
+export type InstructorAnnouncementsCourse = {
+  id: string;
+  code: string;
+  title: string;
+  announcements: InstructorAnnouncementItem[];
+};
+
+export type InstructorAnnouncementsData = {
+  instructor: { id: string; fullName: string };
+  semesterName: string;
+  totalSent: number;
+  courses: InstructorAnnouncementsCourse[];
+};
+
+export function getInstructorAnnouncementsData(): InstructorAnnouncementsData | null {
+  const instructor = getDefaultInstructor();
+  if (!instructor) return null;
+
+  const activeSemester = db.semesters.find((s) => s.status === "active") ?? db.semesters[0];
+  const activeCourses = getCoursesForInstructor(instructor.id).filter(
+    (c) => c.status === "active",
+  );
+
+  const courses: InstructorAnnouncementsCourse[] = activeCourses.map((c) => {
+    const count = 3 + (strHash(c.id + "anncount") % 3);
+    const announcements: InstructorAnnouncementItem[] = Array.from(
+      { length: count },
+      (_, i) => {
+        const h = strHash(c.id + `ann${i}`);
+        const titleIdx = h % ANN_TITLES.length;
+        const bodyIdx = strHash(c.id + `annbody${i}`) % ANN_BODIES.length;
+        const agoIdx = i < ANN_AGO.length ? i : i % ANN_AGO.length;
+        return {
+          id: `ann-${c.id}-${i}`,
+          courseCode: c.code,
+          courseId: c.id,
+          title: ANN_TITLES[titleIdx],
+          body: ANN_BODIES[bodyIdx],
+          recipientCount: c.studentIds.length,
+          postedLabel: ANN_AGO[agoIdx],
+          status: i === 0 && h % 7 === 0 ? "draft" : "published",
+        };
+      },
+    );
+    return { id: c.id, code: c.code, title: c.title, announcements };
+  });
+
+  const totalSent = courses.reduce(
+    (s, c) => s + c.announcements.filter((a) => a.status === "published").length,
+    0,
+  );
+
+  return {
+    instructor,
+    semesterName: activeSemester?.name ?? "Spring 2025",
+    totalSent,
+    courses,
+  };
+}
+
 export type InstructorRosterCourse = {
   id: string;
   code: string;
