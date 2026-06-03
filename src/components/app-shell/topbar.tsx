@@ -3,7 +3,14 @@
 import { Fragment } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, ChevronLeft, ChevronRight, Info, Menu, Search } from "lucide-react";
+import {
+  Bell,
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  Menu,
+  Search,
+} from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 function notifHref(pathname: string): string {
@@ -50,7 +57,13 @@ function deriveCrumbs(pathname: string): string[] {
   return [root, ...segments.slice(1).map(prettify)];
 }
 
-export function Topbar({ onNavToggle }: { onNavToggle?: () => void }) {
+export function Topbar({
+  onNavToggle,
+  onSearchOpen,
+}: {
+  onNavToggle?: () => void;
+  onSearchOpen?: () => void;
+}) {
   const pathname = usePathname();
   const crumbs = deriveCrumbs(pathname);
   const notifUrl = notifHref(pathname);
@@ -73,14 +86,27 @@ export function Topbar({ onNavToggle }: { onNavToggle?: () => void }) {
         ))}
       </div>
 
-      <div className="m-search">
+      <div
+        className="m-search"
+        role="button"
+        tabIndex={0}
+        onClick={onSearchOpen}
+        onKeyDown={(e) => e.key === "Enter" && onSearchOpen?.()}
+      >
         <Search className="m-search__icon" size={14} />
-        <input placeholder="Search courses, people, sections…" readOnly />
+        <input
+          placeholder="Search courses, people, sections…"
+          readOnly
+          tabIndex={-1}
+        />
         <span className="m-search__kbd">⌘K</span>
       </div>
 
       <div className="m-top-actions">
-        <Link href="/" className="m-btn m-btn--ghost m-btn--sm m-topbar-landing">
+        <Link
+          href="/"
+          className="m-btn m-btn--ghost m-btn--sm m-topbar-landing"
+        >
           <ChevronLeft size={12} /> Landing
         </Link>
         <ThemeToggle />
