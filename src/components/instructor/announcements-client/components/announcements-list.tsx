@@ -1,4 +1,6 @@
 import type { InstructorAnnouncementItem } from "@/fake-db/dashboards";
+import { EmptyState } from "@/components/shared/empty-state/empty-state";
+import { Inbox } from "lucide-react";
 
 type AnnouncementsListProps = {
   announcements: InstructorAnnouncementItem[];
@@ -10,7 +12,14 @@ export function AnnouncementsList({
   showCourse = false,
 }: AnnouncementsListProps) {
   if (announcements.length === 0) {
-    return <div className="m-table-empty">No announcements yet.</div>;
+    return (
+      <EmptyState
+        icon={Inbox}
+        heading="Nothing sent yet"
+        body="Compose your first announcement to reach your students."
+        size="sm"
+      />
+    );
   }
 
   return (
