@@ -2658,8 +2658,16 @@ const ANN_BODIES = [
 ];
 
 const ANN_AGO = [
-  "Just now", "12m ago", "1h ago", "3h ago", "Yesterday",
-  "2 days ago", "3 days ago", "5 days ago", "1 week ago", "2 weeks ago",
+  "Just now",
+  "12m ago",
+  "1h ago",
+  "3h ago",
+  "Yesterday",
+  "2 days ago",
+  "3 days ago",
+  "5 days ago",
+  "1 week ago",
+  "2 weeks ago",
 ];
 
 export type InstructorAnnouncementItem = {
@@ -2691,7 +2699,8 @@ export function getInstructorAnnouncementsData(): InstructorAnnouncementsData | 
   const instructor = getDefaultInstructor();
   if (!instructor) return null;
 
-  const activeSemester = db.semesters.find((s) => s.status === "active") ?? db.semesters[0];
+  const activeSemester =
+    db.semesters.find((s) => s.status === "active") ?? db.semesters[0];
   const activeCourses = getCoursesForInstructor(instructor.id).filter(
     (c) => c.status === "active",
   );
@@ -2721,7 +2730,8 @@ export function getInstructorAnnouncementsData(): InstructorAnnouncementsData | 
   });
 
   const totalSent = courses.reduce(
-    (s, c) => s + c.announcements.filter((a) => a.status === "published").length,
+    (s, c) =>
+      s + c.announcements.filter((a) => a.status === "published").length,
     0,
   );
 
@@ -3209,4 +3219,161 @@ export function getInstructorGradingData(): InstructorGradingData | null {
   }
 
   return null;
+}
+
+// ─── Command Palette Index ─────────────────────────────────────────────────
+
+export type CmdIconName =
+  | "dashboard"
+  | "activity"
+  | "bell"
+  | "book"
+  | "users"
+  | "graduation"
+  | "calendar"
+  | "calendar-clock"
+  | "user-cog"
+  | "settings"
+  | "pen"
+  | "inbox";
+
+export type CmdIndexItem = {
+  id: string;
+  label: string;
+  sub?: string;
+  group: "Pages" | "Courses" | "Students" | "Instructors";
+  href: string;
+  icon: CmdIconName;
+};
+
+type CmdRole = "admin" | "student" | "instructor";
+
+const CMD_NAV: Record<
+  CmdRole,
+  { label: string; href: string; icon: CmdIconName }[]
+> = {
+  admin: [
+    { label: "Overview", href: "/admin/overview", icon: "dashboard" },
+    { label: "Activity", href: "/admin/activity", icon: "activity" },
+    { label: "Notifications", href: "/admin/notifications", icon: "bell" },
+    { label: "Courses", href: "/admin/courses", icon: "book" },
+    { label: "Students", href: "/admin/students", icon: "users" },
+    { label: "Instructors", href: "/admin/instructors", icon: "graduation" },
+    { label: "Semesters", href: "/admin/semesters", icon: "calendar" },
+    { label: "Users & Roles", href: "/admin/users", icon: "user-cog" },
+    { label: "Settings", href: "/admin/settings", icon: "settings" },
+  ],
+  student: [
+    { label: "Today", href: "/student/dashboard", icon: "dashboard" },
+    { label: "Notifications", href: "/student/notifications", icon: "bell" },
+    { label: "My Courses", href: "/student/courses", icon: "book" },
+    { label: "Deadlines", href: "/student/deadlines", icon: "calendar-clock" },
+    { label: "Grades", href: "/student/grades", icon: "activity" },
+    { label: "Settings", href: "/student/settings", icon: "settings" },
+  ],
+  instructor: [
+    { label: "Overview", href: "/instructor/dashboard", icon: "dashboard" },
+    { label: "Grading queue", href: "/instructor/grading", icon: "pen" },
+    { label: "My Courses", href: "/instructor/courses", icon: "book" },
+    { label: "Roster", href: "/instructor/roster", icon: "users" },
+    { label: "Notifications", href: "/instructor/notifications", icon: "bell" },
+    {
+      label: "Announcements",
+      href: "/instructor/announcements",
+      icon: "inbox",
+    },
+    { label: "Settings", href: "/instructor/settings", icon: "settings" },
+  ],
+};
+
+function buildRoleIndex(role: CmdRole): CmdIndexItem[] {
+  const items: CmdIndexItem[] = [];
+
+  for (const nav of CMD_NAV[role]) {
+    items.push({
+      id: `page-${nav.href}`,
+      label: nav.label,
+      sub: nav.href,
+      group: "Pages",
+      href: nav.href,
+      icon: nav.icon,
+    });
+  }
+
+  const defaultStudent = db.students[0];
+  const defaultInstructor =
+    db.instructors.find((i) => i.courseIds.length >= 2) ?? db.instructors[0];
+
+  const courses =
+    role === "student"
+      ? db.courses.filter((c) =>
+          defaultStudent?.enrolledCourseIds.includes(c.id),
+        )
+      : role === "instructor"
+        ? db.courses.filter((c) => defaultInstructor?.courseIds.includes(c.id))
+        : db.courses.slice(0, 30);
+
+  for (const course of courses) {
+    const dept = db.departments.find((d) => d.id === course.departmentId);
+    const href =
+      role === "admin"
+        ? `/admin/courses/${encodeURIComponent(course.code)}`
+        : role === "student"
+          ? `/student/courses/${encodeURIComponent(course.code)}`
+          : `/instructor/courses`;
+    items.push({
+      id: `course-${course.id}`,
+      label: `${course.code} — ${course.title}`,
+      sub: dept?.name ?? course.code.split("-")[0],
+      group: "Courses",
+      href,
+      icon: "book",
+    });
+  }
+
+  if (role === "admin" || role === "instructor") {
+    const students =
+      role === "instructor"
+        ? db.students
+            .filter((s) =>
+              defaultInstructor?.courseIds.some((cid) =>
+                s.enrolledCourseIds.includes(cid),
+              ),
+            )
+            .slice(0, 20)
+        : db.students.slice(0, 20);
+    for (const s of students) {
+      items.push({
+        id: `student-${s.id}`,
+        label: s.fullName,
+        sub: s.email,
+        group: "Students",
+        href: role === "admin" ? `/admin/students` : `/instructor/roster`,
+        icon: "users",
+      });
+    }
+  }
+
+  if (role === "admin") {
+    for (const inst of db.instructors.slice(0, 20)) {
+      items.push({
+        id: `instructor-${inst.id}`,
+        label: `${inst.title} ${inst.firstName} ${inst.lastName}`,
+        sub: inst.email,
+        group: "Instructors",
+        href: `/admin/instructors`,
+        icon: "graduation",
+      });
+    }
+  }
+
+  return items;
+}
+
+export function getCmdPaletteIndex(): Record<CmdRole, CmdIndexItem[]> {
+  return {
+    admin: buildRoleIndex("admin"),
+    student: buildRoleIndex("student"),
+    instructor: buildRoleIndex("instructor"),
+  };
 }
