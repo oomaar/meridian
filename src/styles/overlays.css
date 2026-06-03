@@ -590,6 +590,174 @@
   padding: 48px 20px;
 }
 
+/* ── Command Palette ────────────────────────────────────────────────────────
+   Triggered by ⌘K or clicking the topbar search bar. */
+.m-cmd-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--m-overlay);
+  z-index: 300;
+  animation: m-cmd-fade 0.12s ease;
+}
+@keyframes m-cmd-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.m-cmd {
+  position: fixed;
+  top: 14vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, 96vw);
+  background: var(--m-surface);
+  border: 1px solid var(--m-line-strong);
+  border-radius: 12px;
+  box-shadow: var(--m-shadow-lg);
+  z-index: 301;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: m-cmd-in 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes m-cmd-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+.m-cmd__search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--m-line);
+  flex-shrink: 0;
+}
+.m-cmd__search-icon {
+  color: var(--m-text-3);
+  flex-shrink: 0;
+}
+.m-cmd__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: var(--m-text);
+  font-family: inherit;
+}
+.m-cmd__input::placeholder {
+  color: var(--m-text-4);
+}
+.m-cmd__list {
+  overflow-y: auto;
+  max-height: 380px;
+  padding: 6px;
+}
+.m-cmd__group-label {
+  font-size: 10.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--m-text-3);
+  font-weight: 500;
+  padding: 8px 10px 4px;
+}
+.m-cmd__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.08s;
+}
+.m-cmd__item:hover {
+  background: var(--m-surface-2);
+}
+.m-cmd__item--selected {
+  background: var(--m-accent-bg);
+}
+.m-cmd__item-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--m-surface-2);
+  display: grid;
+  place-items: center;
+  color: var(--m-text-2);
+  flex-shrink: 0;
+}
+.m-cmd__item--selected .m-cmd__item-icon {
+  background: color-mix(in srgb, var(--m-accent) 15%, transparent);
+  color: var(--m-accent);
+}
+.m-cmd__item-body {
+  flex: 1;
+  min-width: 0;
+}
+.m-cmd__item-label {
+  font-size: 13.5px;
+  color: var(--m-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-cmd__item-sub {
+  font-size: 11.5px;
+  color: var(--m-text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-cmd__item-arrow {
+  color: var(--m-text-4);
+  flex-shrink: 0;
+}
+.m-cmd__empty {
+  padding: 36px 20px;
+  text-align: center;
+  color: var(--m-text-3);
+  font-size: 13.5px;
+}
+.m-cmd__footer {
+  border-top: 1px solid var(--m-line);
+  padding: 8px 14px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.m-cmd__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: var(--m-text-3);
+}
+.m-cmd__hint kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  min-width: 18px;
+  padding: 0 4px;
+  background: var(--m-surface-2);
+  border: 1px solid var(--m-line);
+  border-radius: 3px;
+  font-size: 10px;
+  font-family: var(--m-font-mono);
+  color: var(--m-text-2);
+}
+
 /* ── Modal / dialog ─────────────────────────────────────────────────────────
    Centred overlay modal. Wider than a sheet — used for reports, charts, etc. */
 .m-modal-overlay {
