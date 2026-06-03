@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 import type { StudentSidebarCourse } from "@/fake-db/dashboards";
+import { GradingCountProvider } from "@/lib/grading-count-context";
 
 export function AppShell({
   children,
@@ -12,18 +13,21 @@ export function AppShell({
   studentCourseCount,
   studentDeadlineCount,
   studentNotifCount,
+  instructorGradingCount,
+  instructorCourseCount,
 }: {
   children: ReactNode;
   studentCourses: StudentSidebarCourse[];
   studentCourseCount: number;
   studentDeadlineCount: number;
   studentNotifCount: number;
+  instructorGradingCount: number;
+  instructorCourseCount: number;
 }) {
   const pathname = usePathname();
   const [navOpen, setNavOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
 
-  // Close nav on navigation without an effect (React derived-state pattern)
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
     setNavOpen(false);
@@ -33,15 +37,23 @@ export function AppShell({
   const toggle = useCallback(() => setNavOpen((o) => !o), []);
 
   return (
-    <div className="m-app" data-nav-open={navOpen ? "" : undefined}>
-      {navOpen && (
-        <div className="m-nav-overlay" onClick={close} aria-hidden="true" />
-      )}
-      <Sidebar studentCourses={studentCourses} studentCourseCount={studentCourseCount} studentDeadlineCount={studentDeadlineCount} studentNotifCount={studentNotifCount} />
-      <div className="m-main">
-        <Topbar onNavToggle={toggle} />
-        <div className="m-page">{children}</div>
+    <GradingCountProvider initial={instructorGradingCount}>
+      <div className="m-app" data-nav-open={navOpen ? "" : undefined}>
+        {navOpen && (
+          <div className="m-nav-overlay" onClick={close} aria-hidden="true" />
+        )}
+        <Sidebar
+          studentCourses={studentCourses}
+          studentCourseCount={studentCourseCount}
+          studentDeadlineCount={studentDeadlineCount}
+          studentNotifCount={studentNotifCount}
+          instructorCourseCount={instructorCourseCount}
+        />
+        <div className="m-main">
+          <Topbar onNavToggle={toggle} />
+          <div className="m-page">{children}</div>
+        </div>
       </div>
-    </div>
+    </GradingCountProvider>
   );
 }
