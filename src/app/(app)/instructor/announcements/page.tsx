@@ -1,3 +1,8 @@
+import { getInstructorAnnouncementsData } from "@/fake-db/dashboards";
+import { AnnouncementsClient } from "@/components/instructor/announcements-client/announcements-client";
+
 export default function InstructorAnnouncementsPage() {
-  return <h1>Announcements</h1>;
+  const data = getInstructorAnnouncementsData();
+  if (!data) return <p>No data.</p>;
+  return <AnnouncementsClient data={data} />;
 }
