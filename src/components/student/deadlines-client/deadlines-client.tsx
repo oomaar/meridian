@@ -7,6 +7,8 @@ import { DeadlineGroup } from "./components/deadline-group";
 import { groupDeadlinesByDate } from "./helpers/groupDeadlinesByDate";
 import type { DeadlineType } from "./types/DeadlineType";
 import { DEADLINE_GROUPS } from "./data/DEADLINE_GROUPS";
+import { EmptyState } from "@/components/shared/empty-state/empty-state";
+import { CalendarClock } from "lucide-react";
 
 type DeadlinesClientProps = {
   deadlines: StudentDeadlineItem[];
@@ -70,9 +72,12 @@ export function DeadlinesClient({ deadlines }: DeadlinesClientProps) {
                 />
               ))
             ) : (
-              <div className="m-deadlines-empty">
-                <p>No deadlines to show</p>
-              </div>
+              <EmptyState
+                icon={CalendarClock}
+                heading="All clear"
+                body="No deadlines match this filter. Enjoy the breathing room."
+                size="sm"
+              />
             )}
           </div>
         </div>

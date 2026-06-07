@@ -11,6 +11,8 @@ import { GradingClientInstructorComments } from "./components/grading-client-ins
 import type { DraftState } from "./types/DraftState";
 import type { ReleaseState } from "./types/ReleaseState";
 import type { InstructorGradingData } from "@/fake-db/dashboards";
+import { EmptyState } from "@/components/shared/empty-state/empty-state";
+import { PenLine } from "lucide-react";
 
 export type InstructorCommentsState = {
   draft: DraftState;
@@ -53,7 +55,24 @@ export function GradingClient({ data }: { data: InstructorGradingData }) {
   }
 
   const selected = queue[selectedIdx];
-  if (!selected) return null;
+  if (!selected)
+    return (
+      <>
+        <div className="m-page__header">
+          <div className="m-page__title">
+            <span className="m-page__eyebrow">Grading</span>
+            <h1 className="m-page__h">Grading queue</h1>
+          </div>
+        </div>
+        <div className="m-page__body">
+          <EmptyState
+            icon={PenLine}
+            heading="Queue is clear"
+            body="All submissions have been graded. Check back when new work comes in."
+          />
+        </div>
+      </>
+    );
   const isReleased = releasedIds.has(selected.id);
   const rubric = buildRubric(selected);
 

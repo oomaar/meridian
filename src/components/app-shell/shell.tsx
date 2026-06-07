@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useCallback, type ReactNode } from "react";
+import { useState, useCallback, useEffect, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar";
-import { Topbar } from "./topbar";
+import { Topbar } from "./topbar/topbar";
+import { CommandPalette } from "./command-palette";
 import type { StudentSidebarCourse } from "@/fake-db/dashboards";
+import type { CmdIndexItem } from "@/fake-db/dashboards";
 import { GradingCountProvider } from "@/lib/grading-count-context";
 
 export function AppShell({
@@ -15,6 +17,7 @@ export function AppShell({
   studentNotifCount,
   instructorGradingCount,
   instructorCourseCount,
+  cmdIndex,
 }: {
   children: ReactNode;
   studentCourses: StudentSidebarCourse[];
@@ -23,9 +26,11 @@ export function AppShell({
   studentNotifCount: number;
   instructorGradingCount: number;
   instructorCourseCount: number;
+  cmdIndex: Record<string, CmdIndexItem[]>;
 }) {
   const pathname = usePathname();
   const [navOpen, setNavOpen] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
 
   if (pathname !== prevPathname) {
@@ -35,6 +40,19 @@ export function AppShell({
 
   const close = useCallback(() => setNavOpen(false), []);
   const toggle = useCallback(() => setNavOpen((o) => !o), []);
+  const openCmd = useCallback(() => setCmdOpen(true), []);
+  const closeCmd = useCallback(() => setCmdOpen(false), []);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setCmdOpen(true);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <GradingCountProvider initial={instructorGradingCount}>
@@ -50,9 +68,10 @@ export function AppShell({
           instructorCourseCount={instructorCourseCount}
         />
         <div className="m-main">
-          <Topbar onNavToggle={toggle} />
+          <Topbar onNavToggle={toggle} onSearchOpen={openCmd} />
           <div className="m-page">{children}</div>
         </div>
+        {cmdOpen && <CommandPalette cmdIndex={cmdIndex} onClose={closeCmd} />}
       </div>
     </GradingCountProvider>
   );
